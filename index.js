@@ -42,4 +42,4 @@ try {
 
 });
 
-client.login(config.token);
+client.login(process.env.bot_token);

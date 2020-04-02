@@ -8,7 +8,7 @@ module.exports = {
       `here's your Doppel picture!`
       `Doppel's cute, isn't she? :heart:`
       `I hope you're having a great time! :wink:`
-    ]
+    ];
     const doppel_imgs = [
       'https://cdn.discordapp.com/attachments/694943149142966396/694943222882893924/1f6d3f69f297eb0cbbd4fa55b2eb39acd7ef64fe_full.jpg',
       'https://cdn.discordapp.com/attachments/694943149142966396/694943225105874995/5f82f4034113f2759e9aed767bf8a20f.jpg',

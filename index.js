@@ -50,7 +50,7 @@ if (message.isMentioned(client.user)) {
     "It feels like I've become stronger. I have to thank you.",
     "Defeating me... i'll teach you just what that means!",
     "Hah... what a pointless question... I'm Arle! ...I'm not anything besides that!!",
-  ]
+  ];
   message.reply(mention_responses[Math.floor(Math.random() * mention_responses.length)]);
 }
 });

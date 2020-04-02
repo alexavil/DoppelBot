@@ -40,8 +40,7 @@ try {
 	message.reply('there was an error trying to execute that command!');
 }
 
-const mention = new RegExp(`^<@!?${client.user.id}> `);
-if (message.content.startsWith(mention)) {
+if (message.isMentioned(client.user)) {
   const mention_responses = [
     'My relationship with Arle? Can you handle the knowledge?',
     'I look like Arle? Well of course I do... Haha.',

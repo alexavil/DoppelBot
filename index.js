@@ -40,7 +40,7 @@ try {
 	message.reply('there was an error trying to execute that command!');
 }
 
-if (message.startsWith("<@!601454973158424585>")) {
+if (message.content.startsWith("<@!601454973158424585>")) {
   const mention_responses = [
     'My relationship with Arle? Can you handle the knowledge?',
     'I look like Arle? Well of course I do... Haha.',

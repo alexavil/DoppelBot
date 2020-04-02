@@ -41,7 +41,7 @@ try {
 }
 
 if (message.isMentioned(client.user)) {
-  mention_responses = [
+  const mention_responses = [
     'My relationship with Arle? Can you handle the knowledge?',
     'I look like Arle? Well of course I do... Haha.',
     'Now...take me to more fun places.',

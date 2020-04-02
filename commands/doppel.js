@@ -5,9 +5,9 @@ module.exports = {
 	execute(message) {
 
     const responses = [
-      `here's your Doppel picture!`
-      `Doppel's cute, isn't she? :heart:`
-      `I hope you're having a great time! :wink:`
+      "here's your Doppel picture!",
+      "Doppel's cute, isn't she? :heart:",
+      "I hope you're having a great time! :wink: Here's a Doppel picture for you!",
     ];
     const doppel_imgs = [
       'https://cdn.discordapp.com/attachments/694943149142966396/694943222882893924/1f6d3f69f297eb0cbbd4fa55b2eb39acd7ef64fe_full.jpg',

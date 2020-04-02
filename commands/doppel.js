@@ -5,9 +5,9 @@ module.exports = {
 	execute(message) {
 
     const responses = [
-      `${message.author}, here's your Doppel picture!`
-      `${message.author}, Doppel's cute, isn't she? :heart:`
-      `${message.author}, I hope you're having a great time! :wink:`
+      `here's your Doppel picture!`
+      `Doppel's cute, isn't she? :heart:`
+      `I hope you're having a great time! :wink:`
     ]
     const doppel_imgs = [
       'https://cdn.discordapp.com/attachments/694943149142966396/694943222882893924/1f6d3f69f297eb0cbbd4fa55b2eb39acd7ef64fe_full.jpg',
@@ -64,7 +64,7 @@ module.exports = {
       'https://cdn.discordapp.com/attachments/694943149142966396/694945288695316551/Voidhole.jpg'     
 ];
         
-message.channel.send(responses[Math.floor(Math.random() * responses.length)], {
+message.channel.reply(responses[Math.floor(Math.random() * responses.length)], {
   file: doppel_imgs[Math.floor(Math.random() * doppel_imgs.length)]
 });
 	},

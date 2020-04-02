@@ -42,10 +42,10 @@ try {
 
 if (message.isMentioned(client.user)) {
   mention_responses = [
-    "My relationship with Arle? Can you handle the knowledge?",
-    "I look like Arle? Well of course I do... Haha.",
-    "Now...take me to more fun places.",
-    "Hahaha... You look surprised. Something wrong?",
+    'My relationship with Arle? Can you handle the knowledge?',
+    'I look like Arle? Well of course I do... Haha.',
+    'Now...take me to more fun places.',
+    'Hahaha... You look surprised. Something wrong?',
     "Ahahaha! I'm having such a great time.",
     "It feels like I've become stronger. I have to thank you.",
     "Defeating me... i'll teach you just what that means!",

@@ -61,7 +61,27 @@ module.exports = {
       'https://cdn.discordapp.com/attachments/694943149142966396/694945217853521950/twoarlestwice2.jpeg',
       'https://cdn.discordapp.com/attachments/694943149142966396/694945231258255360/twoarlestwice3.jpeg',
       'https://cdn.discordapp.com/attachments/694943149142966396/694945231258255360/twoarlestwice4.jpeg',
-      'https://cdn.discordapp.com/attachments/694943149142966396/694945288695316551/Voidhole.jpg'     
+      'https://cdn.discordapp.com/attachments/694943149142966396/694945288695316551/Voidhole.jpg',
+      'https://cdn.discordapp.com/attachments/694943149142966396/695301267941228655/DoL8sKPUcAAb81x.jpeg',
+      'https://cdn.discordapp.com/attachments/694943149142966396/695301272441454653/doppelpfp.png',
+      'https://cdn.discordapp.com/attachments/694943149142966396/695301273880100984/EQPqXovU8AA7XwY.jpeg',
+      'https://cdn.discordapp.com/attachments/694943149142966396/695301415270219796/EUD9zxiUEAAgcaR.jpeg',
+      'https://cdn.discordapp.com/attachments/694943149142966396/695301428662501497/ER7y9z4U0AAEC72.jpeg',
+      'https://cdn.discordapp.com/attachments/694943149142966396/695301437202366484/re.jpeg',
+      'https://cdn.discordapp.com/attachments/694943149142966396/695301442818277464/unnamed.jpg',
+      'https://cdn.discordapp.com/attachments/694943149142966396/695303582676942868/doppelganger_arle_puyopuyo_and_1_more_drawn_by_tsukino_neru__2ba4718440e21be03fd26ba7bfec3e95.jpg',
+      'https://cdn.discordapp.com/attachments/694943149142966396/695303583113150484/ESRFvYOU0AEjOJt.jpgsmall.jpeg',
+      'https://cdn.discordapp.com/attachments/694943149142966396/695303584601866320/4838999i.jpeg',
+      'https://cdn.discordapp.com/attachments/694943149142966396/695303586006958190/2987601-tenLxHNjMEtMuAQN.png',
+      'https://cdn.discordapp.com/attachments/694943149142966396/695303586959196320/566.jpeg',
+      'https://cdn.discordapp.com/attachments/694943149142966396/695303588813209611/c469.jpg',
+      'https://cdn.discordapp.com/attachments/694943149142966396/695303589962448976/image158144862l.png',
+      'https://cdn.discordapp.com/attachments/694943149142966396/695301265969643561/DoCuhm5XoAAikZs.jpeg',
+      'https://cdn.discordapp.com/attachments/694943149142966396/695301260848660590/C1f_IF_UQAADKX_.jpeg',
+      'https://cdn.discordapp.com/attachments/694943149142966396/695301257664921691/C0bxbA5UQAQ0dle.jpeg',
+      'https://cdn.discordapp.com/attachments/694943149142966396/695301255320436787/8625520i.jpeg',
+      'https://cdn.discordapp.com/attachments/694943149142966396/695301251566534746/1184609i.jpeg',
+      'https://cdn.discordapp.com/attachments/694943149142966396/695301250308243516/45.png',     
 ];
         
 message.channel.send(responses[Math.floor(Math.random() * responses.length)], {

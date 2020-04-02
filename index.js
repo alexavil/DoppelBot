@@ -40,7 +40,8 @@ try {
 	message.reply('there was an error trying to execute that command!');
 }
 
-if (message.content.startsWith("<@!601454973158424585>")) {
+const mention = new RegExp(`^<@!?${client.user.id}> `);
+if (message.content.startsWith(mention)) {
   const mention_responses = [
     'My relationship with Arle? Can you handle the knowledge?',
     'I look like Arle? Well of course I do... Haha.',

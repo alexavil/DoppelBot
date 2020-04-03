@@ -1,9 +1,10 @@
 const Discord = require('discord.js');
+const client = require('../index.js');
 module.exports = {
-	name: 'submit',
-  description: 'Submit your content',
+	name: 'contributor',
+  description: 'Mark someone as a contributor',
 	execute(message, args) {
-
+    
     if(message.channel.type != "dm") return;
     if(message.author.id != "332148103803174913") return;
 

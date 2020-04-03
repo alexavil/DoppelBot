@@ -12,6 +12,6 @@ module.exports = {
       ":information_source: | According to the Puyo Puyo canon, Doppel spent 500 years on the void, implying that the Madou Monogotari canon is canon here too, as Arle (Pre-Reset) fought the creator and won. However, that victory came at the cost of everything as she knew: it all turned into a void. The Arle that we know today is actually half of this original Arle. The other half would be Doppel, which was stuck in the void untill the events of Puyo Puyo 4.",
     ];
         
-message.channel.send(facts[Math.floor(Math.random() * responses.length)]);
+message.channel.send(facts[Math.floor(Math.random() * facts.length)]);
 	},
 };

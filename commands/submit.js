@@ -11,8 +11,9 @@ module.exports = {
         return message.channel.send(`You didn't provide any content. That happens, don't worry. :heart:`)
     }
     else {
-        const user = client.users.cache.get('332148103803174913');
-        user.send(`${message.author} wants something to be added to the bot!\n${args}`);        
+        client.fetchuser('332148103803174913').then((user) => {
+            user.send(`${message.author} wants something to be added to the bot!\n${args}`);
+        });       
     };
 },
 };

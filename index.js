@@ -36,6 +36,12 @@ client.on('message', message => {
         "It feels like I've become stronger. I have to thank you.",
         "Defeating me... i'll teach you just what that means!",
         "Hah... what a pointless question... I'm Arle! ...I'm not anything besides that!!",
+	"Today you will definitely acknowledge me... Ahahaha!",
+        "No matter how you might want to deny it, the truth remains... that I am what I am...",
+        "Is the Arle that you know really Arle, I wonder? Fufufu...",
+        "I am strong... Which should prove useful to you. That should suffice, no?",
+        "Tell me, are you obligated to prove that you really are yourself? ...Well neither am I.",
+        "You get it now, right? There's no need for two Arles...",
       ];
       message.reply(mention_responses[Math.floor(Math.random() * mention_responses.length)]);
     };

@@ -18,7 +18,7 @@ client.on('ready', () => {
 client.user.setPresence({
     status: "online",
     game: {
-        name: `with Doppel in Skynet`,
+        name: `Doppel: Become Human`,
         type: "PLAYING"
     },
 });

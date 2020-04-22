@@ -22,10 +22,6 @@ client.user.setPresence({
         type: "PLAYING"
     },
 });
-if (config.birthday_mode = true) {
-  const channel = client.channels.get('678640161738850365');
-  channel.send("Today is Doppel's brithday! :birthday:" );
-}
 });
 
 client.on('message', message => {
@@ -47,19 +43,7 @@ client.on('message', message => {
         "You get it now, right? There's no need for two Arles...",
       ];
       message.reply(mention_responses[Math.floor(Math.random() * mention_responses.length)]);
-    }
-    if(message.content.startsWith("Happy Birthday, Doppel!")) {
-      const responses = [
-        'Would you like a piece of cake? :cake:',
-        ':heart: :smile:',
-        'Yay! :tada:',
-        ':fireworks: :fireworks: :fireworks:',
-      ];
-      if(config.birthday_mode = true) {
-        message.reply(responses[Math.floor(Math.random() * responses.length)]);
-      }
-    }
-    else return;
+    } else return;
   };
 
   if(message.author.bot) return;

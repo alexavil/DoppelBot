@@ -112,7 +112,6 @@ function DailyDoppel() {
   file: doppel_imgs[Math.floor(Math.random() * doppel_imgs.length)]
 });
 }
-setTimeout(DailyDoppel, 3 * 1000);
 setInterval(DailyDoppel, 86400 * 1000);
 });
 

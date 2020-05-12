@@ -107,7 +107,7 @@ function DailyDoppel() {
     'https://cdn.discordapp.com/attachments/694943149142966396/704461248665747486/external-content.duckduckgo.com.jpeg',
     'https://cdn.discordapp.com/attachments/694943149142966396/704462085014159430/image0.png.jpeg',         
 ];
-  const channel = client.channels.get('678640161738850365');
+  const channel = client.channels.get('694943149142966396');
   channel.send("I hope you're having a great time! Here's your Daily Doppel! :heart:", {
   file: doppel_imgs[Math.floor(Math.random() * doppel_imgs.length)]
 });

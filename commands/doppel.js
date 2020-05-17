@@ -105,7 +105,7 @@ if (chance == 1) {
     file: "./mq2.png"
   });
 }
-if (chance != 58) {
+if (chance != 1) {
 message.channel.send(responses[Math.floor(Math.random() * responses.length)], {
   file: doppel_imgs[Math.floor(Math.random() * doppel_imgs.length)]
 });

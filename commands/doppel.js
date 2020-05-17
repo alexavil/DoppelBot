@@ -4,6 +4,12 @@ module.exports = {
   description: 'Get a random picture of Doppel',
 	execute(message) {
 
+    function randomInt(min, max) {
+      return min + Math.floor((max - min) * Math.random());
+    }
+
+    chance = randomInt(1, 100);
+
     const responses = [
       "Here's your Doppel picture!",
       "Doppel's cute, isn't she? :heart:",
@@ -93,9 +99,16 @@ module.exports = {
       'https://cdn.discordapp.com/attachments/694943149142966396/704461248665747486/external-content.duckduckgo.com.jpeg',
       'https://cdn.discordapp.com/attachments/694943149142966396/704462085014159430/image0.png.jpeg',     
 ];
-        
+   
+if (chance == 58) {
+  message.channel.send("Here's your... wait, this isn't Doppel... Could anything ELSE go wrong today?!?!", {
+    file: "https://cdn.discordapp.com/attachments/568429234977243146/711524930076016650/mq2.png"
+  });
+}
+if (chance != 58) {
 message.channel.send(responses[Math.floor(Math.random() * responses.length)], {
   file: doppel_imgs[Math.floor(Math.random() * doppel_imgs.length)]
 });
+}
 	},
 };

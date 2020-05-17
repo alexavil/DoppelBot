@@ -102,7 +102,7 @@ module.exports = {
    
 if (chance == 58) {
   message.channel.send("Here's your... wait, this isn't Doppel... Could anything ELSE go wrong today?!?!", {
-    file: "https://cdn.discordapp.com/attachments/568429234977243146/711524930076016650/mq2.png"
+    file: "https://cdn.discordapp.com/attachments/584763379068043265/711630870104113273/mq2.png"
   });
 }
 if (chance != 58) {

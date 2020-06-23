@@ -137,7 +137,8 @@ module.exports = {
       './images/EY9wbg4WAAAJwj_.jpeg',
       './images/EY9xItPX0AAX5xl.jpeg',
       './images/EYBKzKnXYAMQMyx.jpeg',
-      './images/EYOkvpiU4AAJPVC.jpeg',      
+      './images/EYOkvpiU4AAJPVC.jpeg',
+      './images/your-way-cinnabar-wide-large-doppel-edition.png',      
 ];
    
 if (chance == 58) {

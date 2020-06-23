@@ -145,7 +145,8 @@ function DailyDoppel() {
       './images/EY9wbg4WAAAJwj_.jpeg',
       './images/EY9xItPX0AAX5xl.jpeg',
       './images/EYBKzKnXYAMQMyx.jpeg',
-      './images/EYOkvpiU4AAJPVC.jpeg',      
+      './images/EYOkvpiU4AAJPVC.jpeg',
+      './images/your-way-cinnabar-wide-large-doppel-edition.png',      
 ];
   const channel = client.channels.get('694943149142966396');
   channel.send("I hope you're having a great time! Here's your Daily Doppel! :heart:", {

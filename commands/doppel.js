@@ -139,20 +139,20 @@ module.exports = {
       './images/EYBKzKnXYAMQMyx.jpeg',
       './images/EYOkvpiU4AAJPVC.jpeg',
       './images/your-way-cinnabar-wide-large-doppel-edition.png',
-      './images/Ea81gY4UwAUEclH.jpeg'.
-      './images/EaARFfXU0AEABuW.jpeg'.
-      './images/EbDTiblU0AAhuu9.jpeg'.
-      './images/EbkZeTSU8AIVrAm.jpeg'.
-      './images/EbSfb-hVcAAHftX.jpeg'.
-      './images/EbxZQz7UYAAycZ3.jpeg'.
-      './images/EITkG-eXkAAuH63.jpeg'.
-      './images/ETMUfBzUEAA86J8.jpeg'.
-      './images/EWIpO-XUYAAd0z9.jpeg'.
-      './images/EWnN0iKUwAEyWVw.jpeg'.
-      './images/EYXjHIiUYAEbJT6.jpeg'.
-      './images/EZlIp5bVcAEAclO.jpeg'.
-      './images/EZRaRHQUwAAq60X.jpeg'.
-      './images/EcZlA4RU4AAU_J_.jpeg'.       
+      './images/Ea81gY4UwAUEclH.jpeg',
+      './images/EaARFfXU0AEABuW.jpeg',
+      './images/EbDTiblU0AAhuu9.jpeg',
+      './images/EbkZeTSU8AIVrAm.jpeg',
+      './images/EbSfb-hVcAAHftX.jpeg',
+      './images/EbxZQz7UYAAycZ3.jpeg',
+      './images/EITkG-eXkAAuH63.jpeg',
+      './images/ETMUfBzUEAA86J8.jpeg',
+      './images/EWIpO-XUYAAd0z9.jpeg',
+      './images/EWnN0iKUwAEyWVw.jpeg',
+      './images/EYXjHIiUYAEbJT6.jpeg',
+      './images/EZlIp5bVcAEAclO.jpeg',
+      './images/EZRaRHQUwAAq60X.jpeg',
+      './images/EcZlA4RU4AAU_J_.jpeg',       
 ];
    
 if (chance == 58) {

@@ -18,7 +18,7 @@ client.on('ready', () => {
 client.user.setPresence({
     status: "online",
     game: {
-        name: `Doppel: Become Human`,
+        name: `Doppel Adventure DX: Arle's Cut`,
         type: "PLAYING"
     },
 });

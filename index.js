@@ -19,7 +19,8 @@ client.user.setPresence({
     status: "online",
     game: {
         name: `Doppel images right to your channels!`,
-        type: "STREAMING"
+        type: "STREAMING",
+	url:  "https://github.com/alexavil/DoppelBot" 
     },
 });
 function DailyDoppel() {

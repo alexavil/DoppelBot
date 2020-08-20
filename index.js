@@ -18,9 +18,8 @@ client.on('ready', () => {
 client.user.setPresence({
     status: "online",
     game: {
-        name: `Doppel images right to your channels!`,
-        type: "STREAMING",
-	url:  "https://github.com/alexavil/DoppelBot" 
+        name: `Doppel Adventure DX: Arle's Cut`,
+        type: "PLAYING"
     },
 });
 function DailyDoppel() {

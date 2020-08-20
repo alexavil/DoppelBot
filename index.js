@@ -18,8 +18,8 @@ client.on('ready', () => {
 client.user.setPresence({
     status: "online",
     game: {
-        name: `Doppel Mania`,
-        type: "PLAYING"
+        name: `Doppel images right to your channels!`,
+        type: "STREAMING"
     },
 });
 function DailyDoppel() {

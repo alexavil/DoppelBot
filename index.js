@@ -18,7 +18,7 @@ client.on('ready', () => {
 client.user.setPresence({
     status: "online",
     game: {
-        name: `Doppel Adventure DX: Arle's Cut`,
+        name: `Doppel Mania`,
         type: "PLAYING"
     },
 });
@@ -160,10 +160,12 @@ function DailyDoppel() {
       './images/EYXjHIiUYAEbJT6.jpeg',
       './images/EZlIp5bVcAEAclO.jpeg',
       './images/EZRaRHQUwAAq60X.jpeg',
-      './images/EcZlA4RU4AAU_J_.jpeg',      
+      './images/EcZlA4RU4AAU_J_.jpeg',
+      './images/EeG98MNVAAA9RCy.jpeg',
+      './images/EfIy1ndUcAEQ_5S.jpeg',      
 ];
   const channel = client.channels.get('694943149142966396');
-  channel.send("I hope you're having a great time! Here's your Daily Doppel! :heart:", {
+  channel.send("You know what they say? A Doppel a day keeps your sadness away! Here's your Daily Doppel! :heart:", {
   file: doppel_imgs[Math.floor(Math.random() * doppel_imgs.length)]
 });
 }

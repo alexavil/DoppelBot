@@ -152,7 +152,9 @@ module.exports = {
       './images/EYXjHIiUYAEbJT6.jpeg',
       './images/EZlIp5bVcAEAclO.jpeg',
       './images/EZRaRHQUwAAq60X.jpeg',
-      './images/EcZlA4RU4AAU_J_.jpeg',       
+      './images/EcZlA4RU4AAU_J_.jpeg',
+      './images/EeG98MNVAAA9RCy.jpeg',
+      './images/EfIy1ndUcAEQ_5S.jpeg',      
 ];
    
 if (chance == 58) {

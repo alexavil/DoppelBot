@@ -18,7 +18,7 @@ client.on('ready', () => {
 client.user.setPresence({
     status: "online",
     game: {
-        name: `Doppel Adventure DX: Arle's Cut`,
+        name: `Doppel Generations (+ Monika DLC)`,
         type: "PLAYING"
     },
 });

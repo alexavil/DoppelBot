@@ -7,6 +7,6 @@ module.exports = {
         
   message.channel.send(message.content.split(" ").slice(1).join(" "));
   message.delete().catch();
-},
+}
 	},
 };

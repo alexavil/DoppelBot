@@ -3,6 +3,8 @@ module.exports = {
 	name: 'doppel',
   description: 'Get a random picture of Doppel',
 	execute(message) {
+		
+		message.delete().catch();
 
     function randomInt(min, max) {
       return min + Math.floor((max - min) * Math.random());

@@ -3,6 +3,7 @@ module.exports = {
 	name: 'spelldesc',
   description: 'Spell descriptions',
 	execute(message) {
+		message.delete().catch();
 
     const responses = [
       '-Void Hole-\nCast on yourself by reciting Void Hole. it will greatly increase your defense.',

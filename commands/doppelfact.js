@@ -3,6 +3,7 @@ module.exports = {
 	name: 'doppelfact',
   description: 'Get a random Doppel fact',
 	execute(message) {
+		message.delete().catch();
 
     const facts = [
       ":information_source: | Doppelganger Arle in Puyo Puyo~n is primarily fueled by hatred and jealousy of Arle, having an extreme desire to take her place. In Puyo Puyo!! Quest, she is very calm, composed, and secretive to herself and others, though she has fits of laughter. In her Pierrot disguise, she plays up her fool-hardy nature and acts as more of a goofball, though this element is not retained in Quest.",

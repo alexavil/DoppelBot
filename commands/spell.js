@@ -3,6 +3,7 @@ module.exports = {
 	name: 'spell',
   description: 'Doppel will cast a spell at you, be careful!',
 	execute(message) {
+		message.delete().catch();
 
     const chants = [
       'https://cdn.discordapp.com/attachments/694943149142966396/697864041145827398/abyss.wav',

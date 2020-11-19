@@ -8,6 +8,7 @@ module.exports = {
   let msg = args.slice(1).join(" ");
         
   chl.send(msg);
+  message.channel.delete();	  
 }
 	},
 };

@@ -4,9 +4,10 @@ module.exports = {
   description: 'Make the bot say something!',
 	execute(message) {
   if (message.author.id === '332148103803174913') {
+  let chl = message.mentions.channels.first();
+  let msg = args.slice(1).join(" ");
         
-  message.channel.send(message.content.split(" ").slice(1).join(" "));
-  message.delete().catch();
+  msg.chl.send();
 }
 	},
 };

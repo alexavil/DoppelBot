@@ -7,7 +7,7 @@ module.exports = {
   let chl = message.mentions.channels.first();
   let msg = args.slice(1).join(" ");
         
-  msg.chl.send();
+  chl.send(msg);
 }
 	},
 };

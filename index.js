@@ -220,7 +220,7 @@ client.on('message', message => {
       ];
       message.reply(mention_responses[Math.floor(Math.random() * mention_responses.length)]);
     };
-	if(message.content.startsWith("Ahoy")) {
+	if((message.content.startsWith("Ahoy")) || (message.content.startsWith("ahoy"))) {
 		message.reply("Ahoy!");
 	} else return;
   };

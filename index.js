@@ -219,7 +219,10 @@ client.on('message', message => {
         "You get it now, right? There's no need for two Arles...",
       ];
       message.reply(mention_responses[Math.floor(Math.random() * mention_responses.length)]);
-    } else return;
+    };
+	if(message.content.startsWith("Ahoy")) {
+		message.reply("Ahoy!");
+	} else return;
   };
 
   if(message.author.bot) return;

@@ -185,6 +185,8 @@ module.exports = {
       './images/EJlp6TlUcAAZ-5_.jpg',
       './images/ELaa2CEU4AAIBKd.png',
       './images/EZGaqCxUEAYS8m9.jpg',
+      './images/EiS0-YEXsAAILcd.jpg',
+      './images/Ei3__LiWkAEgAEm.jpeg',
 ];
    
 if (chance == 58) {

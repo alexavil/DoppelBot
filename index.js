@@ -190,7 +190,9 @@ function DailyDoppel() {
       './images/EhKF8yLU4AASZRd.jpg',
       './images/EJlp6TlUcAAZ-5_.jpg',
       './images/ELaa2CEU4AAIBKd.png',
-      './images/EZGaqCxUEAYS8m9.jpg',      
+      './images/EZGaqCxUEAYS8m9.jpg',
+      './images/EiS0-YEXsAAILcd.jpg',
+      './images/Ei3__LiWkAEgAEm.jpeg',	      
 ];
   const channel = client.channels.get('694943149142966396');
   channel.send("You know what they say? A Doppel a day keeps your sadness away! Here's your Daily Doppel! :heart:", {

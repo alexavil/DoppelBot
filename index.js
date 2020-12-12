@@ -224,6 +224,9 @@ client.on('message', message => {
     };
 	if((message.content.startsWith("Ahoy")) || (message.content.startsWith("ahoy"))) {
 		message.reply("Ahoy!");
+	};
+	if(((message.content.startsWith("thanks")) || (message.content.startsWith("Thanks"))) && (message.channel.id === "694943149142966396")) {
+		message.reply("all conveniences in the world, just for you!");
 	} else return;
   };
 

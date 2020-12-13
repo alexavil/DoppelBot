@@ -226,7 +226,12 @@ client.on('message', message => {
 		message.reply("Ahoy!");
 	};
 	if(((message.content.startsWith("thanks")) || (message.content.startsWith("Thanks"))) && (message.channel.id === "694943149142966396")) {
-		message.reply("all conveniences in the world, just for you!");
+      const welcome = [
+        'all conveniences in the world, just for you!',
+        "I'm glad you're enjoying this!",
+        "you're welcome!",
+      ];
+      message.reply(welcome[Math.floor(Math.random() * welcome.length)]);
 	} else return;
   };
 

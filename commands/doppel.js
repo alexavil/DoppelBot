@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 const fs = require('fs');
-require.main();
+const doppel_imgs = require('./doppel_imgs/');
 module.exports = {
 	name: 'doppel',
   description: 'Get a random picture of Doppel',
@@ -19,7 +19,6 @@ module.exports = {
       "Doppel's cute, isn't she? :heart:",
       "I hope you're having a great time! :wink: Here's a Doppel picture for you!",
     ];
-	imagescan();
 	
    
 if (chance == 58) {

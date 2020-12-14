@@ -24,7 +24,7 @@ client.user.setPresence({
     },
 });
 function imagescan() {
-	const doppel_imgs = [];
+	var doppel_imgs = [];
 	const imageFolder = './images/';
     fs.readdir(imageFolder, (err, files) => {
       files.forEach(file => {
@@ -32,6 +32,7 @@ function imagescan() {
 			  return;
 		  } else doppel_imgs.push(file);
     });
+	module.exports = doppel_imgs;
 });
 };
 function DailyDoppel() {

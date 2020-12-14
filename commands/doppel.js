@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 const fs = require('fs');
-const index = require('./index.js');
+require.main();
 module.exports = {
 	name: 'doppel',
   description: 'Get a random picture of Doppel',

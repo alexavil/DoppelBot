@@ -33,6 +33,7 @@ function imagescan() {
 		  } else doppel_imgs.push(file);
     });
 };
+};
 function DailyDoppel() {
   const channel = client.channels.get('694943149142966396');
   channel.send("You know what they say? A Doppel a day keeps your sadness away! Here's your Daily Doppel! :heart:", {

@@ -32,7 +32,7 @@ function imagescan() {
 			  return;
 		  } else doppel_imgs.push(file);
     });
-};
+});
 };
 function DailyDoppel() {
   const channel = client.channels.get('694943149142966396');

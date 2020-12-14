@@ -20,7 +20,7 @@ module.exports = {
       "I hope you're having a great time! :wink: Here's a Doppel picture for you!",
     ];
 	imagescan();
-};
+}
 	
    
 if (chance == 58) {

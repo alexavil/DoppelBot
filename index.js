@@ -14,7 +14,8 @@ for (const file of commandFiles) {
 
 
 client.on('ready', () => {
-  console.log('I am ready!')
+  console.log('I am ready!');
+  imagescan();
 client.user.setPresence({
     status: "online",
     game: {

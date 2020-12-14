@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const { Client, RichEmbed, Permissions, PermissionOverwrites, GuildMember, } = require('discord.js');
 module.exports = {
 	name: 'about',
   description: 'About the bot',

@@ -3,7 +3,7 @@ module.exports = {
 	name: 'unban',
 	description: 'Unban a user',
 	execute(message, args) {
-		if (!message.member.hasPermission('BAN_MEMBERS')) {
+		if (!message.author.hasPermission('BAN_MEMBERS')) {
 			return message.channel.send(`You don't have permission to use this command!`);
 		}
 		if (!args.length) {
@@ -14,7 +14,7 @@ module.exports = {
         }
         const id = args[0];
 		setTimeout(() => {
-			message.guild.members.unban(id);
+			message.guild.unban(id);
 			message.channel.send('Unbanned! :white_check_mark:');
 		  }, 500)
 		

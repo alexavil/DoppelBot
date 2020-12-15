@@ -3,7 +3,7 @@ module.exports = {
 	name: 'warn',
 	description: 'Warn a user',
 	execute(message, args) {
-		if (!message.member.has('KICK_MEMBERS')) {
+		if (!message.author.hasPermission('KICK_MEMBERS')) {
 			return message.channel.send(`You don't have permission to use this command!`);
 		}
 		if (!args.length) {

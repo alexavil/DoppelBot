@@ -24,7 +24,6 @@ module.exports = {
 	.addField('Why was I warned?', reason)
     .addField('What does it mean for me?', 'You can continue chatting safely, however, more infractions will lead to more serious penalties.')
 	.addField('How do I appeal?', 'Contact the Server Owner or a moderator that issued you the warning.')
-	)
 	.setTimestamp()
 
 		user.send(warnmessage);

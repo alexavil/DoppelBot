@@ -3,7 +3,7 @@ module.exports = {
 	name: 'about',
   description: 'About the bot',
 	 execute(message) {
-        const help = new Discord.MessageEmbed()
+        const help = new Discord.RichEmbed()
 		.setColor('#0099ff')
 		.setTitle('Welcome to DoppelBot!')
 		.setDescription('')

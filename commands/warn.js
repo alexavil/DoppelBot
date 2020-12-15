@@ -18,13 +18,12 @@ module.exports = {
                 var arg = args[i] + " "; 
                 reason = reason + arg;
 			}
-		const warnmessage = new Discord.MessageEmbed()
+		const warnmessage = new Discord.RichEmbed()
 	.setColor('#00FF00')
 	.setTitle('Important Message: You were warned in ' + message.guild.name)
-	.addFields(
-		{ name: 'Why was I warned?', value: reason },
-		{ name: 'What does it mean for me?', value: 'You can continue chatting safely, however, more infractions will lead to more serious penalties.' },
-		{ name: 'How do I appeal?', value: 'Contact the Server Owner or a moderator that issued you the warning.' },
+	.addField('Why was I warned?', reason)
+    .addField('What does it mean for me?', 'You can continue chatting safely, however, more infractions will lead to more serious penalties.')
+	.addField('How do I appeal?', value: 'Contact the Server Owner or a moderator that issued you the warning.')
 	)
 	.setTimestamp()
 

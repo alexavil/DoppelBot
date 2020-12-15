@@ -18,19 +18,17 @@ module.exports = {
                 var arg = args[i] + " "; 
                 reason = reason + arg;
 			}
-		const kickmessage = new Discord.MessageEmbed()
-	.setColor('#FFFF00')
+			const kickmessage = new Discord.RichEmbed()
+	.setColor('#FF0000')
 	.setTitle('Important Message: You were kicked from ' + message.guild.name)
-	.addFields(
-		{ name: 'Why was I kicked?', value: reason },
-		{ name: 'What does it mean for me?', value: 'You were removed from ' + message.guild.name + '. You can still re-join by using any available invite link, however, your roles will be reset. More infractions will lead to more serious penalties.' },
-		{ name: 'How do I appeal?', value: 'Contact the Server Owner or a moderator that kicked you.' },
-	)
+	.addField('Why was I kicked?', reason)
+	.addField('What does it mean for me?', 'You were removed from ' + message.guild.name + '. You can still re-join by using any available invite link, however, your roles will be reset. More infractions will lead to more serious penalties.')
+	.addField('How do I appeal?', 'Contact the Server Owner or a moderator that kicked you.')
 	.setTimestamp()
 
 
 	try {
-		message.guild.members.ban(user);
+		message.guild.kick(user);
 		user.send(kickmessage);
 	} catch (error) {
 		return message.channel.send(`Failed to kick **${user.tag}**: ${error}`);

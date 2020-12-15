@@ -29,7 +29,7 @@ module.exports = {
 	.setTimestamp()
 
 	try {
-		await message.guild.members.ban(user);
+		message.guild.members.ban(user);
 		user.send(banmessage);
 	} catch (error) {
 		return message.channel.send(`Failed to ban **${user.tag}**: ${error}`);

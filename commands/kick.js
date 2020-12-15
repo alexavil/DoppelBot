@@ -30,7 +30,7 @@ module.exports = {
 
 
 	try {
-		await message.guild.members.ban(user);
+		message.guild.members.ban(user);
 		user.send(kickmessage);
 	} catch (error) {
 		return message.channel.send(`Failed to kick **${user.tag}**: ${error}`);

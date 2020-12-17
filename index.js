@@ -234,7 +234,10 @@ client.on('message', message => {
         "you're welcome!",
       ];
       message.reply(welcome[Math.floor(Math.random() * welcome.length)]);
-	} else return;
+	};
+if(message.content.startsWith("play ina unravel")) {
+message.channel.send('https://www.youtube.com/watch?v=n-hRYCpm8wQ');
+} else return;
   };
 
   if(message.author.bot) return;
@@ -254,4 +257,4 @@ try {
 
 });
 
-client.login(process.env.bot_token);
+client.login('NjAxNDU0OTczMTU4NDI0NTg1.XTCimA.6LvZMnvEpHiNRqJz5YcYTAbfMbk');

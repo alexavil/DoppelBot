@@ -257,4 +257,4 @@ try {
 
 });
 
-client.login('NjAxNDU0OTczMTU4NDI0NTg1.XTCimA.6LvZMnvEpHiNRqJz5YcYTAbfMbk');
+client.login(process.env.bot_token);

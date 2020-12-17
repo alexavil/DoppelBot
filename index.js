@@ -1,5 +1,6 @@
 const fs = require('fs');
 const Discord = require('discord.js');
+const cron = require("cron");
 const { Client, RichEmbed, Permissions, PermissionOverwrites, GuildMember, } = require('discord.js');
 const config = require('./config.json')
 
@@ -199,7 +200,8 @@ function DailyDoppel() {
   file: doppel_imgs[Math.floor(Math.random() * doppel_imgs.length)]
 });
 }
-setInterval(DailyDoppel, 86400 * 1000);
+let job1 = new cron.CronJob('00 00 13 * * *', DailyDoppel);
+job1.start();
 });
 
 client.on('message', message => {

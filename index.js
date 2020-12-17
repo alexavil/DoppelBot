@@ -19,7 +19,7 @@ client.on('ready', () => {
 client.user.setPresence({
     status: "online",
     game: {
-        name: `Doppel Generations (+ Monika DLC)`,
+        name: `Merry Fucking Xmas!`,
         type: "PLAYING"
     },
 });

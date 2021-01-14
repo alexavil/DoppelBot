@@ -1,6 +1,7 @@
 const fs = require('fs');
 const Discord = require('discord.js');
 const cron = require("cron");
+const ReactionRoleManager = require("discord-reaction-role");
 const { Client, RichEmbed, Permissions, PermissionOverwrites, GuildMember, } = require('discord.js');
 const config = require('./config.json')
 
@@ -13,13 +14,19 @@ for (const file of commandFiles) {
 	client.commands.set(command.name, command);
 }
 
+const manager = new ReactionRoleManager(client, {
+    storage: "./roles.json"
+});
+
+client.reactionRoleManager = manager;
+
 
 client.on('ready', () => {
   console.log('I am ready!')
 client.user.setPresence({
     status: "online",
     game: {
-        name: `Merry Fucking Xmas!`,
+        name: `Doppelganger Arle: Ace Attorney`,
         type: "PLAYING"
     },
 });
@@ -72,6 +79,26 @@ client.on('message', message => {
 	if((message.content.startsWith("Ahoy")) || (message.content.startsWith("ahoy"))) {
 		message.reply("Ahoy!");
 	};
+	if((message.content.startsWith("hold it!")) || (message.content.startsWith("Hold it!"))) {
+		message.channel.send({
+        file: "./ace_attorney/hold_it.jpg"
+      });
+	};
+	if((message.content.startsWith("Take that!")) || (message.content.startsWith("take that!"))) {
+		message.channel.send({
+        file: "./ace_attorney/take_that.jpg"
+      });
+	};
+	if((message.content.startsWith("objection!")) || (message.content.startsWith("Objection!"))) {
+		message.channel.send({
+        file: "./ace_attorney/objection.jpg"
+      });
+	};
+	if((message.content.startsWith("gotcha!")) || (message.content.startsWith("Gotcha!"))) {
+		message.channel.send({
+        file: "./ace_attorney/gotcha.jpg"
+      });
+	};	
 	if(((message.content.startsWith("thanks")) || (message.content.startsWith("Thanks"))) && (message.channel.id === "694943149142966396")) {
       const welcome = [
         'all conveniences in the world, just for you!',
@@ -93,14 +120,28 @@ message.channel.send('https://www.youtube.com/watch?v=n-hRYCpm8wQ');
   if (!client.commands.has(commandName)) return;
 
   const command = client.commands.get(commandName);
+  
+  if (command.userpermissions) {
+	const perms = message.channel.permissionsFor(message.author);
+ 	if (!perms || !perms.has(command.userpermissions)) {
+ 		return message.reply('you do not have permission to use this command!');
+ 	}
+}
 
 try {
 	command.execute(message, args);
 } catch (error) {
 	console.error(error);
-	message.reply('there was an error trying to execute that command!');
+	console.log(error.code);
+	if (error.code === Discord.Constants.APIErrors.MISSING_PERMISSIONS) {
+		message.reply("I don't have permissions to do that action! Check the Roles page!");
+	} else message.reply('there was an error trying to execute that command!');
 }
 
 });
 
-client.login(process.env.bot_token);
+process.on('unhandledRejection', error => {
+	console.error('Error:', error);
+});
+
+client.login('');

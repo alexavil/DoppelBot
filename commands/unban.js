@@ -12,7 +12,7 @@ module.exports = {
         }
         const id = args[0];
 		try {
-			message.guild.unban(id).catch(error => {
+			message.guild.members.unban(id).catch(error => {
 	if (error.code === Discord.Constants.APIErrors.MISSING_PERMISSIONS) {
 		return message.reply("I don't have permissions to do that action! Check the Roles page!");
 	}

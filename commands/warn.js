@@ -16,7 +16,7 @@ module.exports = {
                 var arg = args[i] + " "; 
                 reason = reason + arg;
 			}
-		const warnmessage = new Discord.RichEmbed()
+		const warnmessage = new Discord.MessageEmbed()
 	.setColor('#00FF00')
 	.setTitle('Important Message: You were warned in ' + message.guild.name)
 	.addField('Why was I warned?', reason)

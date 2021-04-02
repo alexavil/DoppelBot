@@ -18,16 +18,18 @@ module.exports = {
                 reason = reason + arg;
 			}
 			async function kick() {
-				kickmember = message.guild.member(user);
-				kickmember.kick(reason)
-			user.send(kickmessage).catch(err => {
+				const delay = (msec) => new Promise((resolve) => setTimeout(resolve, msec));
+				user.send(kickmessage).catch(err => {
 				if (err.code === Discord.Constants.APIErrors.CANNOT_MESSAGE_USER) {
 				return message.reply("I couldn't send the message, but the user was kicked successfully!");
 				}
 			});
+				await delay(100);
+				kickmember = message.guild.member(user);
+				kickmember.kick(reason)
 			message.react('✅')
 			};
-		const kickmessage = new Discord.RichEmbed()
+		const kickmessage = new Discord.MessageEmbed()
 	.setColor('#FFFF00')
 	.setTitle('Important Message: You were kicked from ' + message.guild.name)
 	.addField('Why was I kicked?', reason)

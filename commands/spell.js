@@ -16,7 +16,7 @@ module.exports = {
 ];
         
 message.channel.send("I am strong... Which should prove useful to you. That should suffice, no?", {
-  file: chants[Math.floor(Math.random() * chants.length)]
+  files: [chants[Math.floor(Math.random() * chants.length)]]
 });
 	},
 };

@@ -272,4 +272,4 @@ process.on('unhandledRejection', error => {
 	console.error('Error:', error);
 });
 
-client.login('NjAxNDU0OTczMTU4NDI0NTg1.XTCimA.8JD06hM9zMt1HpjDi31lbLhop64');
+client.login();

@@ -1,9 +1,7 @@
 const fs = require('fs');
 const Discord = require('discord.js');
 const cron = require("cron");
-const ReactionRoleManager = require("discord-reaction-role");
-const { Client, RichEmbed, Permissions, PermissionOverwrites, GuildMember, } = require('discord.js');
-const config = require('./config.json')
+const { Client, MessageEmbed, Permissions, PermissionOverwrites, GuildMember, MessageAttachment } = require('discord.js');
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -14,22 +12,68 @@ for (const file of commandFiles) {
 	client.commands.set(command.name, command);
 }
 
-const manager = new ReactionRoleManager(client, {
-    storage: "./roles.json"
-});
-
-client.reactionRoleManager = manager;
 
 
 client.on('ready', () => {
   console.log('I am ready!')
 client.user.setPresence({
     status: "online",
-    game: {
-        name: `Doppelganger Arle: Ace Attorney`,
-        type: "PLAYING"
+    activity: {
+        name: `Doppel's Schoolhouse (feat. Sonic the Hedgehog)`,
     },
 });
+function createConfig() {
+	client.guilds.cache.forEach(g => {
+		fs.access('./guilds/' + g.id + '.json', (err) => {
+		if (err) {
+		var stream = fs.createWriteStream('./guilds/' + g.id + '.json');
+		stream.once('open', (fd) => {
+		stream.write("{\n");
+		stream.write(`"aa": "inactive",\n`);
+		stream.write(`"mentions": "active",\n`);
+		stream.write(`"other": "inactive",\n`);
+		stream.write(`"prefix": "d!",\n`);
+		stream.write(`"filter": "active"\n`);
+		stream.write("}");
+		stream.end();
+});
+		}
+		})
+		fs.access('./filter/' + g.id + '.json', (err) => {
+		if (err) {
+		var stream = fs.createWriteStream('./filter/' + g.id + '.json');
+		stream.once('open', (fd) => {
+		stream.write("{\n");
+		stream.write(`"banned_words": ["https://discordgift.site/"]\n`);	
+		stream.write("}");
+		stream.end();
+});
+		}
+		})
+}); 
+	};
+	fs.access('./database/blacklist.json', (err) => {
+		if (err) {
+		var stream = fs.createWriteStream('./database/blacklist.json');
+		stream.once('open', (fd) => {
+		stream.write("{\n");
+		stream.write(`"blacklist": []\n`);
+		stream.write("}");
+		stream.end();
+});
+		}
+		})
+	fs.access('./database/whitelist.json', (err) => {
+		if (err) {
+		var stream = fs.createWriteStream('./database/whitelist.json');
+		stream.once('open', (fd) => {
+		stream.write("{\n");
+		stream.write(`"whitelist": []\n`);
+		stream.write("}");
+		stream.end();
+});
+		}
+		})		
 function DailyDoppel() {
   const imageFolder = "./images/";
 
@@ -46,19 +90,67 @@ function DailyDoppel() {
         "What is it?! A Daily Doppel?!",
         "Prepare for trouble! And make it Doppel! No idea what that was, but here's your Doppel image.",
       ];
-      const channel = client.channels.get('694943149142966396');
+      const channel = client.channels.cache.get('694943149142966396');
       channel.send(responses[Math.floor(Math.random() * responses.length)], {
-        file: randomImage
+        files: [randomImage]
       });
 });
 }
 let job1 = new cron.CronJob('00 00 13 * * *', DailyDoppel);
 job1.start();
+createConfig();
+});
+
+client.on('guildCreate', guild => {
+function createConfig() {
+		fs.access('./guilds/' + guild.id + '.json', (err) => {
+		if (err) {
+		var stream = fs.createWriteStream('./guilds/' + guild.id + '.json');
+		stream.once('open', (fd) => {
+		stream.write("{\n");
+		stream.write(`"aa": "inactive",\n`);
+		stream.write(`"mentions": "active",\n`);
+		stream.write(`"other": "inactive",\n`);
+		stream.write(`"prefix": "d!",\n`);
+		stream.write(`"filter": "active"\n`);	
+		stream.write("}");
+		stream.end();
+});
+		}
+		});
+		fs.access('./filter/' + guild.id + '.json', (err) => {
+		if (err) {
+		var stream = fs.createWriteStream('./filter/' + guild.id + '.json');
+		stream.once('open', (fd) => {
+		stream.write("{\n");
+		stream.write(`"banned_words": ["https://discordgift.site/"]\n`);	
+		stream.write("}");
+		stream.end();
+});
+		}
+		})
+	};
+createConfig();
+});
+
+client.on('guildDelete', guild => {
+	fs.unlink('./guilds/' + guild.id + '.json', () => {
+	console.log('Removing config...')});
+	fs.unlink('./filter/' + guild.id + '.json', () => {
+	console.log('Removing filter...')});
 });
 
 client.on('message', message => {
-  if (!message.content.startsWith(config.prefix)) {
-    if (message.isMentioned(client.user)) {
+	if (!message.guild) return;
+	id = message.guild.id;
+	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
+	const filter = JSON.parse(fs.readFileSync('./filter/' + id + '.json'));
+  if (!message.content.startsWith(guildconf.prefix)) {
+	  id = message.guild.id;
+    if (message.content.toLowerCase().includes("<@!601454973158424585>")) {
+	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
+	if (guildconf.mentions == "inactive") return;
+	if(message.author.bot) return;
       const mention_responses = [
         'My relationship with Arle? Can you handle the knowledge?',
         'I look like Arle? Well of course I do... Haha.',
@@ -76,50 +168,86 @@ client.on('message', message => {
       ];
       message.reply(mention_responses[Math.floor(Math.random() * mention_responses.length)]);
     };
-	if((message.content.startsWith("Ahoy")) || (message.content.startsWith("ahoy"))) {
+	if (filter.banned_words.some(item => message.content.toLowerCase().includes(item))) {
+		if(message.author.bot) return;
+		if (guildconf.filter == "inactive") return;
+		message.delete().catch();
+		};
+	if(message.content.toLowerCase().startsWith("ahoy")) {
+		if(message.author.bot) return;
+	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
+	if (guildconf.other == "inactive") return;
 		message.reply("Ahoy!");
 	};
-	if((message.content.startsWith("hold it!")) || (message.content.startsWith("Hold it!"))) {
+	if(message.content.toLowerCase().includes("realtek")) {
+		if(message.author.bot) return;
+	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
+	if (guildconf.other == "inactive") return;
+		const realkek = [
+        'Realtek - offering shitty products since 1987!',
+        'Did you mean... Realkek?',
+        'Realtek - more like Real Pain.',
+        'Welcome to the Realtek Mode. Enjoy!',
+        "*Message not found. Realtek ate it.*",
+        "I'm not happy about Realtek as well.",
+        "It took me a lot of effort to read this, y'know.",			
+      ];
+      message.channel.send(realkek[Math.floor(Math.random() * realkek.length)]);
+	};	
+	if(message.content.toLowerCase().startsWith("hold it!")) {
+	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
+	if (guildconf.aa == "inactive") return;
 		message.channel.send({
-        file: "./ace_attorney/hold_it.jpg"
+        files: ["./ace_attorney/hold_it.jpg"]
       });
 	};
-	if((message.content.startsWith("Take that!")) || (message.content.startsWith("take that!"))) {
+	if(message.content.toLowerCase().startsWith("take that!")) {
+	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
+	if (guildconf.aa == "inactive") return;
 		message.channel.send({
-        file: "./ace_attorney/take_that.jpg"
+        files: ["./ace_attorney/take_that.jpg"]
       });
 	};
-	if((message.content.startsWith("objection!")) || (message.content.startsWith("Objection!"))) {
+	if(message.content.toLowerCase().startsWith("objection!")) {
+	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
+	if (guildconf.aa == "inactive") return;
 		message.channel.send({
-        file: "./ace_attorney/objection.jpg"
+        files: ["./ace_attorney/objection.jpg"]
       });
 	};
-	if((message.content.startsWith("gotcha!")) || (message.content.startsWith("Gotcha!"))) {
+	if(message.content.toLowerCase().startsWith("gotcha!")) {
+	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
+	if (guildconf.aa == "inactive") return;
 		message.channel.send({
-        file: "./ace_attorney/gotcha.jpg"
+        files: ["./ace_attorney/gotcha.jpg"]
+      });
+	};
+	if(message.content.toLowerCase().startsWith("eureka!")) {
+	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
+	if (guildconf.aa == "inactive") return;
+		message.channel.send({
+        files: ["./ace_attorney/eureka.png"]
       });
 	};	
-	if(((message.content.startsWith("thanks")) || (message.content.startsWith("Thanks"))) && (message.channel.id === "694943149142966396")) {
+	if((message.content.toLowerCase().startsWith("thanks")) && (message.channel.id === "694943149142966396")) {
       const welcome = [
         'all conveniences in the world, just for you!',
         "I'm glad you're enjoying this!",
         "you're welcome!",
       ];
       message.reply(welcome[Math.floor(Math.random() * welcome.length)]);
-	};
-if((message.content.startsWith("play ina unravel")) ||(message.content.startsWith("doppelbot, play ina unravel")) || (message.content.startsWith("this is so sad, doppelbot play ina unravel"))) {
-  if(message.author.bot) return;
-message.channel.send('https://www.youtube.com/watch?v=n-hRYCpm8wQ');
-} else return;
+	} else return;
   };
 
   if(message.author.bot) return;
+  if (message.channel.type === 'dm') return;
+  
 
-  const args = message.content.slice(config.prefix.length).split(' ');
+  const args = message.content.slice(guildconf.prefix.length).split(' ');
   const commandName = args.shift().toLowerCase();
   if (!client.commands.has(commandName)) return;
 
-  const command = client.commands.get(commandName);
+  const command = client.commands.get(commandName); 
   
   if (command.userpermissions) {
 	const perms = message.channel.permissionsFor(message.author);
@@ -129,7 +257,7 @@ message.channel.send('https://www.youtube.com/watch?v=n-hRYCpm8wQ');
 }
 
 try {
-	command.execute(message, args);
+	command.execute(message, args, client);
 } catch (error) {
 	console.error(error);
 	console.log(error.code);
@@ -144,4 +272,4 @@ process.on('unhandledRejection', error => {
 	console.error('Error:', error);
 });
 
-client.login('');
+client.login('NjAxNDU0OTczMTU4NDI0NTg1.XTCimA.8JD06hM9zMt1HpjDi31lbLhop64');

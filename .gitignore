@@ -1,3 +1,14 @@
-
+analyze.sh
+cleanup.sh
 start.sh
 roles.json
+database/blacklist.json
+database/whitelist.json
+filter/177518713967345664.json
+filter/579733226667638794.json
+filter/584763378640355348.json
+filter/678640161738850354.json
+guilds/177518713967345664.json
+guilds/579733226667638794.json
+guilds/584763378640355348.json
+guilds/678640161738850354.json

@@ -10,7 +10,7 @@ module.exports = {
 		  id = randomInt(1, 999);
 		  chname = "party-" + id.toString();
 		  code = randomInt(1000, 9999);
-		message.guild.createChannel(chname, {
+		message.guild.channels.create(chname, {
 			type: 'text',
 			topic: 'Party code: ' + code + ". Leader: " + message.author.tag,
 			permissionOverwrites: [

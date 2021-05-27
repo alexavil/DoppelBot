@@ -17,7 +17,7 @@ module.exports = {
                 var arg = args[i] + " "; 
                 reason = reason + arg;
 			}
-		const banmessage = new Discord.RichEmbed()
+		const banmessage = new Discord.MessageEmbed()
 	.setColor('#FF0000')
 	.setTitle('Important Message: You were banned from ' + message.guild.name)
 	.addField('Why was I banned?', reason)
@@ -25,12 +25,12 @@ module.exports = {
 	.addField('How do I appeal?', 'Contact the Server Owner or a moderator that issued you the ban.')
 	.setTimestamp()
 	try {
-		message.guild.ban(user, reason)
-		user.send(banmessage).catch(error => {
+				user.send(banmessage).catch(error => {
 	if (error.code === Discord.Constants.APIErrors.CANNOT_MESSAGE_USER) {
 		return message.reply("I couldn't message the user, but they were banned successfully!");
 	} 
 });
+		message.guild.members.ban(user, {reason: reason})
 		message.react('✅');
 	} catch (error) {
 		 return message.channel.send(`Failed to ban **${user.tag}**: ${error}`);

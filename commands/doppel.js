@@ -22,7 +22,7 @@ module.exports = {
       ];
 
       message.channel.send(responses[Math.floor(Math.random() * responses.length)], {
-        file: randomImage
+        files: [randomImage]
       });
           message.delete().catch();
   });

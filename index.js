@@ -4,6 +4,7 @@ const cron = require("cron");
 const { Client, MessageEmbed, Permissions, PermissionOverwrites, GuildMember, MessageAttachment } = require('discord.js');
 
 const client = new Discord.Client();
+const disbut = require('discord-buttons')(client);
 client.commands = new Discord.Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
@@ -19,7 +20,7 @@ client.on('ready', () => {
 client.user.setPresence({
     status: "online",
     activity: {
-        name: `Doppel's Schoolhouse (feat. Sonic the Hedgehog)`,
+        name: `Super Sonic Maker`,
     },
 });
 function createConfig() {
@@ -179,6 +180,14 @@ client.on('message', message => {
 	if (guildconf.other == "inactive") return;
 		message.reply("Ahoy!");
 	};
+	if(message.content.toLowerCase().startsWith("buttontest")) {
+		if(message.author.bot) return;
+		let button = new disbut.MessageButton()
+  		.setStyle('red') //default: blurple
+  		.setLabel('My First Button!') //default: NO_LABEL_PROVIDED
+  		.setID('click_to_function') //note: if you use the style "url" you must provide url using .setURL('https://example.com')
+		message.reply('Hey, i am powered by https://npmjs.com/discord-buttons', button);
+	};
 	if(message.content.toLowerCase().includes("realtek")) {
 		if(message.author.bot) return;
 	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
@@ -268,8 +277,14 @@ try {
 
 });
 
+client.on('clickButton', async (button) => {
+	if (button.id === 'click_to_function') {
+	 return button.channel.send(`${button.clicker.user.tag} clicked button!`);
+	}
+  });
+
 process.on('unhandledRejection', error => {
 	console.error('Error:', error);
 });
 
-client.login();
+client.login("");

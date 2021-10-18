@@ -10,7 +10,7 @@ module.exports = {
 		if (args.length === 1) {
 			return message.channel.send(`Provide a reason!`)
 		}
-		const user = message.mentions.users.first() || message.guild.members.get(args[0]);
+		const user = message.mentions.users.first() || message.guild.members.cache.get(args[0]);
 		var reason = "";
             for(i = 1; i < args.length; i++){
                 var arg = args[i] + " "; 
@@ -24,7 +24,7 @@ module.exports = {
 	.addField('How do I appeal?', 'Contact the Server Owner or a moderator that kicked you.')
 	.setTimestamp()
 	try {
-		user.send(warnmessage).catch(error => {
+		user.send({ embeds: [warnmessage]} ).catch(error => {
 	if (error.code === Discord.Constants.APIErrors.CANNOT_MESSAGE_USER) {
 		return message.reply("I couldn't message the user, but they were warned successfully!");
 	} 

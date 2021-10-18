@@ -3,7 +3,7 @@ const fs = require('fs');
 module.exports = {
 	name: 'settings',
   description: 'Show server settings',
-  userpermissions: 'ADMINISTRATOR',
+  userpermissions: 'BAN_MEMBERS',
 	 execute(message) {
 	id = message.guild.id;
 	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
@@ -16,6 +16,7 @@ module.exports = {
 	.addField('**Other responses**', guildconf.other)
 	.addField('**Guild prefix**', guildconf.prefix)
 	.addField('**Word filter**', guildconf.filter)
-    message.channel.send(settings);
+	.addField('**Global Bans**', guildconf.global_bans)	
+    message.channel.send({ embeds: [settings]} );
 	},
 };

@@ -3,7 +3,7 @@ const fs = require('fs');
 module.exports = {
 	name: 'viewfilter',
   description: 'View filter',
-  userpermissions: 'ADMINISTRATOR',
+  userpermissions: 'BAN_MEMBERS',
 	 execute(message) {
 		 id = message.guild.id;
 	const guildconf = JSON.parse(fs.readFileSync('./filter/' + id + '.json'));

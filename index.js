@@ -1,10 +1,9 @@
 const fs = require('fs');
 const Discord = require('discord.js');
 const cron = require("cron");
-const { Client, MessageEmbed, Permissions, PermissionOverwrites, GuildMember, MessageAttachment } = require('discord.js');
+const { Client, MessageEmbed, Permissions, PermissionOverwrites, GuildMember, MessageAttachment, Intents } = require('discord.js');
 
-const client = new Discord.Client();
-const disbut = require('discord-buttons')(client);
+const client = new Discord.Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS, Intents.FLAGS.GUILD_INTEGRATIONS, Intents.FLAGS.GUILD_WEBHOOKS, Intents.FLAGS.GUILD_INVITES, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_PRESENCES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_MESSAGE_TYPING, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.DIRECT_MESSAGE_REACTIONS, Intents.FLAGS.DIRECT_MESSAGE_TYPING] });
 client.commands = new Discord.Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
@@ -13,16 +12,10 @@ for (const file of commandFiles) {
 	client.commands.set(command.name, command);
 }
 
-
+const responses = JSON.parse(fs.readFileSync('./responses.json'));
 
 client.on('ready', () => {
   console.log('I am ready!')
-client.user.setPresence({
-    status: "online",
-    activity: {
-        name: `Super Sonic Maker`,
-    },
-});
 function createConfig() {
 	client.guilds.cache.forEach(g => {
 		fs.access('./guilds/' + g.id + '.json', (err) => {
@@ -34,7 +27,8 @@ function createConfig() {
 		stream.write(`"mentions": "active",\n`);
 		stream.write(`"other": "inactive",\n`);
 		stream.write(`"prefix": "d!",\n`);
-		stream.write(`"filter": "active"\n`);
+		stream.write(`"filter": "active",\n`);
+		stream.write(`"global_bans": "active"\n`);		
 		stream.write("}");
 		stream.end();
 });
@@ -52,29 +46,7 @@ function createConfig() {
 		}
 		})
 }); 
-	};
-	fs.access('./database/blacklist.json', (err) => {
-		if (err) {
-		var stream = fs.createWriteStream('./database/blacklist.json');
-		stream.once('open', (fd) => {
-		stream.write("{\n");
-		stream.write(`"blacklist": []\n`);
-		stream.write("}");
-		stream.end();
-});
-		}
-		})
-	fs.access('./database/whitelist.json', (err) => {
-		if (err) {
-		var stream = fs.createWriteStream('./database/whitelist.json');
-		stream.once('open', (fd) => {
-		stream.write("{\n");
-		stream.write(`"whitelist": []\n`);
-		stream.write("}");
-		stream.end();
-});
-		}
-		})		
+	};	
 function DailyDoppel() {
   const imageFolder = "./images/";
 
@@ -86,15 +58,13 @@ function DailyDoppel() {
 
       let randomIndex = Math.floor(Math.random() * doppel_imgs.length);
       let randomImage = './images/' + doppel_imgs[randomIndex];
-      let responses = [
-        "You earned a Daily Doppel! Congrats!",
-        "What is it?! A Daily Doppel?!",
-        "Prepare for trouble! And make it Doppel! No idea what that was, but here's your Doppel image.",
-      ];
+      let ddmessage = responses.dd_responses;
       const channel = client.channels.cache.get('694943149142966396');
-      channel.send(responses[Math.floor(Math.random() * responses.length)], {
-        files: [randomImage]
-      });
+	  const doppelembed = new Discord.MessageEmbed()
+		.setTitle(ddmessage[Math.floor(Math.random() * ddmessage.length)])
+		const file = new MessageAttachment(randomImage);
+		doppelembed.setImage('attachment://' + doppel_imgs[randomIndex]);
+		channel.send({embeds: [doppelembed], files: [randomImage] });
 });
 }
 let job1 = new cron.CronJob('00 00 13 * * *', DailyDoppel);
@@ -113,7 +83,8 @@ function createConfig() {
 		stream.write(`"mentions": "active",\n`);
 		stream.write(`"other": "inactive",\n`);
 		stream.write(`"prefix": "d!",\n`);
-		stream.write(`"filter": "active"\n`);	
+		stream.write(`"filter": "active",\n`);
+		stream.write(`"global_bans": "active"\n`);		
 		stream.write("}");
 		stream.end();
 });
@@ -141,7 +112,16 @@ client.on('guildDelete', guild => {
 	console.log('Removing filter...')});
 });
 
-client.on('message', message => {
+client.on('guildMemberAdd', member => {
+	console.log(member);
+	console.log(member.user.username);
+	const name = member.user.username;
+	if ((name.toLowerCase().includes("twitter.com/h0nde")) || (name.toLowerCase().includes("h0nda"))) {
+		member.guild.members.ban(member, {reason: "Spambot"})
+	}
+});
+
+client.on('messageCreate', message => {
 	if (!message.guild) return;
 	id = message.guild.id;
 	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
@@ -152,21 +132,7 @@ client.on('message', message => {
 	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
 	if (guildconf.mentions == "inactive") return;
 	if(message.author.bot) return;
-      const mention_responses = [
-        'My relationship with Arle? Can you handle the knowledge?',
-        'I look like Arle? Well of course I do... Haha.',
-        'Now...take me to more fun places.',
-        'Hahaha... You look surprised. Something wrong?',
-        "Ahahaha! I'm having such a great time.",
-        "It feels like I've become stronger. I have to thank you.",
-        "Defeating me... i'll teach you just what that means!",
-        "Hah... what a pointless question... I'm Arle! ...I'm not anything besides that!!",
-	      "Today you will definitely acknowledge me... Ahahaha!",
-        "No matter how you might want to deny it, the truth remains... that I am what I am...",
-        "Is the Arle that you know really Arle, I wonder? Fufufu...",
-        "Tell me, are you obligated to prove that you really are yourself? ...Well neither am I.",
-        "You get it now, right? There's no need for two Arles...",
-      ];
+      const mention_responses = responses.mention_responses;
       message.reply(mention_responses[Math.floor(Math.random() * mention_responses.length)]);
     };
 	if (filter.banned_words.some(item => message.content.toLowerCase().includes(item))) {
@@ -180,28 +146,12 @@ client.on('message', message => {
 	if (guildconf.other == "inactive") return;
 		message.reply("Ahoy!");
 	};
-	if(message.content.toLowerCase().startsWith("buttontest")) {
-		if(message.author.bot) return;
-		let button = new disbut.MessageButton()
-  		.setStyle('red') //default: blurple
-  		.setLabel('My First Button!') //default: NO_LABEL_PROVIDED
-  		.setID('click_to_function') //note: if you use the style "url" you must provide url using .setURL('https://example.com')
-		message.reply('Hey, i am powered by https://npmjs.com/discord-buttons', button);
-	};
 	if(message.content.toLowerCase().includes("realtek")) {
 		if(message.author.bot) return;
 	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
 	if (guildconf.other == "inactive") return;
-		const realkek = [
-        'Realtek - offering shitty products since 1987!',
-        'Did you mean... Realkek?',
-        'Realtek - more like Real Pain.',
-        'Welcome to the Realtek Mode. Enjoy!',
-        "*Message not found. Realtek ate it.*",
-        "I'm not happy about Realtek as well.",
-        "It took me a lot of effort to read this, y'know.",			
-      ];
-      message.channel.send(realkek[Math.floor(Math.random() * realkek.length)]);
+		const realtek_responses = responses.realkek;
+      message.channel.send(realtek_responses[Math.floor(Math.random() * realtek_responses.length)]);
 	};	
 	if(message.content.toLowerCase().startsWith("hold it!")) {
 	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));

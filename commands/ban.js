@@ -10,8 +10,8 @@ module.exports = {
 		if (args.length === 1) {
 			return message.channel.send(`Provide a reason!`)
 		}
-		const user = message.mentions.users.first() || message.guild.members.get(args[0]);
-		if (!message.guild.member(user).bannable) return message.reply("I don't have permissions to do that action! Check the Roles page!");
+		const user = message.mentions.users.first() || message.guild.members.cache.get(args[0]);
+		if (!message.guild.members.cache.get(user.id).bannable) return message.reply("I don't have permissions to do that action! Check the Roles page!");
 		var reason = "";
             for(i = 1; i < args.length; i++){
                 var arg = args[i] + " "; 
@@ -25,7 +25,7 @@ module.exports = {
 	.addField('How do I appeal?', 'Contact the Server Owner or a moderator that issued you the ban.')
 	.setTimestamp()
 	try {
-				user.send(banmessage).catch(error => {
+				user.send({ embeds: [banmessage]}).catch(error => {
 	if (error.code === Discord.Constants.APIErrors.CANNOT_MESSAGE_USER) {
 		return message.reply("I couldn't message the user, but they were banned successfully!");
 	} 

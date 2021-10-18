@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
-const ytdl = require('ytdl-core');
 const fs = require('fs');
+const { getVoiceConnection } = require('@discordjs/voice');
 module.exports = {
 	name: 'stop',
   description: 'Stop music',
@@ -10,7 +10,8 @@ module.exports = {
                   message.delete().catch();
                   message.channel.send('You must be in a VC to use this command!');
                 } else {
-                channel.leave();
+                const connection = getVoiceConnection(channel.guild.id);
+                connection.destroy();
                 message.delete().catch();
                 };
 	},

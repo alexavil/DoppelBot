@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
-const ytdl = require('ytdl-core');
-var search = require('youtube-search');
+const youtube = require('play-dl');
 const fs = require('fs');
+const { joinVoiceChannel, createAudioPlayer, createAudioResource } = require('@discordjs/voice');
 module.exports = {
 	name: 'search',
   description: 'Search for music',
@@ -11,44 +11,31 @@ module.exports = {
              message.channel.send('Provide a search query!')
         };
 		let query = args.slice(1).join(" ");
-		var opts = {
-			maxResults: 1,
-			key: 'AIzaSyAlyZvG0HXWjlfLbg4xDp1pMMrCnfTJ2dA',
-			type: 'video'
-		};
-
-		search(query, opts, function(err, results) {
-		if(err) return console.log(err);
-
-		console.log(results);
-		console.log(results[0].link);
+		let yt_info = await youtube.search(query, { limit : 1 })
+		let stream = await youtube.stream(yt_info[0].url)
 		async function play() {
 		const channel = message.member.voice.channel;
         if (!channel) {
             message.delete().catch();
           return message.channel.send('You must be in a VC to use this command!');
         };
-        if (channel && results) {
+        if (channel && yt_info[0]) {
             message.delete().catch();
-        message.channel.send('Now playing: ' + results[0].link);
-        const connection = await channel.join();
-        const dispatcher = connection.play(ytdl(results[0].link, {filter: "audioonly", quality: 'highestaudio', highWaterMark: 1 << 25}));
-
-        dispatcher.on('start', () => {
-	        console.log('Music is now playing!');
+        message.channel.send('Now playing: ' + yt_info[0].url);
+        const connection = joinVoiceChannel({
+          channelId: channel.id,
+          guildId: channel.guild.id,
+          adapterCreator: channel.guild.voiceAdapterCreator,
         });
-
-        dispatcher.on('finish', () => {
-            connection.channel.leave();
-	        console.log('Music has finished playing!');
+        const player = createAudioPlayer();
+        const resource = createAudioResource(stream.stream, {
+            inputType : stream.type
         });
-
-        // Always remember to handle errors appropriately!
-        dispatcher.on('error', console.error);
+        player.play(resource);
+        const subscription = connection.subscribe(player);
 		}
     }
 	play();
-		});
 		
 	},
 };

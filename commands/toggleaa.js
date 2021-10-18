@@ -3,7 +3,7 @@ const fs = require('fs');
 module.exports = {
 	name: 'toggleaa',
   description: 'Toggle Ace Attorney images',
-  userpermissions: 'ADMINISTRATOR',
+  userpermissions: 'BAN_MEMBERS',
 	 execute(message) {
 		 id = message.guild.id;
 	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
@@ -16,11 +16,11 @@ module.exports = {
 		stream.write(`"mentions": "` + guildconf.mentions +`",\n`);
 		stream.write(`"other": "` + guildconf.other +`",\n`);
 		stream.write(`"prefix": "` + guildconf.prefix +`",\n`);
-		stream.write(`"filter": "` + guildconf.filter +`"\n`);
+		stream.write(`"filter": "` + guildconf.filter +`",\n`);
+		stream.write(`"global_bans": "` + guildconf.global_bans +`"\n`);		
 		stream.write("}");
 		stream.end();
 });
-	const guildnewconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
 	message.reply('Ace Attorney responses are now **on**!');
 	}
 	if (guildconf.aa == "active") {
@@ -31,11 +31,11 @@ module.exports = {
 		stream.write(`"mentions": "` + guildconf.mentions +`",\n`);
 		stream.write(`"other": "` + guildconf.other +`",\n`);
 		stream.write(`"prefix": "` + guildconf.prefix +`",\n`);
-		stream.write(`"filter": "` + guildconf.filter +`"\n`);		
+		stream.write(`"filter": "` + guildconf.filter +`",\n`);
+		stream.write(`"global_bans": "` + guildconf.global_bans +`"\n`);		
 		stream.write("}");
 		stream.end();
 });
-	const guildnewconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
 	message.reply('Ace Attorney responses are now **off**!');
 	}	
 	},

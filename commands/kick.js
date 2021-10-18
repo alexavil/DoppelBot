@@ -10,8 +10,8 @@ module.exports = {
 		if (args.length === 1) {
 			return message.channel.send(`Provide a reason!`)
 		}
-		const user = message.mentions.users.first();
-		if (!message.guild.member(user).bannable) return message.reply("I don't have permissions to do that action! Check the Roles page!");
+		const user = message.mentions.users.first() || message.guild.members.cache.get(args[0]);
+		if (!message.guild.members.cache.get(user.id).bannable) return message.reply("I don't have permissions to do that action! Check the Roles page!");
 		var reason = "";
             for(i = 1; i < args.length; i++){
                 var arg = args[i] + " "; 
@@ -19,13 +19,13 @@ module.exports = {
 			}
 			async function kick() {
 				const delay = (msec) => new Promise((resolve) => setTimeout(resolve, msec));
-				user.send(kickmessage).catch(err => {
+				user.send({ embeds: [kickmessage]}).catch(err => {
 				if (err.code === Discord.Constants.APIErrors.CANNOT_MESSAGE_USER) {
 				return message.reply("I couldn't send the message, but the user was kicked successfully!");
 				}
 			});
 				await delay(100);
-				kickmember = message.guild.member(user);
+				kickmember = message.guild.members.cache.get(user.id);
 				kickmember.kick(reason)
 			message.react('✅')
 			};

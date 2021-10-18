@@ -3,7 +3,7 @@ const fs = require('fs');
 module.exports = {
 	name: 'togglementions',
   description: 'Toggle mention responses',
-  userpermissions: 'ADMINISTRATOR',
+  userpermissions: 'BAN_MEMBERS',
 	 execute(message) {
 		 id = message.guild.id;
 	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
@@ -16,11 +16,11 @@ module.exports = {
 		stream.write(`"mentions": "active",\n`);
 		stream.write(`"other": "` + guildconf.other +`",\n`);
 		stream.write(`"prefix": "` + guildconf.prefix +`",\n`);
-		stream.write(`"filter": "` + guildconf.filter +`"\n`);
+		stream.write(`"filter": "` + guildconf.filter +`",\n`);
+		stream.write(`"global_bans": "` + guildconf.global_bans +`"\n`);		
 		stream.write("}");
 		stream.end();
 });
-	const guildnewconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
 	message.reply('Mention responses are now **on**!');
 	}
 	if (guildconf.mentions == "active") {
@@ -31,11 +31,11 @@ module.exports = {
 		stream.write(`"mentions": "inactive",\n`);
 		stream.write(`"other": "` + guildconf.other +`",\n`);
 		stream.write(`"prefix": "` + guildconf.prefix +`",\n`);
-		stream.write(`"filter": "` + guildconf.filter +`"\n`);		
+		stream.write(`"filter": "` + guildconf.filter +`",\n`);
+		stream.write(`"global_bans": "` + guildconf.global_bans +`"\n`);		
 		stream.write("}");
 		stream.end();
 });
-	const guildnewconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
 	message.reply('Mention responses are now **off**!');
 	}	
 	},

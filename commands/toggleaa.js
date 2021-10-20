@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const fs = require('fs');
 module.exports = {
 	name: 'toggleaa',
+	aliases: ['aa'],
   description: 'Toggle Ace Attorney images',
   userpermissions: 'BAN_MEMBERS',
 	 execute(message) {

@@ -5,6 +5,7 @@ const fs = require('fs');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource } = require('@discordjs/voice');
 module.exports = {
 	name: 'play',
+	aliases: ['p'],
   description: 'Play music',
 	async execute(message, args) {
         const channel = message.member.voice.channel;
@@ -12,7 +13,7 @@ module.exports = {
             message.delete().catch();
           message.channel.send('You must be in a VC to use this command!');
         };
-         if (!args.length || ((!args[0].startsWith("https://www.youtube.com/")) && (!args[0].startsWith("https://youtu.be")) && (!args[0].startsWith("https://soundcloud.com/")))) {
+         if (channel && (!args.length || ((!args[0].startsWith("https://www.youtube.com/")) && (!args[0].startsWith("https://youtu.be")) && (!args[0].startsWith("https://soundcloud.com/"))))) {
             message.delete().catch();
              message.channel.send('Provide a YT or SoundCloud link to your song!')
         };

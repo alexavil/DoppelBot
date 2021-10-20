@@ -190,9 +190,9 @@ client.on('messageCreate', message => {
 	};	
 	if((message.content.toLowerCase().startsWith("thanks")) && (message.channel.id === "694943149142966396")) {
       const welcome = [
-        'all conveniences in the world, just for you!',
+        'All conveniences in the world, just for you!',
         "I'm glad you're enjoying this!",
-        "you're welcome!",
+        "You're welcome!",
       ];
       message.reply(welcome[Math.floor(Math.random() * welcome.length)]);
 	} else return;
@@ -204,9 +204,9 @@ client.on('messageCreate', message => {
 
   const args = message.content.slice(guildconf.prefix.length).split(' ');
   const commandName = args.shift().toLowerCase();
-  if (!client.commands.has(commandName)) return;
+	const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
-  const command = client.commands.get(commandName); 
+	if (!command) return;
   
   if (command.userpermissions) {
 	const perms = message.channel.permissionsFor(message.author);
@@ -237,4 +237,4 @@ process.on('unhandledRejection', error => {
 	console.error('Error:', error);
 });
 
-client.login("");
+client.login("NjAxNDU0OTczMTU4NDI0NTg1.XTCimA.Hgd5ib6kkH3viDcHECmdB2FYIjk");

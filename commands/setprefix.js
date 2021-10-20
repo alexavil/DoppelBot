@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const fs = require('fs');
 module.exports = {
 	name: 'setprefix',
+	aliases: ['prefix'],
   description: 'Set guild prefix',
   userpermissions: 'BAN_MEMBERS',
 	 execute(message, args) {

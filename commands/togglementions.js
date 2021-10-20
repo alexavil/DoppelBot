@@ -3,6 +3,7 @@ const fs = require('fs');
 module.exports = {
 	name: 'togglementions',
   description: 'Toggle mention responses',
+  aliases: ['mentions'],
   userpermissions: 'BAN_MEMBERS',
 	 execute(message) {
 		 id = message.guild.id;

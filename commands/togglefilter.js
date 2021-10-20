@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const fs = require('fs');
 module.exports = {
 	name: 'togglefilter',
+	aliases: ['filter'],
   description: 'Toggle filter',
   userpermissions: 'BAN_MEMBERS',
 	 execute(message) {

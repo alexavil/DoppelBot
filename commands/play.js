@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 const youtube = require('play-dl');
 const { authorization } = require('play-dl');
 const fs = require('fs');
-const { joinVoiceChannel, createAudioPlayer, createAudioResource } = require('@discordjs/voice');
+const { AudioPlayerStatus, joinVoiceChannel, createAudioPlayer, createAudioResource } = require('@discordjs/voice');
 module.exports = {
 	name: 'play',
 	aliases: ['p'],
@@ -19,7 +19,7 @@ module.exports = {
         };
         if (channel && args.length && ((args[0].startsWith("https://www.youtube.com/")) || (args[0].startsWith("https://youtu.be")) || (args[0].startsWith("https://soundcloud.com/")))) {
             message.delete().catch();
-        message.channel.send('Now playing: ' + args[0]);
+        message.channel.send('Now playing: ' + args[0] + '\nRequested by: <@' + message.author + '>');
         const connection = joinVoiceChannel({
           channelId: channel.id,
           guildId: channel.guild.id,
@@ -32,6 +32,12 @@ module.exports = {
         });
         player.play(resource);
         const subscription = connection.subscribe(player);
+		player.on(AudioPlayerStatus.Idle, () => {
+			function disconnect() {
+				connection.destroy();
+			};
+			setTimeout(disconnect, 60000);
+		});
     }
 	},
 };

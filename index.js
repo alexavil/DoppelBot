@@ -45,6 +45,17 @@ function createConfig() {
 });
 		}
 		})
+		fs.access('./filter/scamlist.json', (err) => {
+		if (err) {
+		var stream = fs.createWriteStream('./filter/scamlist.json');
+		stream.once('open', (fd) => {
+		stream.write("{\n");
+		stream.write(`"banned_links": ["https://discordgift.site/"]\n`);	
+		stream.write("}");
+		stream.end();
+});
+		}
+		})		
 }); 
 	};	
 function DailyDoppel() {
@@ -116,9 +127,6 @@ client.on('guildMemberAdd', member => {
 	console.log(member);
 	console.log(member.user.username);
 	const name = member.user.username;
-	if ((name.toLowerCase().includes("twitter.com/h0nde")) || (name.toLowerCase().includes("h0nda"))) {
-		member.guild.members.ban(member, {reason: "Spambot"})
-	}
 });
 
 client.on('messageCreate', message => {
@@ -126,6 +134,7 @@ client.on('messageCreate', message => {
 	id = message.guild.id;
 	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
 	const filter = JSON.parse(fs.readFileSync('./filter/' + id + '.json'));
+	const scamfilter = JSON.parse(fs.readFileSync('./filter/scamlist.json'));
   if (!message.content.startsWith(guildconf.prefix)) {
 	  id = message.guild.id;
     if (message.content.toLowerCase().includes("<@!601454973158424585>")) {
@@ -140,6 +149,11 @@ client.on('messageCreate', message => {
 		if (guildconf.filter == "inactive") return;
 		message.delete().catch();
 		};
+	if (scamfilter.banned_links.some(item => message.content.toLowerCase().includes(item))) {
+		if(message.author.bot) return;
+		message.delete().catch();
+		message.guild.members.ban(message.author, {reason: "Scammer"});
+		};		
 	if(message.content.toLowerCase().startsWith("ahoy")) {
 		if(message.author.bot) return;
 	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
@@ -237,4 +251,4 @@ process.on('unhandledRejection', error => {
 	console.error('Error:', error);
 });
 
-client.login("NjAxNDU0OTczMTU4NDI0NTg1.XTCimA.Hgd5ib6kkH3viDcHECmdB2FYIjk");
+client.login("NjAxNDU0OTczMTU4NDI0NTg1.XTCimA.6WiFsnvcIz_EpIoNMfoAs3QLnTc");

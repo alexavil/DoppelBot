@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const youtube = require('play-dl');
 const fs = require('fs');
-const { joinVoiceChannel, createAudioPlayer, createAudioResource } = require('@discordjs/voice');
+const { AudioPlayerStatus, joinVoiceChannel, createAudioPlayer, createAudioResource } = require('@discordjs/voice');
 module.exports = {
 	name: 'search',
   description: 'Search for music',
@@ -21,7 +21,7 @@ module.exports = {
         };
         if (channel && yt_info[0]) {
             message.delete().catch();
-        message.channel.send('Now playing: ' + yt_info[0].url);
+        message.channel.send('Now playing: ' + yt_info[0].url + '\nRequested by: <@' + message.author + '>');
         const connection = joinVoiceChannel({
           channelId: channel.id,
           guildId: channel.guild.id,
@@ -33,9 +33,16 @@ module.exports = {
         });
         player.play(resource);
         const subscription = connection.subscribe(player);
+				player.on(AudioPlayerStatus.Idle, () => {
+			function disconnect() {
+				connection.destroy();
+			};
+			setTimeout(disconnect, 60000);
+		});
 		}
     }
 	play();
+	
 		
 	},
 };

@@ -15,7 +15,13 @@ for (const file of commandFiles) {
 const responses = JSON.parse(fs.readFileSync('./responses.json'));
 
 client.on('ready', () => {
-  console.log('I am ready!')
+  console.log('I am ready!');
+function gamecycle() {
+	var games = ["Doppel Doppel Literature Club Plus","LEGO Puyo Puyo: The Video Game","Doppel Adventure DX","Doppelganger Arle: Ace Attorney","Super Arle Sisters","Microsoft Doppel Simulator X: Arle Edition","doppel&box","Hearts of Arle IV","Doppel's Mod","Doppel's Schoolhouse (Featuring Sonic The Hedgehog)"]
+	var gamestring = Math.floor(Math.random() * games.length);
+	console.log(gamestring);
+	client.user.setActivity(games[gamestring]);
+}	
 function createConfig() {
 	client.guilds.cache.forEach(g => {
 		fs.access('./guilds/' + g.id + '.json', (err) => {
@@ -80,7 +86,10 @@ function DailyDoppel() {
 }
 let job1 = new cron.CronJob('00 00 13 * * *', DailyDoppel);
 job1.start();
+let job2 = new cron.CronJob('00 00 * * * *', gamecycle);
+job2.start();
 createConfig();
+gamecycle();
 });
 
 client.on('guildCreate', guild => {
@@ -251,4 +260,4 @@ process.on('unhandledRejection', error => {
 	console.error('Error:', error);
 });
 
-client.login("NjAxNDU0OTczMTU4NDI0NTg1.XTCimA.6WiFsnvcIz_EpIoNMfoAs3QLnTc");
+client.login("");

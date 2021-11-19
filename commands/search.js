@@ -33,11 +33,8 @@ module.exports = {
         });
         player.play(resource);
         const subscription = connection.subscribe(player);
-				player.on(AudioPlayerStatus.Idle, () => {
-			function disconnect() {
-				connection.destroy();
-			};
-			setTimeout(disconnect, 60000);
+		player.on(AudioPlayerStatus.Idle, () => {
+			connection.destroy();
 		});
 		}
     }

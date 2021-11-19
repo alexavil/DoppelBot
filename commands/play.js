@@ -8,6 +8,8 @@ module.exports = {
 	aliases: ['p'],
   description: 'Play music',
 	async execute(message, args) {
+		let playing = false;
+		let timer;
         const channel = message.member.voice.channel;
         if (!channel) {
             message.delete().catch();
@@ -30,14 +32,21 @@ module.exports = {
         const resource = createAudioResource(stream.stream, {
             inputType : stream.type
         });
+		clearTimeout(timer);
         player.play(resource);
+		playing = true;
+		console.log(playing);
         const subscription = connection.subscribe(player);
 		player.on(AudioPlayerStatus.Idle, () => {
-			function disconnect() {
-				connection.destroy();
-			};
-			setTimeout(disconnect, 60000);
+			connection.destroy();
 		});
     }
 	},
 };
+
+//		playing = false;
+//			console.log(playing);
+//			function disconnect() {
+//				if (playing == false) connection.destroy();
+//			};
+//			timer = setTimeout(disconnect, 60000);

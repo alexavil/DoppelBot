@@ -2,6 +2,7 @@ const fs = require('fs');
 const Discord = require('discord.js');
 const cron = require("cron");
 const { Client, MessageEmbed, Permissions, PermissionOverwrites, GuildMember, MessageAttachment, Intents } = require('discord.js');
+const sqlite3 = require('sqlite3').verbose();
 
 const client = new Discord.Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS, Intents.FLAGS.GUILD_INTEGRATIONS, Intents.FLAGS.GUILD_WEBHOOKS, Intents.FLAGS.GUILD_INVITES, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_PRESENCES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_MESSAGE_TYPING, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.DIRECT_MESSAGE_REACTIONS, Intents.FLAGS.DIRECT_MESSAGE_TYPING] });
 client.commands = new Discord.Collection();
@@ -12,7 +13,14 @@ for (const file of commandFiles) {
 	client.commands.set(command.name, command);
 }
 
-const responses = JSON.parse(fs.readFileSync('./responses.json'));
+
+let settings = new sqlite3.Database('./guilds.db', (err) => {
+    if (err) {
+      console.error(err.message);
+    }
+    console.log('Connected to the settings database.');
+    settings.run('CREATE TABLE IF NOT EXISTS guilds(id text, aa text, mentions text, other text, prefix text, filter text)');
+  });
 
 client.on('ready', () => {
   console.log('I am ready!');
@@ -24,44 +32,12 @@ function gamecycle() {
 }	
 function createConfig() {
 	client.guilds.cache.forEach(g => {
-		fs.access('./guilds/' + g.id + '.json', (err) => {
-		if (err) {
-		var stream = fs.createWriteStream('./guilds/' + g.id + '.json');
-		stream.once('open', (fd) => {
-		stream.write("{\n");
-		stream.write(`"aa": "inactive",\n`);
-		stream.write(`"mentions": "active",\n`);
-		stream.write(`"other": "inactive",\n`);
-		stream.write(`"prefix": "d!",\n`);
-		stream.write(`"filter": "active",\n`);
-		stream.write(`"global_bans": "active"\n`);		
-		stream.write("}");
-		stream.end();
-});
-		}
-		})
-		fs.access('./filter/' + g.id + '.json', (err) => {
-		if (err) {
-		var stream = fs.createWriteStream('./filter/' + g.id + '.json');
-		stream.once('open', (fd) => {
-		stream.write("{\n");
-		stream.write(`"banned_words": ["https://discordgift.site/"]\n`);	
-		stream.write("}");
-		stream.end();
-});
-		}
-		})
-		fs.access('./filter/scamlist.json', (err) => {
-		if (err) {
-		var stream = fs.createWriteStream('./filter/scamlist.json');
-		stream.once('open', (fd) => {
-		stream.write("{\n");
-		stream.write(`"banned_links": ["https://discordgift.site/"]\n`);	
-		stream.write("}");
-		stream.end();
-});
-		}
-		})		
+		settings.run(`INSERT INTO guilds(id, aa, mentions, other, prefix, filter) VALUES(?, ?, ?, ?, ?, ?)`, [`${g.id}`, `no`, `yes`, `no`, `d!`, `yes`], function(err) {
+			if (err) {
+			  return console.log(err.message);
+			}
+			console.log(`A new guild has been added! ${g.id}`);
+		  });	
 }); 
 	};	
 function DailyDoppel() {
@@ -94,48 +70,23 @@ gamecycle();
 
 client.on('guildCreate', guild => {
 function createConfig() {
-		fs.access('./guilds/' + guild.id + '.json', (err) => {
+	settings.run(`INSERT INTO guilds(id, aa, mentions, other, prefix, filter) VALUES(?, ?, ?, ?, ?, ?)`, [`${guild.id}`, `no`, `yes`, `no`, `d!`, `yes`], function(err) {
 		if (err) {
-		var stream = fs.createWriteStream('./guilds/' + guild.id + '.json');
-		stream.once('open', (fd) => {
-		stream.write("{\n");
-		stream.write(`"aa": "inactive",\n`);
-		stream.write(`"mentions": "active",\n`);
-		stream.write(`"other": "inactive",\n`);
-		stream.write(`"prefix": "d!",\n`);
-		stream.write(`"filter": "active",\n`);
-		stream.write(`"global_bans": "active"\n`);		
-		stream.write("}");
-		stream.end();
-});
+		  return console.log(err.message);
 		}
-		});
-		fs.access('./filter/' + guild.id + '.json', (err) => {
-		if (err) {
-		var stream = fs.createWriteStream('./filter/' + guild.id + '.json');
-		stream.once('open', (fd) => {
-		stream.write("{\n");
-		stream.write(`"banned_words": ["https://discordgift.site/"]\n`);	
-		stream.write("}");
-		stream.end();
-});
-		}
-		})
+		console.log(`A new guild has been added! ${guild.id}`);
+	  });
 	};
 createConfig();
 });
 
 client.on('guildDelete', guild => {
-	fs.unlink('./guilds/' + guild.id + '.json', () => {
-	console.log('Removing config...')});
-	fs.unlink('./filter/' + guild.id + '.json', () => {
-	console.log('Removing filter...')});
-});
-
-client.on('guildMemberAdd', member => {
-	console.log(member);
-	console.log(member.user.username);
-	const name = member.user.username;
+	settings.run(`DELETE FROM guilds WHERE id=?`, guild.id, function(err) {
+		if (err) {
+		  return console.error(err.message);
+		}
+		console.log(`Guild deleted: ${guild.id}`);
+		});
 });
 
 client.on('messageCreate', message => {
@@ -250,11 +201,6 @@ try {
 
 });
 
-client.on('clickButton', async (button) => {
-	if (button.id === 'click_to_function') {
-	 return button.channel.send(`${button.clicker.user.tag} clicked button!`);
-	}
-  });
 
 process.on('unhandledRejection', error => {
 	console.error('Error:', error);

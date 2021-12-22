@@ -13,6 +13,8 @@ for (const file of commandFiles) {
 	client.commands.set(command.name, command);
 }
 
+const responses = JSON.parse(fs.readFileSync('./responses.json'));
+
 
 let settings = new sqlite3.Database('./guilds.db', (err) => {
     if (err) {
@@ -32,12 +34,19 @@ function gamecycle() {
 }	
 function createConfig() {
 	client.guilds.cache.forEach(g => {
-		settings.run(`INSERT INTO guilds(id, aa, mentions, other, prefix, filter) VALUES(?, ?, ?, ?, ?, ?)`, [`${g.id}`, `no`, `yes`, `no`, `d!`, `yes`], function(err) {
+		settings.all('SELECT * FROM guilds WHERE id=?', [g.id], (err, rows) => {
 			if (err) {
-			  return console.log(err.message);
+				throw err;
 			}
-			console.log(`A new guild has been added! ${g.id}`);
-		  });	
+			if (!rows[0]) {
+				settings.run(`INSERT INTO guilds(id, aa, mentions, other, prefix, filter) VALUES(?, ?, ?, ?, ?, ?)`, [`${g.id}`, `no`, `yes`, `no`, `d!`, `yes`], function (err) {
+					if (err) {
+						return console.log(err.message);
+					}
+					console.log(`A new guild has been added! ${g.id}`);
+				});
+            }
+		});
 }); 
 	};	
 function DailyDoppel() {
@@ -92,113 +101,98 @@ client.on('guildDelete', guild => {
 client.on('messageCreate', message => {
 	if (!message.guild) return;
 	id = message.guild.id;
-	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
-	const filter = JSON.parse(fs.readFileSync('./filter/' + id + '.json'));
-	const scamfilter = JSON.parse(fs.readFileSync('./filter/scamlist.json'));
-  if (!message.content.startsWith(guildconf.prefix)) {
-	  id = message.guild.id;
-    if (message.content.toLowerCase().includes("<@!601454973158424585>")) {
-	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
-	if (guildconf.mentions == "inactive") return;
-	if(message.author.bot) return;
-      const mention_responses = responses.mention_responses;
-      message.reply(mention_responses[Math.floor(Math.random() * mention_responses.length)]);
-    };
-	if (filter.banned_words.some(item => message.content.toLowerCase().includes(item))) {
-		if(message.author.bot) return;
-		if (guildconf.filter == "inactive") return;
-		message.delete().catch();
-		};
-	if (scamfilter.banned_links.some(item => message.content.toLowerCase().includes(item))) {
-		if(message.author.bot) return;
-		message.delete().catch();
-		message.guild.members.ban(message.author, {reason: "Scammer"});
-		};		
-	if(message.content.toLowerCase().startsWith("ahoy")) {
-		if(message.author.bot) return;
-	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
-	if (guildconf.other == "inactive") return;
-		message.reply("Ahoy!");
-	};
-	if(message.content.toLowerCase().includes("realtek")) {
-		if(message.author.bot) return;
-	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
-	if (guildconf.other == "inactive") return;
-		const realtek_responses = responses.realkek;
-      message.channel.send(realtek_responses[Math.floor(Math.random() * realtek_responses.length)]);
-	};	
-	if(message.content.toLowerCase().startsWith("hold it!")) {
-	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
-	if (guildconf.aa == "inactive") return;
-		message.channel.send({
-        files: ["./ace_attorney/hold_it.jpg"]
-      });
-	};
-	if(message.content.toLowerCase().startsWith("take that!")) {
-	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
-	if (guildconf.aa == "inactive") return;
-		message.channel.send({
-        files: ["./ace_attorney/take_that.jpg"]
-      });
-	};
-	if(message.content.toLowerCase().startsWith("objection!")) {
-	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
-	if (guildconf.aa == "inactive") return;
-		message.channel.send({
-        files: ["./ace_attorney/objection.jpg"]
-      });
-	};
-	if(message.content.toLowerCase().startsWith("gotcha!")) {
-	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
-	if (guildconf.aa == "inactive") return;
-		message.channel.send({
-        files: ["./ace_attorney/gotcha.jpg"]
-      });
-	};
-	if(message.content.toLowerCase().startsWith("eureka!")) {
-	const guildconf = JSON.parse(fs.readFileSync('./guilds/' + id + '.json'));
-	if (guildconf.aa == "inactive") return;
-		message.channel.send({
-        files: ["./ace_attorney/eureka.png"]
-      });
-	};	
-	if((message.content.toLowerCase().startsWith("thanks")) && (message.channel.id === "694943149142966396")) {
-      const welcome = [
-        'All conveniences in the world, just for you!',
-        "I'm glad you're enjoying this!",
-        "You're welcome!",
-      ];
-      message.reply(welcome[Math.floor(Math.random() * welcome.length)]);
-	} else return;
-  };
+	settings.all('SELECT * FROM guilds WHERE id=?', [id], (err, rows) => {
+		if (err) {
+			throw err;
+		}
+		rows.forEach((row) => {
+			console.log(row.prefix);
+			if (!message.content.startsWith(row.prefix)) {
+				if (message.content.toLowerCase().includes("<@!601454973158424585>")) {
+					if (row.mentions == "no") return;
+					if (message.author.bot) return;
+					const mention_responses = responses.mention_responses;
+					message.reply(mention_responses[Math.floor(Math.random() * mention_responses.length)]);
+				};
+				if (message.content.toLowerCase().startsWith("ahoy")) {
+					if (message.author.bot) return;
+					if (row.other == "no") return;
+					message.reply("Ahoy!");
+				};
+				if (message.content.toLowerCase().includes("realtek")) {
+					if (message.author.bot) return;					
+					if (row.other == "no") return;
+					const realtek_responses = responses.realkek;
+					message.channel.send(realtek_responses[Math.floor(Math.random() * realtek_responses.length)]);
+				};
+				if (message.content.toLowerCase().startsWith("hold it!")) {					
+					if (row.aa == "no") return;
+					message.channel.send({
+						files: ["./ace_attorney/hold_it.jpg"]
+					});
+				};
+				if (message.content.toLowerCase().startsWith("take that!")) {					
+					if (row.aa == "no") return;
+					message.channel.send({
+						files: ["./ace_attorney/take_that.jpg"]
+					});
+				};
+				if (message.content.toLowerCase().startsWith("objection!")) {					
+					if (row.aa == "no") return;
+					message.channel.send({
+						files: ["./ace_attorney/objection.jpg"]
+					});
+				};
+				if (message.content.toLowerCase().startsWith("gotcha!")) {					
+					if (row.aa == "no") return;
+					message.channel.send({
+						files: ["./ace_attorney/gotcha.jpg"]
+					});
+				};
+				if (message.content.toLowerCase().startsWith("eureka!")) {					
+					if (row.aa == "no") return;
+					message.channel.send({
+						files: ["./ace_attorney/eureka.png"]
+					});
+				};
+				if ((message.content.toLowerCase().startsWith("thanks")) && (message.channel.id === "694943149142966396")) {
+					const welcome = [
+						'All conveniences in the world, just for you!',
+						"I'm glad you're enjoying this!",
+						"You're welcome!",
+					];
+					message.reply(welcome[Math.floor(Math.random() * welcome.length)]);
+				} else return;
+			};
+
+			const args = message.content.slice(row.prefix.length).split(' ');
+			const commandName = args.shift().toLowerCase();
+			const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+
+			if (!command) return;
+
+			if (command.userpermissions) {
+				const perms = message.channel.permissionsFor(message.author);
+				if (!perms || !perms.has(command.userpermissions)) {
+					return message.reply('you do not have permission to use this command!');
+				}
+			}
+
+			try {
+				command.execute(message, args, client);
+			} catch (error) {
+				console.error(error);
+				console.log(error.code);
+				if (error.code === Discord.Constants.APIErrors.MISSING_PERMISSIONS) {
+					message.reply("I don't have permissions to do that action! Check the Roles page!");
+				} else message.reply('there was an error trying to execute that command!');
+			}
+		});
+	});
 
   if(message.author.bot) return;
   if (message.channel.type === 'dm') return;
   
-
-  const args = message.content.slice(guildconf.prefix.length).split(' ');
-  const commandName = args.shift().toLowerCase();
-	const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
-
-	if (!command) return;
-  
-  if (command.userpermissions) {
-	const perms = message.channel.permissionsFor(message.author);
- 	if (!perms || !perms.has(command.userpermissions)) {
- 		return message.reply('you do not have permission to use this command!');
- 	}
-}
-
-try {
-	command.execute(message, args, client);
-} catch (error) {
-	console.error(error);
-	console.log(error.code);
-	if (error.code === Discord.Constants.APIErrors.MISSING_PERMISSIONS) {
-		message.reply("I don't have permissions to do that action! Check the Roles page!");
-	} else message.reply('there was an error trying to execute that command!');
-}
-
 });
 
 

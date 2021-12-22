@@ -22,7 +22,23 @@ let settings = new sqlite3.Database('./guilds.db', (err) => {
     }
     console.log('Connected to the settings database.');
     settings.run('CREATE TABLE IF NOT EXISTS guilds(id text, aa text, mentions text, other text, prefix text, filter text)');
-  });
+});
+
+let filter = new sqlite3.Database('./filter.db', (err) => {
+	if (err) {
+		console.error(err.message);
+	}
+	console.log('Connected to the filter database.');
+	filter.run('CREATE TABLE IF NOT EXISTS filters(id text, filter text)');
+});
+
+let queue = new sqlite3.Database('./queue.db', (err) => {
+	if (err) {
+		console.error(err.message);
+	}
+	console.log('Connected to the queue database.');
+	queue.run('CREATE TABLE IF NOT EXISTS filters(id text, links text)');
+});
 
 client.on('ready', () => {
   console.log('I am ready!');

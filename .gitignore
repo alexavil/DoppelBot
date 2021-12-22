@@ -21,3 +21,5 @@ filter/842264510437785601.json
 /.vs
 guilds.db
 responses.json
+/queue.db
+/filter.db

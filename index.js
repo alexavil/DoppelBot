@@ -40,6 +40,14 @@ let queue = new sqlite3.Database('./queue.db', (err) => {
 	queue.run('CREATE TABLE IF NOT EXISTS filters(id text, links text)');
 });
 
+let parties = new sqlite3.Database('./party.db', (err) => {
+	if (err) {
+		console.error(err.message);
+	}
+	console.log('Connected to the party database.');
+	queue.run('CREATE TABLE IF NOT EXISTS filters(serverid text, leader text)');
+});
+
 client.on('ready', () => {
   console.log('I am ready!');
 function gamecycle() {

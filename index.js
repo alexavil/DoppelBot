@@ -17,9 +17,8 @@ const responses = JSON.parse(fs.readFileSync('./responses.json'));
 client.on('ready', () => {
   console.log('I am ready!');
 function gamecycle() {
-	var games = ["Doppel Doppel Literature Club Plus","LEGO Puyo Puyo: The Video Game","Doppel Adventure DX","Doppelganger Arle: Ace Attorney","Super Arle Sisters","Microsoft Doppel Simulator X: Arle Edition","doppel&box","Hearts of Arle IV","Doppel's Mod","Doppel's Schoolhouse (Featuring Sonic The Hedgehog)"]
+	var games = ["Formula Doppel","Doppel Doppel Literature Club Plus","LEGO Puyo Puyo: The Video Game","Doppel Adventure DX","Doppelganger Arle: Ace Attorney","Super Arle Sisters","Microsoft Doppel Simulator X: Arle Edition","doppel&box","Hearts of Arle IV","Doppel's Mod","Doppel's Schoolhouse (Featuring Sonic The Hedgehog)"]
 	var gamestring = Math.floor(Math.random() * games.length);
-	console.log(gamestring);
 	client.user.setActivity(games[gamestring]);
 }	
 function createConfig() {
@@ -130,12 +129,6 @@ client.on('guildDelete', guild => {
 	console.log('Removing config...')});
 	fs.unlink('./filter/' + guild.id + '.json', () => {
 	console.log('Removing filter...')});
-});
-
-client.on('guildMemberAdd', member => {
-	console.log(member);
-	console.log(member.user.username);
-	const name = member.user.username;
 });
 
 client.on('messageCreate', message => {

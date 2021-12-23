@@ -11,13 +11,13 @@ module.exports = {
         const channel = message.member.voice.channel;
         if (!channel) {
             message.delete().catch();
-            message.channel.send('You must be in a VC to use this command!');
+            return message.channel.send('You must be in a VC to use this command!');
         };
         switch (args[0]) {
             case "play":
                 if (channel && (!args[1] || ((!args[1].startsWith("https://www.youtube.com/")) && (!args[1].startsWith("https://youtu.be")) && (!args[1].startsWith("https://soundcloud.com/"))))) {
                     message.delete().catch();
-                    message.channel.send('Provide a YT or SoundCloud link to your song!')
+                    return message.channel.send('Provide a YT or SoundCloud link to your song!')
                 };
                 if (channel && args.length && ((args[1].startsWith("https://www.youtube.com/")) || (args[1].startsWith("https://youtu.be")) || (args[1].startsWith("https://soundcloud.com/")))) {
                     message.delete().catch();
@@ -49,9 +49,9 @@ module.exports = {
             case "search":
                 if (!args[1]) {
                     message.delete().catch();
-                    message.channel.send('Provide a search query!')
+                    return message.channel.send('Provide a search query!')
                 };
-                let query = args.slice(2).join(" ");
+                let query = args.slice(1).join(" ");
                 message.reply(query);
                 let yt_info = await youtube.search(query, { limit: 1 })
                 let stream = await youtube.stream(yt_info[0].url)

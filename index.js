@@ -205,12 +205,7 @@ client.on('messageCreate', message => {
       });
 	};	
 	if((message.content.toLowerCase().startsWith("thanks")) && (message.channel.id === "694943149142966396")) {
-      const welcome = [
-        'All conveniences in the world, just for you!',
-        "I'm glad you're enjoying this!",
-        "You're welcome!",
-      ];
-      message.reply(welcome[Math.floor(Math.random() * welcome.length)]);
+      message.reply(responses.thanks[Math.floor(Math.random() * responses.thanks.length)]);
 	} else return;
   };
 

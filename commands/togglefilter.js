@@ -7,7 +7,7 @@ module.exports = {
   userpermissions: 'BAN_MEMBERS',
 	execute(message) {
 		id = message.guild.id;
-		let settings = new sqlite3.Database('./guilds.db', (err) => {
+		let settings = new sqlite3.Database('./settings.db', (err) => {
 			if (err) {
 				console.error(err.message);
 			}

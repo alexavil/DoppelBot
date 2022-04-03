@@ -6,8 +6,7 @@ module.exports = {
   userpermissions: 'BAN_MEMBERS',
 	 execute(message) {
 		 id = message.guild.id;
-	const guildconf = JSON.parse(fs.readFileSync('./filter/' + id + '.json'));
-	console.log(guildconf);
-	return message.reply('Your current filter: `' + guildconf.banned_words + '`');
+		//Pull the server filter from the settings database
+		
 	},
 };

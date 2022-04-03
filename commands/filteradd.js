@@ -6,47 +6,63 @@ module.exports = {
   userpermissions: 'ADMINISTRATOR',
 	 execute(message, args) {
 		 id = message.guild.id;
-	const guildconf = JSON.parse(fs.readFileSync('./filter/' + id + '.json'));
-	console.log(guildconf);
+	//Get the database
+		let settings = new sqlite3.Database('./settings.db', (err) => {
+			if (err) {
+				console.error(err.message);
+			}
+			console.log('Connected to the settings database.');
+		});
 	if(!args.length) {
 		return message.reply('Provide at least one word or string!');
 	}
 	if(args.length == 1) {
-			oldfilter = JSON.parse(fs.readFileSync('./filter/' + id + '.json'));
-			console.log(oldfilter);
-			if (oldfilter.banned_words.includes(args[0])) {
-				return message.reply('This word is already filtered!');
-			}
-			newfilter = oldfilter.banned_words.push(args[0]);
-			console.log(newfilter);
-			let data = JSON.stringify(oldfilter);
-			fs.writeFileSync('./filter/' + id + '.json', data, (err) => {
+		//Get the existing filter and push a new word to it
+		//The filter is an array of words
+		settings.get('SELECT filter FROM filters WHERE id=?', [id], (err, row) => {
 			if (err) {
 				throw err;
-			} else {
-			console.log("item written successfully.");
-		
-    }
-  });
-  return message.reply('Added!');
+			}
+			//If the filter includes the word, return
+			if (row.filter.includes(args[0])) {
+				return message.reply('That word is already in the filter!');
+			}
+			if (row.filter == "") {
+				settings.run(`INSERT INTO filters (id, filter) VALUES (?, ?)`, [id, args[0]], function (err) {
+					if (err) {
+						return console.log(err.message);
+					}
+					message.reply(`Added ${args[0]} to the filter!`);
+				});
+			}
+			if (row.filter != "") {
+				settings.run(`UPDATE filters SET filter=? WHERE id=?`, [row.filter + "," + args[0], id], function (err) {
+					if (err) {
+						return console.log(err.message);
+					}
+					message.reply(`Added ${args[0]} to the filter!`);
+				});
+			}
+		});
+	return message.reply('Added!');
 	}
 	if(args.length > 1) {
 		args.forEach(item => {
-			oldfilter = JSON.parse(fs.readFileSync('./filter/' + id + '.json'));
-			console.log(oldfilter);
-			if (oldfilter.banned_words.includes(item)) {
-				return console.log('This word is already filtered!');
-			}
-			newfilter = oldfilter.banned_words.push(item);
-			console.log(newfilter);
-			let data = JSON.stringify(oldfilter);
-			fs.writeFileSync('./filter/' + id + '.json', data, (err) => {
-			if (err) {
-				throw err;
-			} else {
-			console.log("item written successfully.");
-    }
-  });
+			settings.get('SELECT filter FROM filters WHERE id=?', [id], (err, row) => {
+				if (err) {
+					throw err;
+				}
+				//If the filter includes the word, return
+				if (row.filter.includes(item)) {
+					return console.log('That word is already in the filter!');
+				}
+					settings.run(`UPDATE filters SET filter=? WHERE id=?`, [row.filter + "," + item, id], function (err) {
+						if (err) {
+							return console.log(err.message);
+						}
+						console.log(`Added ${args[0]} to the filter!`);
+					});
+			});
 	});
 	return message.reply('Added!');
 	}	

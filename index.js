@@ -16,37 +16,19 @@ for (const file of commandFiles) {
 const responses = JSON.parse(fs.readFileSync('./responses.json'));
 
 
-let settings = new sqlite3.Database('./guilds.db', (err) => {
+let settings = new sqlite3.Database('./settings.db', (err) => {
     if (err) {
       console.error(err.message);
     }
     console.log('Connected to the settings database.');
     settings.run('CREATE TABLE IF NOT EXISTS guilds(id text, aa text, mentions text, other text, prefix text, filter text)');
+	settings.run('CREATE TABLE IF NOT EXISTS filters(id text, filter text)');
+	settings.run('CREATE TABLE IF NOT EXISTS queue(id text, links text, playing text, songindex text)');
+	settings.run('CREATE TABLE IF NOT EXISTS parties(serverid text, leader text)');
 });
 
-let filter = new sqlite3.Database('./filter.db', (err) => {
-	if (err) {
-		console.error(err.message);
-	}
-	console.log('Connected to the filter database.');
-	filter.run('CREATE TABLE IF NOT EXISTS filters(id text, filter text)');
-});
 
-let queue = new sqlite3.Database('./queue.db', (err) => {
-	if (err) {
-		console.error(err.message);
-	}
-	console.log('Connected to the queue database.');
-	queue.run('CREATE TABLE IF NOT EXISTS filters(id text, links text)');
-});
 
-let parties = new sqlite3.Database('./party.db', (err) => {
-	if (err) {
-		console.error(err.message);
-	}
-	console.log('Connected to the party database.');
-	queue.run('CREATE TABLE IF NOT EXISTS filters(serverid text, leader text)');
-});
 
 client.on('ready', () => {
   console.log('I am ready!');
@@ -69,9 +51,15 @@ function createConfig() {
 					}
 					console.log(`A new guild has been added! ${g.id}`);
 				});
+				settings.run(`INSERT INTO queue(id, links, playing, songindex) VALUES(?, ?, ?, ?)`, [g.id, "", 'no', "1"], function (err) {
+					if (err) {
+						return console.log(err.message);
+					}
+					console.log(`A new guild has been added! ${g.id}`);
+				});
             }
 		});
-}); 
+	});
 	};	
 function DailyDoppel() {
   const imageFolder = "./images/";
@@ -108,7 +96,12 @@ function createConfig() {
 		  return console.log(err.message);
 		}
 		console.log(`A new guild has been added! ${guild.id}`);
-	  });
+	});
+	settings.run(`INSERT INTO queue(id, links, playing, songindex) VALUES(?, ?, ?, ?)`, [id, "", 'no', "1"], function (err) {
+		if (err) {
+			return console.log(err.message);
+		}
+	});
 	};
 createConfig();
 });
@@ -119,7 +112,13 @@ client.on('guildDelete', guild => {
 		  return console.error(err.message);
 		}
 		console.log(`Guild deleted: ${guild.id}`);
-		});
+	});
+	settings.run(`DELETE FROM queue WHERE id=?`, guild.id, function(err) {
+		if (err) {
+		  return console.error(err.message);
+		}
+		console.log(`Guild deleted: ${guild.id}`);
+	});
 });
 
 client.on('messageCreate', message => {
@@ -180,12 +179,7 @@ client.on('messageCreate', message => {
 					});
 				};
 				if ((message.content.toLowerCase().startsWith("thanks")) && (message.channel.id === "694943149142966396")) {
-					const welcome = [
-						'All conveniences in the world, just for you!',
-						"I'm glad you're enjoying this!",
-						"You're welcome!",
-					];
-					message.reply(welcome[Math.floor(Math.random() * welcome.length)]);
+					message.reply(responses.thanks[Math.floor(Math.random() * responses.thanks.length)]);
 				} else return;
 			};
 

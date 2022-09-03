@@ -1,42 +1,43 @@
 const Discord = require("discord.js");
-const fs = require("fs");
+const sqlite3 = require("better-sqlite3");
 module.exports = {
   name: "about",
   aliases: ["help"],
   description: "About the bot",
   execute(message) {
+    settings = new sqlite3("./settings.db");
     id = message.guild.id;
-    const guildconf = JSON.parse(fs.readFileSync("./guilds/" + id + ".json"));
+    let prefix = settings.prepare(`SELECT value FROM guild_${id} WHERE option = 'prefix'`).get().value;
     const help = new Discord.MessageEmbed()
       .setColor("#0099ff")
       .setTitle("Hi, I'm DoppelBot! :heart:")
       .addField(
         "How to use",
         "If you need a random picture of Doppelganger Arle, I can help you with that. Use " +
-          guildconf.prefix +
+          prefix +
           "doppel to start the magic."
       )
       .addField(
         "What else can I do?",
         "You can also use " +
-          guildconf.prefix +
+          prefix +
           "doppelfact to get a random fact about Doppel, " +
-          guildconf.prefix +
+          prefix +
           "spell if you want to hear a spell chant and " +
-          guildconf.prefix +
+          prefix +
           "spelldesc to read a spell description. Mention me and I will respond with Doppel's quotes! :wink:"
       )
       .addField(
         "Music commands (WIP)",
-        guildconf.prefix +
-          "play (p) - play music\n" +
-          guildconf.prefix +
+        prefix +
+          "play - play music\n" +
+          prefix +
           "search - search for music\n" +
-          guildconf.prefix +
+          prefix +
           "stop - stop playing"
       )
       .setFooter(
-        "To view administrator commands, use " + guildconf.prefix + "admhelp"
+        "To view administrator commands, use " + prefix + "admhelp"
       );
     message.channel.send({ embeds: [help] });
   },

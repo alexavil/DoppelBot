@@ -5,6 +5,7 @@ const token = process.env.TOKEN || process.argv[2];
 const sqlite3 = require('better-sqlite3');
 const {
   Intents,
+  Permissions
 } = require("discord.js");
 
 const client = new Discord.Client({
@@ -78,13 +79,20 @@ client.on("guildDelete", (guild) => {
 client.on("messageCreate", (message) => {
   if (!message.guild) return;
   id = message.guild.id;
+
+  const escapeRegex = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+
   let prefix = settings.prepare(`SELECT * FROM guild_${id} WHERE option = 'prefix'`).get().value;
-  if (!message.content.startsWith(prefix)) return;
 
   if (message.author.bot) return;
   if (message.channel.type === "dm") return;
+	const prefixRegex = new RegExp(`^(<@!?${client.user.id}>|${escapeRegex(prefix)})\\s*`);
+	if (!prefixRegex.test(message.content)) return;
 
-  const args = message.content.slice(prefix.length).split(" ");
+	const [, matchedPrefix] = message.content.match(prefixRegex);
+	const args = message.content.slice(matchedPrefix.length).trim().split(/ +/);
+  console.log(args);
   const commandName = args.shift().toLowerCase();
   const command =
     client.commands.get(commandName) ||

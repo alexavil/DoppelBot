@@ -14,7 +14,7 @@ module.exports = {
     description: "Music control",
     aliases: ["m"],
     async execute(message, args) {
-        settings = new sqlite3("./settings.db");
+        queue = new sqlite3("./queue.db");
         id = message.guild.id;
         let queue;
         let url = "";
@@ -43,9 +43,9 @@ module.exports = {
               );
               player.play(resource);
               player.on(AudioPlayerStatus.Idle, () => {
-                settings.prepare(`DELETE FROM guild_${id} WHERE rowid = ${pos}`).run();
+                queue.prepare(`DELETE FROM guild_${id} WHERE rowid = ${pos}`).run();
                 pos++
-                var track = settings.prepare(`SELECT * FROM guild_${id} WHERE rowid = ${pos}`).get();
+                var track = queue.prepare(`SELECT * FROM guild_${id} WHERE rowid = ${pos}`).get();
                 console.log(track);
                 if (track || track != undefined) {
                     play(channel, track.track, pos, track.author);
@@ -74,8 +74,8 @@ module.exports = {
                     message.delete().catch();
                 }
                 //Add to queue
-                settings.prepare(`INSERT INTO guild_${id} VALUES (?, ?)`).run(url, message.author.id);
-                queue = settings.prepare(`SELECT * FROM guild_${id}`).all();
+                queue.prepare(`INSERT INTO guild_${id} VALUES (?, ?)`).run(url, message.author.id);
+                queue = queue.prepare(`SELECT * FROM guild_${id}`).all();
                 console.log(queue.length);
                 if (queue.length == 1) {
                     play(channel, url, 1, message.author.id);
@@ -86,7 +86,7 @@ module.exports = {
             case "stop":
                 const connection = getVoiceConnection(channel.guild.id);
                 if (connection) connection.destroy();
-                settings.prepare(`DELETE FROM guild_${id}`).run();
+                queue.prepare(`DELETE FROM guild_${id}`).run();
                 message.channel.send("Stopped!");
                 break;
             case "search":
@@ -116,8 +116,8 @@ module.exports = {
                         console.log(emoji.count);
                         if (emoji.count > 1) {
                             url = yt_info[choice].url;
-                            settings.prepare(`INSERT INTO guild_${id} VALUES (?, ?)`).run(url, message.author.id);
-                            queue = settings.prepare(`SELECT * FROM guild_${id}`).all();
+                            queue.prepare(`INSERT INTO guild_${id} VALUES (?, ?)`).run(url, message.author.id);
+                            queue = queue.prepare(`SELECT * FROM guild_${id}`).all();
                             console.log(queue.length);
                             if (queue.length == 1) {
                                 play(channel, url, 1, message.author.id);
@@ -133,7 +133,7 @@ module.exports = {
                 sendEmbed();
                 break;
             case "queue":
-                queue = settings.prepare(`SELECT * FROM guild_${id}`).all();
+                queue = queue.prepare(`SELECT * FROM guild_${id}`).all();
                 let embed = new Discord.MessageEmbed()
                 queue.forEach(track => {
                     embed.addFields({ name: track.track, value: `Requested by: <@!${track.author}>`, inline: true })
@@ -143,9 +143,9 @@ module.exports = {
                 message.channel.send({ embeds: [embed] });
                 break;
             case "skip":
-                settings.prepare(`DELETE FROM guild_${id} ORDER BY ROWID LIMIT 1`).run();
+                queue.prepare(`DELETE FROM guild_${id} ORDER BY ROWID LIMIT 1`).run();
                 message.channel.send("Skipped!")
-                var track = settings.prepare(`SELECT * FROM guild_${id} ORDER BY ROWID LIMIT 1`).get();
+                var track = queue.prepare(`SELECT * FROM guild_${id} ORDER BY ROWID LIMIT 1`).get();
                 console.log(track);
                 if (track || track != undefined) {
                     play(channel, track.track, track.rowid, track.author);

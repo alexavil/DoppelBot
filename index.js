@@ -38,13 +38,17 @@ for (const file of commandFiles) {
 
 const responses = JSON.parse(fs.readFileSync("./responses.json"));
 const settings = new sqlite3("./settings.db");
+const queue = new sqlite3("./queue.db");
 
 function createConfig(id) {
-    settings.prepare(`CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT UNIQUE, author TEXT)`).run();
+    settings.prepare(`CREATE TABLE IF NOT EXISTS guild_${id} (option TEXT UNIQUE, value TEXT)`).run();
+    settings.prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`).run("prefix", "d!");
+    queue.prepare(`CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT UNIQUE, author TEXT)`).run();
 }
 
 function deleteConfig(id) {
     settings.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
+    queue.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
 }
 
 function gamecycle() {
@@ -74,7 +78,7 @@ client.on("guildDelete", (guild) => {
 client.on("messageCreate", (message) => {
   if (!message.guild) return;
   id = message.guild.id;
-  let prefix = "d!"
+  let prefix = settings.prepare(`SELECT * FROM guild_${id} WHERE option = 'prefix'`).get().value;
   if (!message.content.startsWith(prefix)) return;
 
   if (message.author.bot) return;
@@ -98,7 +102,7 @@ client.on("messageCreate", (message) => {
   }
 
   try {
-    command.execute(message, args, client, settings);
+    command.execute(message, args, client, queue);
   } catch (error) {
     console.error(error);
     console.log(error.code);

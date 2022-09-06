@@ -5,9 +5,9 @@ module.exports = {
   aliases: ["help"],
   description: "About the bot",
   execute(message) {
-    settings = new sqlite3("./settings.db");
+    queue = new sqlite3("./queue.db");
     id = message.guild.id;
-    let prefix = settings.prepare(`SELECT value FROM guild_${id} WHERE option = 'prefix'`).get().value;
+    let prefix = queue.prepare(`SELECT value FROM guild_${id} WHERE option = 'prefix'`).get().value;
     const help = new Discord.MessageEmbed()
       .setColor("#0099ff")
       .setTitle("Hi, I'm DoppelBot! :heart:")

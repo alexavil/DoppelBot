@@ -30,12 +30,12 @@ module.exports = {
     }
     if (args.length > 1) {
       args.forEach((item) => {
-        oldfilter = JSON.parse(fs.readFileSync("./filter/" + id + ".json"));
+        let oldfilter = JSON.parse(fs.readFileSync("./filter/" + id + ".json"));
         console.log(oldfilter);
         if (oldfilter.banned_words.includes(item)) {
           return console.log("This word is already filtered!");
         }
-        newfilter = oldfilter.banned_words.push(item);
+        let newfilter = oldfilter.banned_words.push(item);
         console.log(newfilter);
         let data = JSON.stringify(oldfilter);
         fs.writeFileSync("./filter/" + id + ".json", data, (err) => {

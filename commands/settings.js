@@ -5,7 +5,7 @@ module.exports = {
   description: "Show server settings",
   userpermissions: "BAN_MEMBERS",
   execute(message) {
-    id = message.guild.id;
+    let id = message.guild.id;
     const guildconf = JSON.parse(fs.readFileSync("./guilds/" + id + ".json"));
     console.log(guildconf);
     const settings = new Discord.MessageEmbed()

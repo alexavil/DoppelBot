@@ -1,4 +1,3 @@
-const Discord = require("discord.js");
 module.exports = {
   name: "gleave",
   description: "Leave a guild by ID!",

@@ -2,11 +2,6 @@ const fs = require("fs");
 const Discord = require("discord.js");
 const cron = require("cron");
 const {
-  Client,
-  MessageEmbed,
-  Permissions,
-  PermissionOverwrites,
-  GuildMember,
   MessageAttachment,
   Intents,
 } = require("discord.js");
@@ -66,7 +61,7 @@ client.on("ready", () => {
       fs.access("./guilds/" + g.id + ".json", (err) => {
         if (err) {
           let stream = fs.createWriteStream("./guilds/" + g.id + ".json");
-          stream.once("open", (fd) => {
+          stream.once("open", () => {
             stream.write("{\n");
             stream.write(`"aa": "inactive",\n`);
             stream.write(`"mentions": "active",\n`);
@@ -118,7 +113,6 @@ client.on("ready", () => {
       const doppelembed = new Discord.MessageEmbed().setTitle(
         ddmessage[Math.floor(Math.random() * ddmessage.length)]
       );
-      const file = new MessageAttachment(randomImage);
       doppelembed.setImage("attachment://" + doppel_imgs[randomIndex]);
       channel.send({ embeds: [doppelembed], files: [randomImage] });
     });
@@ -136,7 +130,7 @@ client.on("guildCreate", (guild) => {
     fs.access("./guilds/" + guild.id + ".json", (err) => {
       if (err) {
         let stream = fs.createWriteStream("./guilds/" + guild.id + ".json");
-        stream.once("open", (fd) => {
+        stream.once("open", () => {
           stream.write("{\n");
           stream.write(`"aa": "inactive",\n`);
           stream.write(`"mentions": "active",\n`);
@@ -152,7 +146,7 @@ client.on("guildCreate", (guild) => {
     fs.access("./filter/" + guild.id + ".json", (err) => {
       if (err) {
         let stream = fs.createWriteStream("./filter/" + guild.id + ".json");
-        stream.once("open", (fd) => {
+        stream.once("open", () => {
           stream.write("{\n");
           stream.write(`"banned_words": ["https://discordgift.site/"]\n`);
           stream.write("}");
@@ -174,8 +168,8 @@ client.on("guildDelete", (guild) => {
 });
 
 client.on("messageCreate", (message) => {
-  if (!message.guild) return;
-  id = message.guild.id;
+  if (!message.guild) return false;
+  let id = message.guild.id;
   const guildconf = JSON.parse(fs.readFileSync("./guilds/" + id + ".json"));
   const filter = JSON.parse(fs.readFileSync("./filter/" + id + ".json"));
   const scamfilter = JSON.parse(fs.readFileSync("./filter/scamlist.json"));

@@ -14,7 +14,7 @@ module.exports = {
       message.mentions.users.first() ||
       message.guild.members.cache.get(args[0]);
     let reason = "";
-    for (i = 1; i < args.length; i++) {
+    for (let i = 1; i < args.length; i++) {
       let arg = args[i] + " ";
       reason = reason + arg;
     }

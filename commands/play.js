@@ -1,7 +1,4 @@
-const Discord = require("discord.js");
 const youtube = require("play-dl");
-const { authorization } = require("play-dl");
-const fs = require("fs");
 const {
   AudioPlayerStatus,
   joinVoiceChannel,
@@ -55,17 +52,9 @@ module.exports = {
       player.play(resource);
       playing = true;
       console.log(playing);
-      const subscription = connection.subscribe(player);
       player.on(AudioPlayerStatus.Idle, () => {
         connection.destroy();
       });
     }
   },
 };
-
-//		playing = false;
-//			console.log(playing);
-//			function disconnect() {
-//				if (playing == false) connection.destroy();
-//			};
-//			timer = setTimeout(disconnect, 60000);

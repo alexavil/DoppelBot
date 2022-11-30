@@ -1,4 +1,3 @@
-const Discord = require("discord.js");
 const fs = require("fs");
 module.exports = {
   name: "toggleaa",
@@ -6,12 +5,12 @@ module.exports = {
   description: "Toggle Ace Attorney images",
   userpermissions: "BAN_MEMBERS",
   execute(message) {
-    id = message.guild.id;
+    let id = message.guild.id;
     const guildconf = JSON.parse(fs.readFileSync("./guilds/" + id + ".json"));
     console.log(guildconf);
     if (guildconf.aa == "inactive") {
       let stream = fs.createWriteStream("./guilds/" + id + ".json");
-      stream.once("open", (fd) => {
+      stream.once("open", () => {
         stream.write("{\n");
         stream.write(`"aa": "active",\n`);
         stream.write(`"mentions": "` + guildconf.mentions + `",\n`);
@@ -26,7 +25,7 @@ module.exports = {
     }
     if (guildconf.aa == "active") {
       let stream = fs.createWriteStream("./guilds/" + id + ".json");
-      stream.once("open", (fd) => {
+      stream.once("open", () => {
         stream.write("{\n");
         stream.write(`"aa": "inactive",\n`);
         stream.write(`"mentions": "` + guildconf.mentions + `",\n`);

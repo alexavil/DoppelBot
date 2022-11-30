@@ -31,7 +31,7 @@ module.exports = {
     }
     if (args.length > 1) {
       args.forEach((item) => {
-        oldfilter = JSON.parse(fs.readFileSync("./filter/" + id + ".json"));
+        let oldfilter = JSON.parse(fs.readFileSync("./filter/" + id + ".json"));
         console.log(oldfilter);
         if (!oldfilter.banned_words.includes(item)) {
           return console.log("This word doesn't exist!");

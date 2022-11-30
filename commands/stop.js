@@ -1,5 +1,3 @@
-const Discord = require("discord.js");
-const fs = require("fs");
 const { getVoiceConnection } = require("@discordjs/voice");
 module.exports = {
   name: "stop",

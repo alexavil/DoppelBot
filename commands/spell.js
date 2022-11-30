@@ -1,4 +1,3 @@
-const Discord = require("discord.js");
 module.exports = {
   name: "spell",
   description: "Doppel will cast a spell at you, be careful!",

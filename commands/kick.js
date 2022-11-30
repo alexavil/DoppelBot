@@ -18,7 +18,7 @@ module.exports = {
         "I don't have permissions to do that action! Check the Roles page!"
       );
     let reason = "";
-    for (i = 1; i < args.length; i++) {
+    for (let i = 1; i < args.length; i++) {
       let arg = args[i] + " ";
       reason = reason + arg;
     }
@@ -33,7 +33,7 @@ module.exports = {
         }
       });
       await delay(100);
-      kickmember = message.guild.members.cache.get(user.id);
+      let kickmember = message.guild.members.cache.get(user.id);
       kickmember.kick(reason);
       message.react("✅");
     }

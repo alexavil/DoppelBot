@@ -1,6 +1,4 @@
-const Discord = require("discord.js");
 const youtube = require("play-dl");
-const fs = require("fs");
 const {
   AudioPlayerStatus,
   joinVoiceChannel,
@@ -43,7 +41,6 @@ module.exports = {
           inputType: stream.type,
         });
         player.play(resource);
-        const subscription = connection.subscribe(player);
         player.on(AudioPlayerStatus.Idle, () => {
           connection.destroy();
         });

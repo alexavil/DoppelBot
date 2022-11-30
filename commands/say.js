@@ -1,4 +1,3 @@
-const Discord = require("discord.js");
 module.exports = {
   name: "say",
   description: "Make the bot say something!",
@@ -9,11 +8,11 @@ module.exports = {
     ) {
       let chl = message.mentions.channels.first();
       let msg = args.slice(1).join(" ");
-      attachments = [];
+      let attachments = [];
       if (message.attachments) {
         console.log(message.attachments);
         message.attachments.forEach((att) => {
-          url = att.url;
+          let url = att.url;
           attachments.push(url);
           console.log(attachments);
         });

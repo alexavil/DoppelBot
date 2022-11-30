@@ -55,7 +55,7 @@ module.exports = {
           message.delete();
           return message.channel.send("There can't be multiple leaders!");
         }
-        if (args.length == 1) {
+        if (args.length === 1) {
           const newleader = message.mentions.users.first();
           message.channel.overwritePermissions(message.author.id, {
             MANAGE_MESSAGES: false,

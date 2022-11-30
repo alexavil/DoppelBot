@@ -11,7 +11,7 @@ module.exports = {
     if (!args.length) {
       return message.reply("Provide at least one banned word or string!");
     }
-    if (args.length == 1) {
+    if (args.length === 1) {
       oldfilter = JSON.parse(fs.readFileSync("./filter/" + id + ".json"));
       console.log(oldfilter);
       if (!oldfilter.banned_words.includes(args[0])) {

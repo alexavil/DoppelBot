@@ -1,10 +1,7 @@
 const fs = require("fs");
 const Discord = require("discord.js");
 const cron = require("cron");
-const {
-  MessageAttachment,
-  Intents,
-} = require("discord.js");
+const { Intents } = require("discord.js");
 
 const client = new Discord.Client({
   intents: [
@@ -77,7 +74,7 @@ client.on("ready", () => {
       fs.access("./filter/" + g.id + ".json", (err) => {
         if (err) {
           let stream = fs.createWriteStream("./filter/" + g.id + ".json");
-          stream.once("open", (fd) => {
+          stream.once("open", () => {
             stream.write("{\n");
             stream.write(`"banned_words": ["https://discordgift.site/"]\n`);
             stream.write("}");
@@ -168,7 +165,7 @@ client.on("guildDelete", (guild) => {
 });
 
 client.on("messageCreate", (message) => {
-  if (!message.guild) return false;
+  if (message.guild) {
   let id = message.guild.id;
   const guildconf = JSON.parse(fs.readFileSync("./guilds/" + id + ".json"));
   const filter = JSON.parse(fs.readFileSync("./filter/" + id + ".json"));
@@ -293,6 +290,7 @@ client.on("messageCreate", (message) => {
       );
     } else message.reply("there was an error trying to execute that command!");
   }
+}
 });
 
 client.on("clickButton", async (button) => {

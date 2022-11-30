@@ -7,7 +7,9 @@ module.exports = {
   execute(message) {
     queue = new sqlite3("./queue.db");
     id = message.guild.id;
-    let prefix = queue.prepare(`SELECT value FROM guild_${id} WHERE option = 'prefix'`).get().value;
+    let prefix = queue
+      .prepare(`SELECT value FROM guild_${id} WHERE option = 'prefix'`)
+      .get().value;
     const help = new Discord.MessageEmbed()
       .setColor("#0099ff")
       .setTitle("Hi, I'm DoppelBot! :heart:")
@@ -36,9 +38,7 @@ module.exports = {
           prefix +
           "stop - stop playing"
       )
-      .setFooter(
-        "To view administrator commands, use " + prefix + "admhelp"
-      );
+      .setFooter("To view administrator commands, use " + prefix + "admhelp");
     message.channel.send({ embeds: [help] });
   },
 };

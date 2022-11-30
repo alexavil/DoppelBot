@@ -2,11 +2,8 @@ const fs = require("fs");
 const Discord = require("discord.js");
 const cron = require("cron");
 const token = process.env.TOKEN || process.argv[2];
-const sqlite3 = require('better-sqlite3');
-const {
-  Intents,
-  Permissions
-} = require("discord.js");
+const sqlite3 = require("better-sqlite3");
+const { Intents, Permissions } = require("discord.js");
 
 const client = new Discord.Client({
   intents: [
@@ -42,14 +39,24 @@ const settings = new sqlite3("./settings.db");
 const queue = new sqlite3("./queue.db");
 
 function createConfig(id) {
-    settings.prepare(`CREATE TABLE IF NOT EXISTS guild_${id} (option TEXT UNIQUE, value TEXT)`).run();
-    settings.prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`).run("prefix", "d!");
-    queue.prepare(`CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT UNIQUE, author TEXT)`).run();
+  settings
+    .prepare(
+      `CREATE TABLE IF NOT EXISTS guild_${id} (option TEXT UNIQUE, value TEXT)`
+    )
+    .run();
+  settings
+    .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
+    .run("prefix", "d!");
+  queue
+    .prepare(
+      `CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT UNIQUE, author TEXT)`
+    )
+    .run();
 }
 
 function deleteConfig(id) {
-    settings.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
-    queue.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
+  settings.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
+  queue.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
 }
 
 function gamecycle() {
@@ -80,18 +87,21 @@ client.on("messageCreate", (message) => {
   if (!message.guild) return;
   id = message.guild.id;
 
-  const escapeRegex = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
+  let prefix = settings
+    .prepare(`SELECT * FROM guild_${id} WHERE option = 'prefix'`)
+    .get().value;
 
-  let prefix = settings.prepare(`SELECT * FROM guild_${id} WHERE option = 'prefix'`).get().value;
-
-  if (message.author.bot && message.author.discriminator != '0000') return;
+  if (message.author.bot && message.author.discriminator != "0000") return;
   if (message.channel.type === "dm") return;
-	const prefixRegex = new RegExp(`^(<@!?${client.user.id}>|${escapeRegex(prefix)})\\s*`);
-	if (!prefixRegex.test(message.content)) return;
+  const prefixRegex = new RegExp(
+    `^(<@!?${client.user.id}>|${escapeRegex(prefix)})\\s*`
+  );
+  if (!prefixRegex.test(message.content)) return;
 
-	const [, matchedPrefix] = message.content.match(prefixRegex);
-	const args = message.content.slice(matchedPrefix.length).trim().split(/ +/);
+  const [, matchedPrefix] = message.content.match(prefixRegex);
+  const args = message.content.slice(matchedPrefix.length).trim().split(/ +/);
   const commandName = args.shift().toLowerCase();
   const command =
     client.commands.get(commandName) ||

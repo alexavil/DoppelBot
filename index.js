@@ -85,7 +85,7 @@ client.on("ready", () => {
       fs.access("./filter/scamlist.json", (err) => {
         if (err) {
           let stream = fs.createWriteStream("./filter/scamlist.json");
-          stream.once("open", (fd) => {
+          stream.once("open", () => {
             stream.write("{\n");
             stream.write(`"banned_links": ["https://discordgift.site/"]\n`);
             stream.write("}");
@@ -166,131 +166,152 @@ client.on("guildDelete", (guild) => {
 
 client.on("messageCreate", (message) => {
   if (message.guild) {
-  let id = message.guild.id;
-  const guildconf = JSON.parse(fs.readFileSync("./guilds/" + id + ".json"));
-  const filter = JSON.parse(fs.readFileSync("./filter/" + id + ".json"));
-  const scamfilter = JSON.parse(fs.readFileSync("./filter/scamlist.json"));
-  if (!message.content.startsWith(guildconf.prefix)) {
-    id = message.guild.id;
-    if (message.content.toLowerCase().includes("<@!601454973158424585>")) {
-      const guildconf = JSON.parse(fs.readFileSync("./guilds/" + id + ".json"));
-      if (guildconf.mentions == "inactive") return;
-      if (message.author.bot) return;
-      const mention_responses = responses.mention_responses;
-      message.reply(
-        mention_responses[Math.floor(Math.random() * mention_responses.length)]
+    let id = message.guild.id;
+    const guildconf = JSON.parse(fs.readFileSync("./guilds/" + id + ".json"));
+    const filter = JSON.parse(fs.readFileSync("./filter/" + id + ".json"));
+    const scamfilter = JSON.parse(fs.readFileSync("./filter/scamlist.json"));
+    if (!message.content.startsWith(guildconf.prefix)) {
+      id = message.guild.id;
+      if (message.content.toLowerCase().includes("<@!601454973158424585>")) {
+        const guildconf = JSON.parse(
+          fs.readFileSync("./guilds/" + id + ".json")
+        );
+        if (guildconf.mentions == "inactive") return;
+        if (message.author.bot) return;
+        const mention_responses = responses.mention_responses;
+        message.reply(
+          mention_responses[
+            Math.floor(Math.random() * mention_responses.length)
+          ]
+        );
+      }
+      if (
+        filter.banned_words.some((item) =>
+          message.content.toLowerCase().includes(item)
+        )
+      ) {
+        if (message.author.bot) return;
+        if (guildconf.filter == "inactive") return;
+        message.delete().catch();
+      }
+      if (
+        scamfilter.banned_links.some((item) =>
+          message.content.toLowerCase().includes(item)
+        )
+      ) {
+        if (message.author.bot) return;
+        message.delete().catch();
+        message.guild.members.ban(message.author, { reason: "Scammer" });
+      }
+      if (message.content.toLowerCase().startsWith("ahoy")) {
+        if (message.author.bot) return;
+        const guildconf = JSON.parse(
+          fs.readFileSync("./guilds/" + id + ".json")
+        );
+        if (guildconf.other == "inactive") return;
+        message.reply("Ahoy!");
+      }
+      if (message.content.toLowerCase().includes("realtek")) {
+        if (message.author.bot) return;
+        const guildconf = JSON.parse(
+          fs.readFileSync("./guilds/" + id + ".json")
+        );
+        if (guildconf.other == "inactive") return;
+        const realtek_responses = responses.realkek;
+        message.channel.send(
+          realtek_responses[
+            Math.floor(Math.random() * realtek_responses.length)
+          ]
+        );
+      }
+      if (message.content.toLowerCase().startsWith("hold it!")) {
+        const guildconf = JSON.parse(
+          fs.readFileSync("./guilds/" + id + ".json")
+        );
+        if (guildconf.aa == "inactive") return;
+        message.channel.send({
+          files: ["./ace_attorney/hold_it.jpg"],
+        });
+      }
+      if (message.content.toLowerCase().startsWith("take that!")) {
+        const guildconf = JSON.parse(
+          fs.readFileSync("./guilds/" + id + ".json")
+        );
+        if (guildconf.aa == "inactive") return;
+        message.channel.send({
+          files: ["./ace_attorney/take_that.jpg"],
+        });
+      }
+      if (message.content.toLowerCase().startsWith("objection!")) {
+        const guildconf = JSON.parse(
+          fs.readFileSync("./guilds/" + id + ".json")
+        );
+        if (guildconf.aa == "inactive") return;
+        message.channel.send({
+          files: ["./ace_attorney/objection.jpg"],
+        });
+      }
+      if (message.content.toLowerCase().startsWith("gotcha!")) {
+        const guildconf = JSON.parse(
+          fs.readFileSync("./guilds/" + id + ".json")
+        );
+        if (guildconf.aa == "inactive") return;
+        message.channel.send({
+          files: ["./ace_attorney/gotcha.jpg"],
+        });
+      }
+      if (message.content.toLowerCase().startsWith("eureka!")) {
+        const guildconf = JSON.parse(
+          fs.readFileSync("./guilds/" + id + ".json")
+        );
+        if (guildconf.aa == "inactive") return;
+        message.channel.send({
+          files: ["./ace_attorney/eureka.png"],
+        });
+      }
+      if (
+        message.content.toLowerCase().startsWith("thanks") &&
+        message.channel.id === "694943149142966396"
+      ) {
+        message.reply(
+          responses.thanks[Math.floor(Math.random() * responses.thanks.length)]
+        );
+      } else return;
+    }
+
+    if (message.author.bot) return;
+    if (message.channel.type === "dm") return;
+
+    const args = message.content.slice(guildconf.prefix.length).split(" ");
+    const commandName = args.shift().toLowerCase();
+    const command =
+      client.commands.get(commandName) ||
+      client.commands.find(
+        (cmd) => cmd.aliases && cmd.aliases.includes(commandName)
       );
+
+    if (!command) return;
+
+    if (command.userpermissions) {
+      const perms = message.channel.permissionsFor(message.author);
+      if (!perms || !perms.has(command.userpermissions)) {
+        return message.reply("you do not have permission to use this command!");
+      }
     }
-    if (
-      filter.banned_words.some((item) =>
-        message.content.toLowerCase().includes(item)
-      )
-    ) {
-      if (message.author.bot) return;
-      if (guildconf.filter == "inactive") return;
-      message.delete().catch();
+
+    try {
+      command.execute(message, args, client);
+    } catch (error) {
+      console.error(error);
+      console.log(error.code);
+      if (error.code === Discord.Constants.APIErrors.MISSING_PERMISSIONS) {
+        message.reply(
+          "I don't have permissions to do that action! Check the Roles page!"
+        );
+      } else
+        message.reply("there was an error trying to execute that command!");
     }
-    if (
-      scamfilter.banned_links.some((item) =>
-        message.content.toLowerCase().includes(item)
-      )
-    ) {
-      if (message.author.bot) return;
-      message.delete().catch();
-      message.guild.members.ban(message.author, { reason: "Scammer" });
-    }
-    if (message.content.toLowerCase().startsWith("ahoy")) {
-      if (message.author.bot) return;
-      const guildconf = JSON.parse(fs.readFileSync("./guilds/" + id + ".json"));
-      if (guildconf.other == "inactive") return;
-      message.reply("Ahoy!");
-    }
-    if (message.content.toLowerCase().includes("realtek")) {
-      if (message.author.bot) return;
-      const guildconf = JSON.parse(fs.readFileSync("./guilds/" + id + ".json"));
-      if (guildconf.other == "inactive") return;
-      const realtek_responses = responses.realkek;
-      message.channel.send(
-        realtek_responses[Math.floor(Math.random() * realtek_responses.length)]
-      );
-    }
-    if (message.content.toLowerCase().startsWith("hold it!")) {
-      const guildconf = JSON.parse(fs.readFileSync("./guilds/" + id + ".json"));
-      if (guildconf.aa == "inactive") return;
-      message.channel.send({
-        files: ["./ace_attorney/hold_it.jpg"],
-      });
-    }
-    if (message.content.toLowerCase().startsWith("take that!")) {
-      const guildconf = JSON.parse(fs.readFileSync("./guilds/" + id + ".json"));
-      if (guildconf.aa == "inactive") return;
-      message.channel.send({
-        files: ["./ace_attorney/take_that.jpg"],
-      });
-    }
-    if (message.content.toLowerCase().startsWith("objection!")) {
-      const guildconf = JSON.parse(fs.readFileSync("./guilds/" + id + ".json"));
-      if (guildconf.aa == "inactive") return;
-      message.channel.send({
-        files: ["./ace_attorney/objection.jpg"],
-      });
-    }
-    if (message.content.toLowerCase().startsWith("gotcha!")) {
-      const guildconf = JSON.parse(fs.readFileSync("./guilds/" + id + ".json"));
-      if (guildconf.aa == "inactive") return;
-      message.channel.send({
-        files: ["./ace_attorney/gotcha.jpg"],
-      });
-    }
-    if (message.content.toLowerCase().startsWith("eureka!")) {
-      const guildconf = JSON.parse(fs.readFileSync("./guilds/" + id + ".json"));
-      if (guildconf.aa == "inactive") return;
-      message.channel.send({
-        files: ["./ace_attorney/eureka.png"],
-      });
-    }
-    if (
-      message.content.toLowerCase().startsWith("thanks") &&
-      message.channel.id === "694943149142966396"
-    ) {
-      message.reply(
-        responses.thanks[Math.floor(Math.random() * responses.thanks.length)]
-      );
-    } else return;
   }
-
-  if (message.author.bot) return;
-  if (message.channel.type === "dm") return;
-
-  const args = message.content.slice(guildconf.prefix.length).split(" ");
-  const commandName = args.shift().toLowerCase();
-  const command =
-    client.commands.get(commandName) ||
-    client.commands.find(
-      (cmd) => cmd.aliases && cmd.aliases.includes(commandName)
-    );
-
-  if (!command) return;
-
-  if (command.userpermissions) {
-    const perms = message.channel.permissionsFor(message.author);
-    if (!perms || !perms.has(command.userpermissions)) {
-      return message.reply("you do not have permission to use this command!");
-    }
-  }
-
-  try {
-    command.execute(message, args, client);
-  } catch (error) {
-    console.error(error);
-    console.log(error.code);
-    if (error.code === Discord.Constants.APIErrors.MISSING_PERMISSIONS) {
-      message.reply(
-        "I don't have permissions to do that action! Check the Roles page!"
-      );
-    } else message.reply("there was an error trying to execute that command!");
-  }
-}
 });
 
 client.on("clickButton", async (button) => {

@@ -88,7 +88,7 @@ module.exports = {
           .run(url, message.author.id);
         queue = queue.prepare(`SELECT * FROM guild_${id}`).all();
         console.log(queue.length);
-        if (queue.length == 1) {
+        if (queue.length === 1) {
           playmusic(channel, url, 1, message.author.id);
         } else {
           message.channel.send("Added " + url + " to queue!");

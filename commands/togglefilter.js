@@ -10,7 +10,7 @@ module.exports = {
     const guildconf = JSON.parse(fs.readFileSync("./guilds/" + id + ".json"));
     console.log(guildconf);
     if (guildconf.filter == "inactive") {
-      var stream = fs.createWriteStream("./guilds/" + id + ".json");
+      let stream = fs.createWriteStream("./guilds/" + id + ".json");
       stream.once("open", (fd) => {
         stream.write("{\n");
         stream.write(`"aa": "` + guildconf.aa + `",\n`);
@@ -25,7 +25,7 @@ module.exports = {
       message.reply("Filter is now **on**!");
     }
     if (guildconf.filter == "active") {
-      var stream = fs.createWriteStream("./guilds/" + id + ".json");
+      let stream = fs.createWriteStream("./guilds/" + id + ".json");
       stream.once("open", (fd) => {
         stream.write("{\n");
         stream.write(`"aa": "` + guildconf.aa + `",\n`);

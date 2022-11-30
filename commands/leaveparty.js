@@ -38,7 +38,7 @@ module.exports = {
       message.delete();
       return message.channel.send("This is not a valid party.");
     }
-    var topic = message.channel.topic;
+    let topic = message.channel.topic;
     user = topic.substr(26);
     console.log(user);
     if (

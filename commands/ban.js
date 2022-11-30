@@ -17,9 +17,9 @@ module.exports = {
       return message.reply(
         "I don't have permissions to do that action! Check the Roles page!"
       );
-    var reason = "";
-    for (i = 1; i < args.length; i++) {
-      var arg = args[i] + " ";
+    let reason = "";
+    for (let i = 1; i < args.length; i++) {
+      let arg = args[i] + " ";
       reason = reason + arg;
     }
     const banmessage = new Discord.MessageEmbed()

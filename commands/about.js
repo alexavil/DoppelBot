@@ -5,7 +5,7 @@ module.exports = {
   aliases: ["help"],
   description: "About the bot",
   execute(message) {
-    id = message.guild.id;
+    let id = message.guild.id;
     const guildconf = JSON.parse(fs.readFileSync("./guilds/" + id + ".json"));
     const help = new Discord.MessageEmbed()
       .setColor("#0099ff")

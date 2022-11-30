@@ -45,7 +45,7 @@ const responses = JSON.parse(fs.readFileSync("./responses.json"));
 client.on("ready", () => {
   console.log("I am ready!");
   function gamecycle() {
-    var games = [
+    let games = [
       "Formula Doppel",
       "Doppel Doppel Literature Club Plus",
       "LEGO Puyo Puyo: The Video Game",
@@ -58,14 +58,14 @@ client.on("ready", () => {
       "Doppel's Mod",
       "Doppel's Schoolhouse (Featuring Sonic The Hedgehog)",
     ];
-    var gamestring = Math.floor(Math.random() * games.length);
+    let gamestring = Math.floor(Math.random() * games.length);
     client.user.setActivity(games[gamestring]);
   }
   function createConfig() {
     client.guilds.cache.forEach((g) => {
       fs.access("./guilds/" + g.id + ".json", (err) => {
         if (err) {
-          var stream = fs.createWriteStream("./guilds/" + g.id + ".json");
+          let stream = fs.createWriteStream("./guilds/" + g.id + ".json");
           stream.once("open", (fd) => {
             stream.write("{\n");
             stream.write(`"aa": "inactive",\n`);
@@ -81,7 +81,7 @@ client.on("ready", () => {
       });
       fs.access("./filter/" + g.id + ".json", (err) => {
         if (err) {
-          var stream = fs.createWriteStream("./filter/" + g.id + ".json");
+          let stream = fs.createWriteStream("./filter/" + g.id + ".json");
           stream.once("open", (fd) => {
             stream.write("{\n");
             stream.write(`"banned_words": ["https://discordgift.site/"]\n`);
@@ -92,7 +92,7 @@ client.on("ready", () => {
       });
       fs.access("./filter/scamlist.json", (err) => {
         if (err) {
-          var stream = fs.createWriteStream("./filter/scamlist.json");
+          let stream = fs.createWriteStream("./filter/scamlist.json");
           stream.once("open", (fd) => {
             stream.write("{\n");
             stream.write(`"banned_links": ["https://discordgift.site/"]\n`);
@@ -135,7 +135,7 @@ client.on("guildCreate", (guild) => {
   function createConfig() {
     fs.access("./guilds/" + guild.id + ".json", (err) => {
       if (err) {
-        var stream = fs.createWriteStream("./guilds/" + guild.id + ".json");
+        let stream = fs.createWriteStream("./guilds/" + guild.id + ".json");
         stream.once("open", (fd) => {
           stream.write("{\n");
           stream.write(`"aa": "inactive",\n`);
@@ -151,7 +151,7 @@ client.on("guildCreate", (guild) => {
     });
     fs.access("./filter/" + guild.id + ".json", (err) => {
       if (err) {
-        var stream = fs.createWriteStream("./filter/" + guild.id + ".json");
+        let stream = fs.createWriteStream("./filter/" + guild.id + ".json");
         stream.once("open", (fd) => {
           stream.write("{\n");
           stream.write(`"banned_words": ["https://discordgift.site/"]\n`);

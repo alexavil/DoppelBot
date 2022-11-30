@@ -10,7 +10,7 @@ module.exports = {
     const guildconf = JSON.parse(fs.readFileSync("./guilds/" + id + ".json"));
     console.log(guildconf);
     if (guildconf.aa == "inactive") {
-      var stream = fs.createWriteStream("./guilds/" + id + ".json");
+      let stream = fs.createWriteStream("./guilds/" + id + ".json");
       stream.once("open", (fd) => {
         stream.write("{\n");
         stream.write(`"aa": "active",\n`);
@@ -25,7 +25,7 @@ module.exports = {
       message.reply("Ace Attorney responses are now **on**!");
     }
     if (guildconf.aa == "active") {
-      var stream = fs.createWriteStream("./guilds/" + id + ".json");
+      let stream = fs.createWriteStream("./guilds/" + id + ".json");
       stream.once("open", (fd) => {
         stream.write("{\n");
         stream.write(`"aa": "inactive",\n`);

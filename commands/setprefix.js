@@ -12,7 +12,7 @@ module.exports = {
     if (!args.length) {
       message.reply("Please provide a prefix!");
     }
-    var stream = fs.createWriteStream("./guilds/" + id + ".json");
+    let stream = fs.createWriteStream("./guilds/" + id + ".json");
     stream.once("open", (fd) => {
       stream.write("{\n");
       stream.write(`"aa": "` + guildconf.aa + `",\n`);

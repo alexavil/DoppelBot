@@ -20,7 +20,6 @@ module.exports = {
       const doppelembed = new Discord.MessageEmbed().setTitle(
         doppelmsg[Math.floor(Math.random() * doppelmsg.length)]
       );
-      const file = new MessageAttachment(randomImage);
       doppelembed.setImage("attachment://" + doppel_imgs[randomIndex]);
       doppelembed.setFooter(
         "If you know the author of this art, please contact us so we can credit them!"

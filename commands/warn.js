@@ -13,9 +13,9 @@ module.exports = {
     const user =
       message.mentions.users.first() ||
       message.guild.members.cache.get(args[0]);
-    var reason = "";
+    let reason = "";
     for (i = 1; i < args.length; i++) {
-      var arg = args[i] + " ";
+      let arg = args[i] + " ";
       reason = reason + arg;
     }
     const warnmessage = new Discord.MessageEmbed()

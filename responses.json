@@ -1,58 +1,58 @@
 {
-	"dd_responses": [
-        "You earned a Daily Doppel! Congrats!",
-        "What is it?! A Daily Doppel?!",
-        "Prepare for trouble! And make it Doppel! No idea what that was, but here's your Doppel image."
-      ],
-	"mention_responses": [
-        "My relationship with Arle? Can you handle the knowledge?",
-        "I look like Arle? Well of course I do... Haha.",
-        "Now...take me to more fun places.",
-        "Hahaha... You look surprised. Something wrong?",
-        "Ahahaha! I'm having such a great time.",
-        "It feels like I've become stronger. I have to thank you.",
-        "Defeating me... i'll teach you just what that means!",
-        "Hah... what a pointless question... I'm Arle! ...I'm not anything besides that!!",
-	    "Today you will definitely acknowledge me... Ahahaha!",
-        "No matter how you might want to deny it, the truth remains... that I am what I am...",
-        "Is the Arle that you know really Arle, I wonder? Fufufu...",
-        "Tell me, are you obligated to prove that you really are yourself? ...Well neither am I.",
-        "You get it now, right? There's no need for two Arles..."
-      ],
-	"realkek": [
-        "Realtek - offering shitty products since 1987!",
-        "Did you mean... Realkek?",
-        "Realtek - more like Real Pain.",
-        "Welcome to the Realtek Mode. Enjoy!",
-        "*Message not found. Realtek ate it.*",
-        "I'm not happy about Realtek as well.",
-        "It took me a lot of effort to read this, y'know."			
-      ],
-	"facts": [
-      ":information_source: | Doppelganger Arle in Puyo Puyo~n is primarily fueled by hatred and jealousy of Arle, having an extreme desire to take her place. In Puyo Puyo!! Quest, she is very calm, composed, and secretive to herself and others, though she has fits of laughter. In her Pierrot disguise, she plays up her fool-hardy nature and acts as more of a goofball, though this element is not retained in Quest.",
-      ":information_source: | Doppel wears a clown suit, and while wearing that clown suit, she identifies herself as Pierrot. That same clown suit apparently acts as a supressor, supressing alot of Doppel's Magic capabilities. this is mainly seen in Pierrot's lack of a super attack.",
-      ":information_source: | It is heavily implied that Doppel's spells are more powerful than Arle's, as Void Hole (Doppel's version of Ruipanko) lasts twice as long. ",
-      ":information_source: | It's rather unknown if Doppel died or not after the events of Puyo Puyo 4. As it is implied that she did indeed die after her defeat, but in the credits scene, we see her overlooking the Puyo Puyo circus as herself (and not as Pierrot), implying that she's alright.",
-      ":information_source: | According to the Puyo Puyo canon, Doppel spent 500 years on the void, implying that the Madou Monogotari canon is canon here too, as Arle (Pre-Reset) fought the creator and won. However, that victory came at the cost of everything as she knew: it all turned into a void. The Arle that we know today is actually half of this original Arle. The other half would be Doppel, which was stuck in the void untill the events of Puyo Puyo 4.",
-      ":information_source: | Rumor has it that Doppel can take people to the Unknown Dimension. It looks like a void similar to the one she spent 500 years in, and there's no way out of it except letting someone drag you out of it, which currently doesn't work 100% of the time. The Unknown Dimension may also appear on well-known locations, which makes it more dangerous."
-    ],
-	"spells": [
-      "-Void Hole-\nCast on yourself by reciting Void Hole. it will greatly increase your defense.",
-      "-Abyss-\nFace your opponent and recite Abyss. It should scorch your enemy.",
-      "-Chaos-\nFace your opponent and recite Chaos. It should freeze your enemy. ",
-      "-Labyrinth-\nCast on yourself by reciting Labyrinth. It will temporarily increase your magic strength.",
-      "-Eclipse-\nFace your Oppoent and recite Eclipse. Their Brain will dissolve and their IQ level will decrease.",
-      "-Grand Cross-\nFace your Opponent and recite Grand Cross. With a power that should be feared, it will snatch away your enemy's strength. However, as a result of consuming large amounts of magical power, when your magical level is low, you won't be able to cast it.",
-      "-Ragnarok-\nFace your opponent and recite Ragnarok. Your opponent will be temporarily frozen and their weak spot will be exposed."     
-	],
-	"doppel_responses": [
-        "Here's your Doppel picture!",
-        "Doppel's cute, isn't she? :heart:",
-        "I hope you're having a great time! :wink: Here's a Doppel picture for you!"
-      ],
-      "thanks": [
-            "All conveniences in the world, just for you!",
-            "I'm glad you're enjoying this!",
-            "You're welcome!"
-      ]
+  "dd_responses": [
+    "You earned a Daily Doppel! Congrats!",
+    "What is it?! A Daily Doppel?!",
+    "Prepare for trouble! And make it Doppel! No idea what that was, but here's your Doppel image."
+  ],
+  "mention_responses": [
+    "My relationship with Arle? Can you handle the knowledge?",
+    "I look like Arle? Well of course I do... Haha.",
+    "Now...take me to more fun places.",
+    "Hahaha... You look surprised. Something wrong?",
+    "Ahahaha! I'm having such a great time.",
+    "It feels like I've become stronger. I have to thank you.",
+    "Defeating me... i'll teach you just what that means!",
+    "Hah... what a pointless question... I'm Arle! ...I'm not anything besides that!!",
+    "Today you will definitely acknowledge me... Ahahaha!",
+    "No matter how you might want to deny it, the truth remains... that I am what I am...",
+    "Is the Arle that you know really Arle, I wonder? Fufufu...",
+    "Tell me, are you obligated to prove that you really are yourself? ...Well neither am I.",
+    "You get it now, right? There's no need for two Arles..."
+  ],
+  "realkek": [
+    "Realtek - offering shitty products since 1987!",
+    "Did you mean... Realkek?",
+    "Realtek - more like Real Pain.",
+    "Welcome to the Realtek Mode. Enjoy!",
+    "*Message not found. Realtek ate it.*",
+    "I'm not happy about Realtek as well.",
+    "It took me a lot of effort to read this, y'know."
+  ],
+  "facts": [
+    ":information_source: | Doppelganger Arle in Puyo Puyo~n is primarily fueled by hatred and jealousy of Arle, having an extreme desire to take her place. In Puyo Puyo!! Quest, she is very calm, composed, and secretive to herself and others, though she has fits of laughter. In her Pierrot disguise, she plays up her fool-hardy nature and acts as more of a goofball, though this element is not retained in Quest.",
+    ":information_source: | Doppel wears a clown suit, and while wearing that clown suit, she identifies herself as Pierrot. That same clown suit apparently acts as a supressor, supressing alot of Doppel's Magic capabilities. this is mainly seen in Pierrot's lack of a super attack.",
+    ":information_source: | It is heavily implied that Doppel's spells are more powerful than Arle's, as Void Hole (Doppel's version of Ruipanko) lasts twice as long. ",
+    ":information_source: | It's rather unknown if Doppel died or not after the events of Puyo Puyo 4. As it is implied that she did indeed die after her defeat, but in the credits scene, we see her overlooking the Puyo Puyo circus as herself (and not as Pierrot), implying that she's alright.",
+    ":information_source: | According to the Puyo Puyo canon, Doppel spent 500 years on the void, implying that the Madou Monogotari canon is canon here too, as Arle (Pre-Reset) fought the creator and won. However, that victory came at the cost of everything as she knew: it all turned into a void. The Arle that we know today is actually half of this original Arle. The other half would be Doppel, which was stuck in the void untill the events of Puyo Puyo 4.",
+    ":information_source: | Rumor has it that Doppel can take people to the Unknown Dimension. It looks like a void similar to the one she spent 500 years in, and there's no way out of it except letting someone drag you out of it, which currently doesn't work 100% of the time. The Unknown Dimension may also appear on well-known locations, which makes it more dangerous."
+  ],
+  "spells": [
+    "-Void Hole-\nCast on yourself by reciting Void Hole. it will greatly increase your defense.",
+    "-Abyss-\nFace your opponent and recite Abyss. It should scorch your enemy.",
+    "-Chaos-\nFace your opponent and recite Chaos. It should freeze your enemy. ",
+    "-Labyrinth-\nCast on yourself by reciting Labyrinth. It will temporarily increase your magic strength.",
+    "-Eclipse-\nFace your Oppoent and recite Eclipse. Their Brain will dissolve and their IQ level will decrease.",
+    "-Grand Cross-\nFace your Opponent and recite Grand Cross. With a power that should be feared, it will snatch away your enemy's strength. However, as a result of consuming large amounts of magical power, when your magical level is low, you won't be able to cast it.",
+    "-Ragnarok-\nFace your opponent and recite Ragnarok. Your opponent will be temporarily frozen and their weak spot will be exposed."
+  ],
+  "doppel_responses": [
+    "Here's your Doppel picture!",
+    "Doppel's cute, isn't she? :heart:",
+    "I hope you're having a great time! :wink: Here's a Doppel picture for you!"
+  ],
+  "thanks": [
+    "All conveniences in the world, just for you!",
+    "I'm glad you're enjoying this!",
+    "You're welcome!"
+  ]
 }

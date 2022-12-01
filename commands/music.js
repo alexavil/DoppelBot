@@ -25,7 +25,6 @@ module.exports = {
     ];
     let channel = message.member.voice.channel;
     async function playmusic(channel, url, pos, author) {
-      let currentpos = pos;
       const connection = joinVoiceChannel({
         channelId: channel.id,
         guildId: channel.guild.id,

@@ -5,9 +5,9 @@ module.exports = {
   aliases: ["help"],
   description: "About the bot",
   execute(message) {
-    queue = new sqlite3("./queue.db");
-    id = message.guild.id;
-    let prefix = queue
+    const settings = new sqlite3("./settings.db");
+    let id = message.guild.id;
+    let prefix = settings
       .prepare(`SELECT value FROM guild_${id} WHERE option = 'prefix'`)
       .get().value;
     const help = new Discord.MessageEmbed()
@@ -20,25 +20,14 @@ module.exports = {
           "doppel to start the magic."
       )
       .addField(
-        "What else can I do?",
-        "You can also use " +
-          prefix +
-          "doppelfact to get a random fact about Doppel, " +
-          prefix +
-          "spell if you want to hear a spell chant and " +
-          prefix +
-          "spelldesc to read a spell description. Mention me and I will respond with Doppel's quotes! :wink:"
-      )
-      .addField(
-        "Music commands (WIP)",
-        prefix +
+        "Music commands",
+        "All music commands start with " + prefix + "music.\n" +
           "play - play music\n" +
-          prefix +
           "search - search for music\n" +
-          prefix +
-          "stop - stop playing"
-      )
-      .setFooter("To view administrator commands, use " + prefix + "admhelp");
+          "stop - stop playing\n" +
+          "queue - view the current queue\n" +
+          "skip - skip the current track."
+      );
     message.channel.send({ embeds: [help] });
   },
 };

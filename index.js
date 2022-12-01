@@ -176,8 +176,8 @@ client.on("messageCreate", (message) => {
         const guildconf = JSON.parse(
           fs.readFileSync("./guilds/" + id + ".json")
         );
-        if (guildconf.mentions == "inactive") return;
-        if (message.author.bot) return;
+        if (guildconf.mentions == "inactive") return false;
+        if (message.author.bot) return false;
         const mention_responses = responses.mention_responses;
         message.reply(
           mention_responses[
@@ -190,8 +190,8 @@ client.on("messageCreate", (message) => {
           message.content.toLowerCase().includes(item)
         )
       ) {
-        if (message.author.bot) return;
-        if (guildconf.filter == "inactive") return;
+        if (message.author.bot) return false;
+        if (guildconf.filter == "inactive") return false;
         message.delete().catch();
       }
       if (
@@ -199,24 +199,24 @@ client.on("messageCreate", (message) => {
           message.content.toLowerCase().includes(item)
         )
       ) {
-        if (message.author.bot) return;
+        if (message.author.bot) return false;
         message.delete().catch();
         message.guild.members.ban(message.author, { reason: "Scammer" });
       }
       if (message.content.toLowerCase().startsWith("ahoy")) {
-        if (message.author.bot) return;
+        if (message.author.bot) return false;
         const guildconf = JSON.parse(
           fs.readFileSync("./guilds/" + id + ".json")
         );
-        if (guildconf.other == "inactive") return;
+        if (guildconf.other == "inactive") return false;
         message.reply("Ahoy!");
       }
       if (message.content.toLowerCase().includes("realtek")) {
-        if (message.author.bot) return;
+        if (message.author.bot) return false;
         const guildconf = JSON.parse(
           fs.readFileSync("./guilds/" + id + ".json")
         );
-        if (guildconf.other == "inactive") return;
+        if (guildconf.other == "inactive") return false;
         const realtek_responses = responses.realkek;
         message.channel.send(
           realtek_responses[
@@ -228,7 +228,7 @@ client.on("messageCreate", (message) => {
         const guildconf = JSON.parse(
           fs.readFileSync("./guilds/" + id + ".json")
         );
-        if (guildconf.aa == "inactive") return;
+        if (guildconf.aa == "inactive") return false;
         message.channel.send({
           files: ["./ace_attorney/hold_it.jpg"],
         });
@@ -237,7 +237,7 @@ client.on("messageCreate", (message) => {
         const guildconf = JSON.parse(
           fs.readFileSync("./guilds/" + id + ".json")
         );
-        if (guildconf.aa == "inactive") return;
+        if (guildconf.aa == "inactive") return false;
         message.channel.send({
           files: ["./ace_attorney/take_that.jpg"],
         });
@@ -246,7 +246,7 @@ client.on("messageCreate", (message) => {
         const guildconf = JSON.parse(
           fs.readFileSync("./guilds/" + id + ".json")
         );
-        if (guildconf.aa == "inactive") return;
+        if (guildconf.aa == "inactive") return false;
         message.channel.send({
           files: ["./ace_attorney/objection.jpg"],
         });
@@ -255,7 +255,7 @@ client.on("messageCreate", (message) => {
         const guildconf = JSON.parse(
           fs.readFileSync("./guilds/" + id + ".json")
         );
-        if (guildconf.aa == "inactive") return;
+        if (guildconf.aa == "inactive") return false;
         message.channel.send({
           files: ["./ace_attorney/gotcha.jpg"],
         });
@@ -264,7 +264,7 @@ client.on("messageCreate", (message) => {
         const guildconf = JSON.parse(
           fs.readFileSync("./guilds/" + id + ".json")
         );
-        if (guildconf.aa == "inactive") return;
+        if (guildconf.aa == "inactive") return false;
         message.channel.send({
           files: ["./ace_attorney/eureka.png"],
         });
@@ -276,11 +276,11 @@ client.on("messageCreate", (message) => {
         message.reply(
           responses.thanks[Math.floor(Math.random() * responses.thanks.length)]
         );
-      } else return;
+      } else return false;
     }
 
-    if (message.author.bot) return;
-    if (message.channel.type === "dm") return;
+    if (message.author.bot) return false;
+    if (message.channel.type === "dm") return false;
 
     const args = message.content.slice(guildconf.prefix.length).split(" ");
     const commandName = args.shift().toLowerCase();
@@ -290,7 +290,7 @@ client.on("messageCreate", (message) => {
         (cmd) => cmd.aliases && cmd.aliases.includes(commandName)
       );
 
-    if (!command) return;
+    if (!command) return false;
 
     if (command.userpermissions) {
       const perms = message.channel.permissionsFor(message.author);

@@ -93,7 +93,8 @@ client.on("messageCreate", (message) => {
     .prepare(`SELECT * FROM guild_${id} WHERE option = 'prefix'`)
     .get().value;
 
-  if (message.author.bot && message.author.discriminator != "0000") return false;
+  if (message.author.bot && message.author.discriminator != "0000")
+    return false;
   if (message.channel.type === "dm") return false;
   const prefixRegex = new RegExp(
     `^(<@!?${client.user.id}>|${escapeRegex(prefix)})\\s*`

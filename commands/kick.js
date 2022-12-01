@@ -23,8 +23,6 @@ module.exports = {
       reason = reason + arg;
     }
     async function kick() {
-      const delay = (msec) =>
-        new Promise((resolve) => setTimeout(resolve, msec));
       user.send({ embeds: [kickmessage] }).catch((err) => {
         if (err.code === Discord.Constants.APIErrors.CANNOT_MESSAGE_USER) {
           return message.reply(
@@ -32,10 +30,11 @@ module.exports = {
           );
         }
       });
-      await delay(100);
-      let kickmember = message.guild.members.cache.get(user.id);
-      kickmember.kick(reason);
-      message.react("✅");
+      setTimeout(() => {
+        let kickmember = message.guild.members.cache.get(user.id);
+        kickmember.kick(reason);
+        message.react("✅");
+      }, 300);
     }
     const kickmessage = new Discord.MessageEmbed()
       .setColor("#FFFF00")

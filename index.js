@@ -2,6 +2,7 @@ const fs = require("fs");
 const Discord = require("discord.js");
 const cron = require("cron");
 const { Intents } = require("discord.js");
+const token = process.env.TOKEN || process.argv[2];
 
 const client = new Discord.Client({
   intents: [
@@ -324,4 +325,4 @@ process.on("unhandledRejection", (error) => {
   console.error("Error:", error);
 });
 
-client.login("");
+client.login(token);

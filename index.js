@@ -3,7 +3,7 @@ const Discord = require("discord.js");
 const cron = require("cron");
 const token = process.env.TOKEN || process.argv[2];
 const sqlite3 = require("better-sqlite3");
-const { Intents } = require("discord.js");
+const { Permissions, Intents } = require("discord.js");
 
 const client = new Discord.Client({
   intents: [
@@ -38,6 +38,50 @@ const responses = JSON.parse(fs.readFileSync("./responses.json"));
 const settings = new sqlite3("./settings.db");
 const queue = new sqlite3("./queue.db");
 
+const RequiredPerms = [
+  [Permissions.FLAGS.VIEW_CHANNEL, "View Channels"],
+  [Permissions.FLAGS.READ_MESSAGE_HISTORY, "Read Message History"],
+  [Permissions.FLAGS.SEND_MESSAGES, "Send Messages"],
+  [Permissions.FLAGS.MANAGE_MESSAGES, "Manage Messages"],
+  [Permissions.FLAGS.CONNECT, "Connect"],
+  [Permissions.FLAGS.SPEAK, "Speak"],
+  [Permissions.FLAGS.ADD_REACTIONS, "Add Reactions"],
+];
+
+function CheckForPerms() {
+  client.guilds.cache.forEach((guild) => {
+    let id = guild.id;
+    let notifs_value = settings
+      .prepare(`SELECT * FROM guild_${id} WHERE option = 'notifications'`)
+      .get().value;
+    if (notifs_value === "false") return false;
+    let botmember = guild.me;
+    let guild_owner = guild.ownerId;
+    let message = `The bot is missing the following permissions in ${guild.name}:\n\n`;
+    let missing = 0;
+    RequiredPerms.forEach((perm) => {
+      if (!botmember.permissions.has(perm[0])) {
+        console.log(`Missing ${perm[1]} permission in ${guild.name}!`);
+        message += `${perm[1]}\n`;
+        missing++;
+      }
+    });
+    if (missing > 0) {
+      message += `\nPlease check your role and member settings!`;
+      client.users.cache
+        .get(guild_owner)
+        .send(message)
+        .catch((err) => {
+          if (err.code === Discord.Constants.APIErrors.CANNOT_MESSAGE_USER) {
+            return console.log(
+              `The owner of ${guild.name} has disabled direct messages!`
+            );
+          }
+        });
+    }
+  });
+}
+
 function createConfig(id) {
   settings
     .prepare(
@@ -47,6 +91,9 @@ function createConfig(id) {
   settings
     .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
     .run("prefix", "d!");
+  settings
+    .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
+    .run("notifications", "true");
   queue
     .prepare(
       `CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT UNIQUE, author TEXT)`
@@ -69,10 +116,13 @@ client.on("ready", () => {
   console.log("I am ready!");
   let job = new cron.CronJob("00 00 * * * *", gamecycle);
   job.start();
+  let permcheck = new cron.CronJob("00 00 * * * *", CheckForPerms);
+  permcheck.start();
   client.guilds.cache.forEach((guild) => {
     createConfig(guild.id);
   });
   gamecycle();
+  CheckForPerms();
 });
 
 client.on("guildCreate", (guild) => {

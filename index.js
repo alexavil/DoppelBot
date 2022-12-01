@@ -3,7 +3,7 @@ const Discord = require("discord.js");
 const cron = require("cron");
 const token = process.env.TOKEN || process.argv[2];
 const sqlite3 = require("better-sqlite3");
-const { Intents, Permissions } = require("discord.js");
+const { Intents } = require("discord.js");
 
 const client = new Discord.Client({
   intents: [
@@ -60,8 +60,8 @@ function deleteConfig(id) {
 }
 
 function gamecycle() {
-  var games = responses.games;
-  var gamestring = Math.floor(Math.random() * games.length);
+  let games = responses.games;
+  let gamestring = Math.floor(Math.random() * games.length);
   client.user.setActivity(games[gamestring]);
 }
 
@@ -84,8 +84,8 @@ client.on("guildDelete", (guild) => {
 });
 
 client.on("messageCreate", (message) => {
-  if (!message.guild) return;
-  id = message.guild.id;
+  if (!message.guild) return false;
+  let id = message.guild.id;
 
   const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -93,12 +93,12 @@ client.on("messageCreate", (message) => {
     .prepare(`SELECT * FROM guild_${id} WHERE option = 'prefix'`)
     .get().value;
 
-  if (message.author.bot && message.author.discriminator != "0000") return;
-  if (message.channel.type === "dm") return;
+  if (message.author.bot && message.author.discriminator != "0000") return false;
+  if (message.channel.type === "dm") return false;
   const prefixRegex = new RegExp(
     `^(<@!?${client.user.id}>|${escapeRegex(prefix)})\\s*`
   );
-  if (!prefixRegex.test(message.content)) return;
+  if (!prefixRegex.test(message.content)) return false;
 
   const [, matchedPrefix] = message.content.match(prefixRegex);
   const args = message.content.slice(matchedPrefix.length).trim().split(/ +/);
@@ -109,7 +109,7 @@ client.on("messageCreate", (message) => {
       (cmd) => cmd.aliases && cmd.aliases.includes(commandName)
     );
 
-  if (!command) return;
+  if (!command) return false;
 
   if (command.userpermissions) {
     const perms = message.channel.permissionsFor(message.author);

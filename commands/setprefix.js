@@ -1,4 +1,3 @@
-const Discord = require("discord.js");
 const sqlite3 = require("better-sqlite3");
 module.exports = {
   name: "setprefix",
@@ -6,8 +5,8 @@ module.exports = {
   description: "Set guild prefix",
   userpermissions: "BAN_MEMBERS",
   execute(message, args) {
-    id = message.guild.id;
-    settings = new sqlite3("./settings.db");
+    let id = message.guild.id;
+    let settings = new sqlite3("./settings.db");
     if (!args.length) {
       let prefix = settings
         .prepare(`SELECT * FROM guild_${id} WHERE option = 'prefix'`)

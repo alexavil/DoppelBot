@@ -21,7 +21,9 @@ module.exports = {
       )
       .addField(
         "Music commands",
-        "All music commands start with " + prefix + "music.\n" +
+        "All music commands start with " +
+          prefix +
+          "music.\n" +
           "play - play music\n" +
           "search - search for music\n" +
           "stop - stop playing\n" +

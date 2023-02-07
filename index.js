@@ -49,12 +49,13 @@ const RequiredPerms = [
 ];
 
 function CheckForPerms() {
+  console.log("Checking permissions...")
   client.guilds.cache.forEach((guild) => {
     let id = guild.id;
     let notifs_value = settings
       .prepare(`SELECT * FROM guild_${id} WHERE option = 'notifications'`)
       .get().value;
-    if (notifs_value === "false") return false;
+    if (notifs_value === "false") return console.log("No reasons to check!");
     let botmember = guild.me;
     let guild_owner = guild.ownerId;
     let message = `The bot is missing the following permissions in ${guild.name}:\n\n`;
@@ -68,9 +69,19 @@ function CheckForPerms() {
     });
     if (missing > 0) {
       message += `\nPlease check your role and member settings!`;
+      const outbtn = new Discord.MessageButton()
+        .setCustomId(`${guild.id}_opt-out`)
+        .setLabel(`Opt-out of service notifications in ${guild.name}`)
+        .setStyle('DANGER');
+      const row = new Discord.MessageActionRow()
+        .addComponents(outbtn);
+      const embed = new Discord.MessageEmbed()
+        .setColor("RED")
+        .setTitle("Alert!")
+        .setDescription(message)
       client.users.cache
         .get(guild_owner)
-        .send(message)
+        .send({embeds: [embed], components: [row]})
         .catch((err) => {
           if (err.code === Discord.Constants.APIErrors.CANNOT_MESSAGE_USER) {
             return console.log(
@@ -78,6 +89,9 @@ function CheckForPerms() {
             );
           }
         });
+    }
+    else {
+      return console.log("All clear!")
     }
   });
 }
@@ -96,7 +110,7 @@ function createConfig(id) {
     .run("notifications", "true");
   queue
     .prepare(
-      `CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT UNIQUE, author TEXT)`
+      `CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT, author TEXT)`
     )
     .run();
 }
@@ -131,6 +145,17 @@ client.on("guildCreate", (guild) => {
 
 client.on("guildDelete", (guild) => {
   deleteConfig(guild.id);
+});
+
+client.on('interactionCreate', interaction => {
+  if (interaction.customId.endsWith("opt-out")) {
+    let id = interaction.customId.split("_")[0];
+    settings
+        .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
+        .run("false", "notifications");
+    interaction.update({components: []});
+    return interaction.channel.send('Notifications are now disabled! You can re-enable them at any time using `d!notifications`.');
+  }
 });
 
 client.on("messageCreate", (message) => {

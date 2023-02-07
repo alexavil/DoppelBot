@@ -94,6 +94,10 @@ function CheckForPerms() {
   });
 }
 
+function clearQueue(id) {
+    queue.prepare(`DELETE FROM guild_${id}`).run();
+}
+
 function createConfig(id) {
   settings
     .prepare(
@@ -130,6 +134,7 @@ client.on("ready", () => {
   permcheck.start();
   client.guilds.cache.forEach((guild) => {
     createConfig(guild.id);
+    clearQueue(guild.id);
   });
   gamecycle();
   CheckForPerms();

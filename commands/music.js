@@ -46,6 +46,7 @@ module.exports = {
       });
       message.channel.send(`Now playing: ${url}\nRequested by <@!${author}>`);
       player.play(resource);
+      connection.subscribe(player);
       player.on(AudioPlayerStatus.Idle, () => {
         queue.prepare(`DELETE FROM guild_${id} WHERE rowid = ${pos}`).run();
         pos++;

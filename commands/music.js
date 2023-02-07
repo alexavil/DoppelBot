@@ -7,7 +7,7 @@ const {
   createAudioPlayer,
   createAudioResource,
   getVoiceConnection,
-  NoSubscriberBehavior
+  NoSubscriberBehavior,
 } = require("@discordjs/voice");
 const sqlite3 = require("better-sqlite3");
 
@@ -47,8 +47,8 @@ module.exports = {
         guildId: channel.guild.id,
         adapterCreator: channel.guild.voiceAdapterCreator,
         behaviors: {
-          noSubscriber: NoSubscriberBehavior.Pause
-        }
+          noSubscriber: NoSubscriberBehavior.Pause,
+        },
       });
       if (url.startsWith(allowedLinks[2])) {
         await play.getFreeClientID().then((clientID) =>
@@ -174,13 +174,16 @@ module.exports = {
         break;
       case "queue": {
         let embed = new Discord.MessageEmbed();
-        masterqueue.prepare(`SELECT * FROM guild_${id}`).all().forEach((track) => {
-          embed.addFields({
-            name: track.track,
-            value: `Requested by: <@!${track.author}>`,
-            inline: true,
+        masterqueue
+          .prepare(`SELECT * FROM guild_${id}`)
+          .all()
+          .forEach((track) => {
+            embed.addFields({
+              name: track.track,
+              value: `Requested by: <@!${track.author}>`,
+              inline: true,
+            });
           });
-        });
         embed.setTitle("Queue");
         embed.setColor("#0099ff");
         message.channel.send({ embeds: [embed] });

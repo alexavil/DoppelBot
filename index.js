@@ -49,7 +49,7 @@ const RequiredPerms = [
 ];
 
 function CheckForPerms() {
-  console.log("Checking permissions...")
+  console.log("Checking permissions...");
   client.guilds.cache.forEach((guild) => {
     let id = guild.id;
     let notifs_value = settings
@@ -72,16 +72,15 @@ function CheckForPerms() {
       const outbtn = new Discord.MessageButton()
         .setCustomId(`${guild.id}_opt-out`)
         .setLabel(`Opt-out of service notifications in ${guild.name}`)
-        .setStyle('DANGER');
-      const row = new Discord.MessageActionRow()
-        .addComponents(outbtn);
+        .setStyle("DANGER");
+      const row = new Discord.MessageActionRow().addComponents(outbtn);
       const embed = new Discord.MessageEmbed()
         .setColor("RED")
         .setTitle("Alert!")
-        .setDescription(message)
+        .setDescription(message);
       client.users.cache
         .get(guild_owner)
-        .send({embeds: [embed], components: [row]})
+        .send({ embeds: [embed], components: [row] })
         .catch((err) => {
           if (err.code === Discord.Constants.APIErrors.CANNOT_MESSAGE_USER) {
             return console.log(
@@ -89,9 +88,8 @@ function CheckForPerms() {
             );
           }
         });
-    }
-    else {
-      return console.log("All clear!")
+    } else {
+      return console.log("All clear!");
     }
   });
 }
@@ -109,9 +107,7 @@ function createConfig(id) {
     .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
     .run("notifications", "true");
   queue
-    .prepare(
-      `CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT, author TEXT)`
-    )
+    .prepare(`CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT, author TEXT)`)
     .run();
 }
 
@@ -147,14 +143,16 @@ client.on("guildDelete", (guild) => {
   deleteConfig(guild.id);
 });
 
-client.on('interactionCreate', interaction => {
+client.on("interactionCreate", (interaction) => {
   if (interaction.customId.endsWith("opt-out")) {
     let id = interaction.customId.split("_")[0];
     settings
-        .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
-        .run("false", "notifications");
-    interaction.update({components: []});
-    return interaction.channel.send('Notifications are now disabled! You can re-enable them at any time using `d!notifications`.');
+      .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
+      .run("false", "notifications");
+    interaction.update({ components: [] });
+    return interaction.channel.send(
+      "Notifications are now disabled! You can re-enable them at any time using `d!notifications`."
+    );
   }
 });
 

@@ -21,7 +21,9 @@ module.exports = {
           settings
             .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
             .run("false", "notifications");
-          return message.channel.send(`Service notifications are now disabled!`);
+          return message.channel.send(
+            `Service notifications are now disabled!`
+          );
       }
     } else return false;
   },

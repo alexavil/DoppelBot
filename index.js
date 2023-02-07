@@ -137,7 +137,7 @@ client.on("ready", () => {
     clearQueue(guild.id);
   });
   gamecycle();
-  CheckForPerms();
+  //CheckForPerms();
 });
 
 client.on("guildCreate", (guild) => {

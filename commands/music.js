@@ -35,13 +35,13 @@ module.exports = {
         .prepare(`INSERT INTO guild_${id} VALUES (?, ?)`)
         .run(url, message.author.id);
       if (masterqueue.prepare(`SELECT * FROM guild_${id}`).all().length === 1) {
-        playmusic(channel, url, 1, message.author.id);
+        playmusic(channel, url, message.author.id);
       } else {
         message.channel.send("Added " + url + " to queue!");
       }
     }
 
-    async function playmusic(channel, url, pos, author) {
+    async function playmusic(channel, url, author) {
       const connection = joinVoiceChannel({
         channelId: channel.id,
         guildId: channel.guild.id,
@@ -71,15 +71,14 @@ module.exports = {
       if (timerId !== undefined) clearTimeout(timerId);
       player.on(AudioPlayerStatus.Idle, () => {
         masterqueue
-          .prepare(`DELETE FROM guild_${id} WHERE rowid = ${pos}`)
+          .prepare(`DELETE FROM guild_${id} ORDER BY ROWID LIMIT 1`)
           .run();
-        pos++;
         let track = masterqueue
-          .prepare(`SELECT * FROM guild_${id} WHERE rowid = ${pos}`)
+          .prepare(`SELECT * FROM guild_${id} ORDER BY ROWID LIMIT 1`)
           .get();
         console.log(track);
         if (track || track != undefined) {
-          playmusic(channel, track.track, pos, track.author);
+          playmusic(channel, track.track, track.author);
         } else {
           timerId = setTimeout(() => {
             message.channel.send("No more tracks to play, disconnecting!");
@@ -199,7 +198,7 @@ module.exports = {
         console.log(track);
         if (track || track != undefined) {
           message.channel.send("Skipped!");
-          playmusic(channel, track.track, track.rowid, track.author);
+          playmusic(channel, track.track, track.author);
         } else {
           message.channel.send("No more tracks to play, disconnecting!");
           const connection = getVoiceConnection(channel.guild.id);

@@ -7,15 +7,19 @@ const {
   createAudioPlayer,
   createAudioResource,
   getVoiceConnection,
+  NoSubscriberBehavior
 } = require("@discordjs/voice");
 const sqlite3 = require("better-sqlite3");
+
+const masterqueue = new sqlite3("./queue.db");
+let timerId = undefined;
+
 module.exports = {
   name: "music",
   description: "Music control",
   aliases: ["m"],
   async execute(message, args) {
-    let queue = new sqlite3("./queue.db");
-    let id = message.guild.id;
+    const id = message.guild.id;
     let url = "";
     let player = undefined;
     let allowedLinks = [
@@ -24,11 +28,27 @@ module.exports = {
       "https://soundcloud.com",
     ];
     let channel = message.member.voice.channel;
+    let timer = 30000;
+
+    async function setupQueue(url) {
+      masterqueue
+        .prepare(`INSERT INTO guild_${id} VALUES (?, ?)`)
+        .run(url, message.author.id);
+      if (masterqueue.prepare(`SELECT * FROM guild_${id}`).all().length === 1) {
+        playmusic(channel, url, 1, message.author.id);
+      } else {
+        message.channel.send("Added " + url + " to queue!");
+      }
+    }
+
     async function playmusic(channel, url, pos, author) {
       const connection = joinVoiceChannel({
         channelId: channel.id,
         guildId: channel.guild.id,
         adapterCreator: channel.guild.voiceAdapterCreator,
+        behaviors: {
+          noSubscriber: NoSubscriberBehavior.Pause
+        }
       });
       if (url.startsWith(allowedLinks[2])) {
         await play.getFreeClientID().then((clientID) =>
@@ -47,17 +67,24 @@ module.exports = {
       message.channel.send(`Now playing: ${url}\nRequested by <@!${author}>`);
       player.play(resource);
       connection.subscribe(player);
+      console.log(timerId);
+      if (timerId !== undefined) clearTimeout(timerId);
       player.on(AudioPlayerStatus.Idle, () => {
-        queue.prepare(`DELETE FROM guild_${id} WHERE rowid = ${pos}`).run();
+        masterqueue
+          .prepare(`DELETE FROM guild_${id} WHERE rowid = ${pos}`)
+          .run();
         pos++;
-        let track = queue
+        let track = masterqueue
           .prepare(`SELECT * FROM guild_${id} WHERE rowid = ${pos}`)
           .get();
         console.log(track);
         if (track || track != undefined) {
           playmusic(channel, track.track, pos, track.author);
         } else {
-          connection.destroy();
+          timerId = setTimeout(() => {
+            message.channel.send("No more tracks to play, disconnecting!");
+            connection.destroy();
+          }, timer);
         }
       });
     }
@@ -95,16 +122,7 @@ module.exports = {
             console.log(emoji.count);
             if (emoji.count > 1) {
               url = yt_info[choice].url;
-              queue
-                .prepare(`INSERT INTO guild_${id} VALUES (?, ?)`)
-                .run(url, message.author.id);
-              queue = queue.prepare(`SELECT * FROM guild_${id}`).all();
-              console.log(queue.length);
-              if (queue.length === 1) {
-                playmusic(channel, url, 1, message.author.id);
-              } else {
-                message.channel.send("Added " + url + " to queue!");
-              }
+              setupQueue(url);
             } else {
               choice++;
             }
@@ -133,22 +151,13 @@ module.exports = {
           message.delete().catch();
         }
         //Add to queue
-        queue
-          .prepare(`INSERT INTO guild_${id} VALUES (?, ?)`)
-          .run(url, message.author.id);
-        queue = queue.prepare(`SELECT * FROM guild_${id}`).all();
-        console.log(queue.length);
-        if (queue.length === 1) {
-          playmusic(channel, url, 1, message.author.id);
-        } else {
-          message.channel.send("Added " + url + " to queue!");
-        }
+        setupQueue(url);
         break;
       }
       case "stop": {
         const connection = getVoiceConnection(channel.guild.id);
         if (connection) connection.destroy();
-        queue.prepare(`DELETE FROM guild_${id}`).run();
+        masterqueue.prepare(`DELETE FROM guild_${id}`).run();
         message.channel.send("Stopped!");
         break;
       }
@@ -164,9 +173,8 @@ module.exports = {
         }
         break;
       case "queue": {
-        queue = queue.prepare(`SELECT * FROM guild_${id}`).all();
         let embed = new Discord.MessageEmbed();
-        queue.forEach((track) => {
+        masterqueue.prepare(`SELECT * FROM guild_${id}`).all().forEach((track) => {
           embed.addFields({
             name: track.track,
             value: `Requested by: <@!${track.author}>`,
@@ -179,15 +187,18 @@ module.exports = {
         break;
       }
       case "skip": {
-        queue.prepare(`DELETE FROM guild_${id} ORDER BY ROWID LIMIT 1`).run();
-        message.channel.send("Skipped!");
-        let track = queue
+        masterqueue
+          .prepare(`DELETE FROM guild_${id} ORDER BY ROWID LIMIT 1`)
+          .run();
+        let track = masterqueue
           .prepare(`SELECT * FROM guild_${id} ORDER BY ROWID LIMIT 1`)
           .get();
         console.log(track);
         if (track || track != undefined) {
+          message.channel.send("Skipped!");
           playmusic(channel, track.track, track.rowid, track.author);
         } else {
+          message.channel.send("No more tracks to play, disconnecting!");
           const connection = getVoiceConnection(channel.guild.id);
           if (connection) connection.destroy();
         }

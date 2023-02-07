@@ -14,12 +14,6 @@ module.exports = {
       .setColor("#0099ff")
       .setTitle("Hi, I'm DoppelBot! :heart:")
       .addField(
-        "How to use",
-        "If you need a random picture of Doppelganger Arle, I can help you with that. Use " +
-          prefix +
-          "doppel to start the magic."
-      )
-      .addField(
         "Music commands",
         "All music commands start with " +
           prefix +

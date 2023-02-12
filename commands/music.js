@@ -11,6 +11,7 @@ const {
 } = require("@discordjs/voice");
 const sqlite3 = require("better-sqlite3");
 
+const settings = new sqlite3("./settings.db");
 const masterqueue = new sqlite3("./queue.db");
 let timerId = undefined;
 let isPaused = false;
@@ -20,7 +21,6 @@ let allowedLinks = [
   "https://youtu.be",
   "https://soundcloud.com",
 ];
-let timer = 30000;
 
 module.exports = {
   name: "music",
@@ -84,7 +84,7 @@ module.exports = {
           timerId = setTimeout(() => {
             message.channel.send("No more tracks to play, disconnecting!");
             connection.destroy();
-          }, timer);
+          }, parseInt(settings.prepare(`SELECT * FROM guild_${id} WHERE option = 'disconnect_timeout'`).get().value) * 1000);
         }
       });
     }
@@ -138,7 +138,7 @@ module.exports = {
       return message.reply("You must be in a voice channel!");
     }
     switch (args[0]) {
-      case "play": 
+      case "play":
       case "p": {
         if (!args[1]) {
           return message.reply("Provide a valid link!");
@@ -173,7 +173,7 @@ module.exports = {
           sendEmbed(yt_info);
         }
         break;
-      case "queue": 
+      case "queue":
       case "q": {
         let embed = new Discord.MessageEmbed();
         masterqueue
@@ -191,7 +191,7 @@ module.exports = {
         message.channel.send({ embeds: [embed] });
         break;
       }
-      case "skip": 
+      case "skip":
       case "s": {
         masterqueue
           .prepare(`DELETE FROM guild_${id} ORDER BY ROWID LIMIT 1`)

@@ -110,6 +110,9 @@ function createConfig(id) {
   settings
     .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
     .run("notifications", "false");
+  settings
+    .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
+    .run("disconnect_timeout", "30");  
   queue
     .prepare(`CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT, author TEXT)`)
     .run();
@@ -130,7 +133,7 @@ client.on("ready", () => {
   console.log("I am ready!");
   let job = new cron.CronJob("00 00 * * * *", gamecycle);
   job.start();
-  let permcheck = new cron.CronJob("00 00 * * * *", CheckForPerms);
+  let permcheck = new cron.CronJob("00 00 */8 * * *", CheckForPerms);
   permcheck.start();
   client.guilds.cache.forEach((guild) => {
     createConfig(guild.id);

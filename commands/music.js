@@ -13,6 +13,14 @@ const sqlite3 = require("better-sqlite3");
 
 const masterqueue = new sqlite3("./queue.db");
 let timerId = undefined;
+let isPaused = false;
+let player = undefined;
+let allowedLinks = [
+  "https://www.youtube.com",
+  "https://youtu.be",
+  "https://soundcloud.com",
+];
+let timer = 30000;
 
 module.exports = {
   name: "music",
@@ -21,14 +29,7 @@ module.exports = {
   async execute(message, args) {
     const id = message.guild.id;
     let url = "";
-    let player = undefined;
-    let allowedLinks = [
-      "https://www.youtube.com",
-      "https://youtu.be",
-      "https://soundcloud.com",
-    ];
     let channel = message.member.voice.channel;
-    let timer = 30000;
 
     async function setupQueue(url) {
       masterqueue
@@ -137,7 +138,8 @@ module.exports = {
       return message.reply("You must be in a voice channel!");
     }
     switch (args[0]) {
-      case "play": {
+      case "play": 
+      case "p": {
         if (!args[1]) {
           return message.reply("Provide a valid link!");
         }
@@ -171,7 +173,8 @@ module.exports = {
           sendEmbed(yt_info);
         }
         break;
-      case "queue": {
+      case "queue": 
+      case "q": {
         let embed = new Discord.MessageEmbed();
         masterqueue
           .prepare(`SELECT * FROM guild_${id}`)
@@ -188,7 +191,8 @@ module.exports = {
         message.channel.send({ embeds: [embed] });
         break;
       }
-      case "skip": {
+      case "skip": 
+      case "s": {
         masterqueue
           .prepare(`DELETE FROM guild_${id} ORDER BY ROWID LIMIT 1`)
           .run();
@@ -205,6 +209,20 @@ module.exports = {
           if (connection) connection.destroy();
         }
         break;
+      }
+      case "pause": {
+        switch (isPaused) {
+          case true: {
+            player.unpause();
+            isPaused = false;
+            return message.channel.send("Unpaused!");
+          }
+          case false: {
+            player.pause();
+            isPaused = true;
+            return message.channel.send("Paused!");
+          }
+        }
       }
     }
   },

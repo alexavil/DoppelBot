@@ -20,6 +20,7 @@ module.exports = {
           "music.\n" +
           "play - play music\n" +
           "search - search for music\n" +
+          "pause - pause the current track\n" +
           "stop - stop playing\n" +
           "queue - view the current queue\n" +
           "skip - skip the current track."

@@ -109,7 +109,7 @@ function createConfig(id) {
     .run("prefix", "d!");
   settings
     .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
-    .run("notifications", "true");
+    .run("notifications", "false");
   queue
     .prepare(`CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT, author TEXT)`)
     .run();
@@ -137,7 +137,6 @@ client.on("ready", () => {
     clearQueue(guild.id);
   });
   gamecycle();
-  //CheckForPerms();
 });
 
 client.on("guildCreate", (guild) => {

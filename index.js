@@ -37,7 +37,6 @@ for (const file of commandFiles) {
 const settings = new sqlite3("./settings.db");
 const queue = new sqlite3("./queue.db");
 
-
 const RequiredPerms = [
   [Permissions.FLAGS.VIEW_CHANNEL, "View Channels"],
   [Permissions.FLAGS.READ_MESSAGE_HISTORY, "Read Message History"],
@@ -48,11 +47,10 @@ const RequiredPerms = [
   [Permissions.FLAGS.ADD_REACTIONS, "Add Reactions"],
 ];
 
-
 let activities = undefined;
 
-if (fs.existsSync("./activities.json"))  {
-  activities = fs.readJSONSync("./activities.json")
+if (fs.existsSync("./activities.json")) {
+  activities = fs.readJSONSync("./activities.json");
 }
 
 function CheckForPerms() {
@@ -102,7 +100,7 @@ function CheckForPerms() {
 }
 
 function clearQueue(id) {
-    queue.prepare(`DELETE FROM guild_${id}`).run();
+  queue.prepare(`DELETE FROM guild_${id}`).run();
 }
 
 function createConfig(id) {
@@ -119,7 +117,7 @@ function createConfig(id) {
     .run("notifications", "false");
   settings
     .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
-    .run("disconnect_timeout", "30");  
+    .run("disconnect_timeout", "30");
   queue
     .prepare(`CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT, author TEXT)`)
     .run();

@@ -1,4 +1,4 @@
-const fs = require("fs");
+const fs = require("fs-extra");
 const Discord = require("discord.js");
 const cron = require("cron");
 const token = process.env.TOKEN || process.argv[2];
@@ -34,9 +34,9 @@ for (const file of commandFiles) {
   client.commands.set(command.name, command);
 }
 
-const responses = JSON.parse(fs.readFileSync("./responses.json"));
 const settings = new sqlite3("./settings.db");
 const queue = new sqlite3("./queue.db");
+
 
 const RequiredPerms = [
   [Permissions.FLAGS.VIEW_CHANNEL, "View Channels"],
@@ -47,6 +47,13 @@ const RequiredPerms = [
   [Permissions.FLAGS.SPEAK, "Speak"],
   [Permissions.FLAGS.ADD_REACTIONS, "Add Reactions"],
 ];
+
+
+let activities = undefined;
+
+if (fs.existsSync("./activities.json"))  {
+  activities = fs.readJSONSync("./activities.json")
+}
 
 function CheckForPerms() {
   console.log("Checking permissions...");
@@ -124,22 +131,24 @@ function deleteConfig(id) {
 }
 
 function gamecycle() {
-  let games = responses.games;
+  let games = activities.games;
   let gamestring = Math.floor(Math.random() * games.length);
   client.user.setActivity(games[gamestring]);
 }
 
 client.on("ready", () => {
   console.log("I am ready!");
-  let job = new cron.CronJob("00 00 * * * *", gamecycle);
-  job.start();
   let permcheck = new cron.CronJob("00 00 */8 * * *", CheckForPerms);
   permcheck.start();
   client.guilds.cache.forEach((guild) => {
     createConfig(guild.id);
     clearQueue(guild.id);
   });
-  gamecycle();
+  if (activities !== undefined) {
+    let job = new cron.CronJob("00 00 * * * *", gamecycle);
+    job.start();
+    gamecycle();
+  }
 });
 
 client.on("guildCreate", (guild) => {

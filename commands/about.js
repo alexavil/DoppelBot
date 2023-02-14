@@ -18,9 +18,10 @@ module.exports = {
     const help = new Discord.MessageEmbed()
       .setColor("#0099ff")
       .setTitle("Hi, I'm DoppelBot! :heart:")
-      .addField(
-        "Music commands",
-        "All music commands start with " +
+      .addFields({
+        name: "Music commands",
+        value:
+          "All music commands start with " +
           prefix +
           "music.\n" +
           "play - play music\n" +
@@ -28,9 +29,9 @@ module.exports = {
           "pause - pause the current track\n" +
           "stop - stop playing\n" +
           "queue - view the current queue\n" +
-          "skip - skip the current track."
-      )
-      .setFooter(`Build: ${version}`);
+          "skip - skip the current track.",
+      })
+      .setFooter({ text: `Build: ${version}` });
     message.channel.send({ embeds: [help] });
   },
 };

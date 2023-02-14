@@ -10,21 +10,24 @@ module.exports = {
     const settingsembed = new Discord.MessageEmbed()
       .setColor("#0099ff")
       .setTitle("Server Settings for " + message.guild.name)
-      .addField(
-        "**Service Notifications**",
-        settings
-          .prepare(`SELECT * FROM guild_${id} WHERE option = 'notifications'`)
-          .get().value
-      )
-      .addField(
-        "**Disconnect Timeout**",
-        parseInt(
-          settings
-            .prepare(
-              `SELECT * FROM guild_${id} WHERE option = 'disconnect_timeout'`
-            )
-            .get().value
-        ) + " seconds"
+      .addFields(
+        {
+          name: "**Service Notifications**",
+          value: settings
+            .prepare(`SELECT * FROM guild_${id} WHERE option = 'notifications'`)
+            .get().value,
+        },
+        {
+          name: "**Disconnect Timeout**",
+          value:
+            parseInt(
+              settings
+                .prepare(
+                  `SELECT * FROM guild_${id} WHERE option = 'disconnect_timeout'`
+                )
+                .get().value
+            ) + " seconds",
+        }
       );
     message.channel.send({ embeds: [settingsembed] });
   },

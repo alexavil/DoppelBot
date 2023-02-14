@@ -4,6 +4,7 @@ const cron = require("cron");
 const token = process.env.TOKEN || process.argv[2];
 const sqlite3 = require("better-sqlite3");
 const { Permissions, Intents } = require("discord.js");
+const child = require("child_process");
 
 const client = new Discord.Client({
   intents: [
@@ -103,6 +104,30 @@ function clearQueue(id) {
   queue.prepare(`DELETE FROM guild_${id}`).run();
 }
 
+function prepareGlobalSettings() {
+  settings
+  .prepare(
+    `CREATE TABLE IF NOT EXISTS global_settings (option TEXT UNIQUE, value TEXT)`
+  )
+  .run();
+settings
+  .prepare(
+    "insert or ignore into global_settings (option, value) values ('current_version', '')"
+  )
+  .run();
+  child.exec("git fetch -q && git ls-remote --heads --quiet", (err, stdout, stderr) => {
+    if (err) {
+      console.log(err);
+    } else {
+      settings
+        .prepare(
+          "update global_settings set value = ? where option = 'current_version'"
+        )
+        .run(stdout.toString().substring(0, 7));
+    }
+  });
+}
+
 function createConfig(id) {
   settings
     .prepare(
@@ -135,6 +160,7 @@ function gamecycle() {
 }
 
 client.on("ready", () => {
+  prepareGlobalSettings();
   console.log("I am ready!");
   let permcheck = new cron.CronJob("00 00 */8 * * *", CheckForPerms);
   permcheck.start();

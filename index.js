@@ -106,26 +106,29 @@ function clearQueue(id) {
 
 function prepareGlobalSettings() {
   settings
-  .prepare(
-    `CREATE TABLE IF NOT EXISTS global_settings (option TEXT UNIQUE, value TEXT)`
-  )
-  .run();
-settings
-  .prepare(
-    "insert or ignore into global_settings (option, value) values ('current_version', '')"
-  )
-  .run();
-  child.exec("git fetch -q && git ls-remote --heads --quiet", (err, stdout, stderr) => {
-    if (err) {
-      console.log(err);
-    } else {
-      settings
-        .prepare(
-          "update global_settings set value = ? where option = 'current_version'"
-        )
-        .run(stdout.toString().substring(0, 7));
+    .prepare(
+      `CREATE TABLE IF NOT EXISTS global_settings (option TEXT UNIQUE, value TEXT)`
+    )
+    .run();
+  settings
+    .prepare(
+      "insert or ignore into global_settings (option, value) values ('current_version', '')"
+    )
+    .run();
+  child.exec(
+    "git fetch -q && git ls-remote --heads --quiet",
+    (err, stdout, stderr) => {
+      if (err) {
+        console.log(err);
+      } else {
+        settings
+          .prepare(
+            "update global_settings set value = ? where option = 'current_version'"
+          )
+          .run(stdout.toString().substring(0, 7));
+      }
     }
-  });
+  );
 }
 
 function createConfig(id) {

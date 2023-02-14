@@ -11,8 +11,10 @@ module.exports = {
       .prepare(`SELECT value FROM guild_${id} WHERE option = 'prefix'`)
       .get().value;
     let version = settings
-      .prepare(`SELECT value FROM global_settings WHERE option = 'current_version'`)
-      .get().value;  
+      .prepare(
+        `SELECT value FROM global_settings WHERE option = 'current_version'`
+      )
+      .get().value;
     const help = new Discord.MessageEmbed()
       .setColor("#0099ff")
       .setTitle("Hi, I'm DoppelBot! :heart:")
@@ -28,7 +30,7 @@ module.exports = {
           "queue - view the current queue\n" +
           "skip - skip the current track."
       )
-      .setFooter(`Build: ${version}`)
+      .setFooter(`Build: ${version}`);
     message.channel.send({ embeds: [help] });
   },
 };

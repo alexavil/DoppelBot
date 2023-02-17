@@ -1,6 +1,6 @@
 const Discord = require("discord.js");
 const sqlite3 = require("better-sqlite3");
-const settings = new sqlite3("./settings.db");
+const settings = new sqlite3("./data/settings.db");
 module.exports = {
   name: "settings",
   description: "Show server settings",

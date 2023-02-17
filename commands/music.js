@@ -11,8 +11,8 @@ const {
 } = require("@discordjs/voice");
 const sqlite3 = require("better-sqlite3");
 
-const settings = new sqlite3("./settings.db");
-const masterqueue = new sqlite3("./queue.db");
+const settings = new sqlite3("./data/settings.db");
+const masterqueue = new sqlite3("./data/queue.db");
 let timerId = undefined;
 let isPaused = false;
 let player = undefined;

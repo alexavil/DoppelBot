@@ -1,9 +1,10 @@
-const fs = require("fs");
+const fs = require("fs-extra");
 const Discord = require("discord.js");
 const cron = require("cron");
 const token = process.env.TOKEN || process.argv[2];
 const sqlite3 = require("better-sqlite3");
 const { Permissions, Intents } = require("discord.js");
+const child = require("child_process");
 
 const client = new Discord.Client({
   intents: [
@@ -34,7 +35,6 @@ for (const file of commandFiles) {
   client.commands.set(command.name, command);
 }
 
-const responses = JSON.parse(fs.readFileSync("./responses.json"));
 const settings = new sqlite3("./settings.db");
 const queue = new sqlite3("./queue.db");
 
@@ -47,6 +47,12 @@ const RequiredPerms = [
   [Permissions.FLAGS.SPEAK, "Speak"],
   [Permissions.FLAGS.ADD_REACTIONS, "Add Reactions"],
 ];
+
+let activities = undefined;
+
+if (fs.existsSync("./activities.json")) {
+  activities = fs.readJSONSync("./activities.json");
+}
 
 function CheckForPerms() {
   console.log("Checking permissions...");
@@ -95,7 +101,34 @@ function CheckForPerms() {
 }
 
 function clearQueue(id) {
-    queue.prepare(`DELETE FROM guild_${id}`).run();
+  queue.prepare(`DELETE FROM guild_${id}`).run();
+}
+
+function prepareGlobalSettings() {
+  settings
+    .prepare(
+      `CREATE TABLE IF NOT EXISTS global_settings (option TEXT UNIQUE, value TEXT)`
+    )
+    .run();
+  settings
+    .prepare(
+      "insert or ignore into global_settings (option, value) values ('current_version', '')"
+    )
+    .run();
+  child.exec(
+    "git fetch -q && git ls-remote --heads --quiet",
+    (err, stdout, stderr) => {
+      if (err) {
+        console.log(err);
+      } else {
+        settings
+          .prepare(
+            "update global_settings set value = ? where option = 'current_version'"
+          )
+          .run(stdout.toString().substring(0, 7));
+      }
+    }
+  );
 }
 
 function createConfig(id) {
@@ -112,7 +145,7 @@ function createConfig(id) {
     .run("notifications", "false");
   settings
     .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
-    .run("disconnect_timeout", "30");  
+    .run("disconnect_timeout", "30");
   queue
     .prepare(`CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT, author TEXT)`)
     .run();
@@ -124,22 +157,25 @@ function deleteConfig(id) {
 }
 
 function gamecycle() {
-  let games = responses.games;
+  let games = activities.games;
   let gamestring = Math.floor(Math.random() * games.length);
   client.user.setActivity(games[gamestring]);
 }
 
 client.on("ready", () => {
+  prepareGlobalSettings();
   console.log("I am ready!");
-  let job = new cron.CronJob("00 00 * * * *", gamecycle);
-  job.start();
   let permcheck = new cron.CronJob("00 00 */8 * * *", CheckForPerms);
   permcheck.start();
   client.guilds.cache.forEach((guild) => {
     createConfig(guild.id);
     clearQueue(guild.id);
   });
-  gamecycle();
+  if (activities !== undefined) {
+    let job = new cron.CronJob("00 00 * * * *", gamecycle);
+    job.start();
+    gamecycle();
+  }
 });
 
 client.on("guildCreate", (guild) => {

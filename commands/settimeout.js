@@ -9,10 +9,14 @@ module.exports = {
     let settings = new sqlite3("./settings.db");
     if (!args.length) {
       let timer = settings
-        .prepare(`SELECT * FROM guild_${id} WHERE option = 'disconnect_timeout'`)
+        .prepare(
+          `SELECT * FROM guild_${id} WHERE option = 'disconnect_timeout'`
+        )
         .get().value;
       return message.reply(
-        "The bot will disconnect after " + timer + " seconds if there's no activity in VC."
+        "The bot will disconnect after " +
+          timer +
+          " seconds if there's no activity in VC."
       );
     }
     if (!Number.isInteger(parseInt(args[0])))
@@ -20,6 +24,10 @@ module.exports = {
     settings
       .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
       .run(args[0], "disconnect_timeout");
-    return message.reply("The bot will disconnect after " + args[0] + " seconds if there's no activity in VC.");
+    return message.reply(
+      "The bot will disconnect after " +
+        args[0] +
+        " seconds if there's no activity in VC."
+    );
   },
 };

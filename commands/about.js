@@ -12,7 +12,7 @@ module.exports = {
       .get().value;
     let version = settings
       .prepare(
-        `SELECT value FROM global_settings WHERE option = 'current_version'`
+        `SELECT value FROM global WHERE option = 'current_version'`
       )
       .get().value;
     const help = new Discord.MessageEmbed()

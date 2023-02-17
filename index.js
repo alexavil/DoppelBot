@@ -108,12 +108,17 @@ function clearQueue(id) {
 function prepareGlobalSettings() {
   settings
     .prepare(
-      `CREATE TABLE IF NOT EXISTS global_settings (option TEXT UNIQUE, value TEXT)`
+      `CREATE TABLE IF NOT EXISTS global (option TEXT UNIQUE, value TEXT)`
     )
     .run();
+  tags
+    .prepare(
+      `CREATE TABLE IF NOT EXISTS global (tag TEXT UNIQUE, response TEXT)`
+    )
+    .run();  
   settings
     .prepare(
-      "insert or ignore into global_settings (option, value) values ('current_version', '')"
+      "insert or ignore into global (option, value) values ('current_version', '')"
     )
     .run();
   child.exec(
@@ -124,7 +129,7 @@ function prepareGlobalSettings() {
       } else {
         settings
           .prepare(
-            "update global_settings set value = ? where option = 'current_version'"
+            "update global set value = ? where option = 'current_version'"
           )
           .run(stdout.toString().substring(0, 7));
       }
@@ -150,6 +155,9 @@ function createConfig(id) {
   queue
     .prepare(`CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT, author TEXT)`)
     .run();
+  tags
+    .prepare(`CREATE TABLE IF NOT EXISTS guild_${id} (tag TEXT, response TEXT)`)
+    .run();  
 }
 
 function deleteConfig(id) {

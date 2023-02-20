@@ -1,6 +1,7 @@
 const sqlite3 = require("better-sqlite3");
 const Discord = require("discord.js");
 
+const settings = new sqlite3("./data/settings.db");
 const tags = new sqlite3("./data/tags.db");
 
 module.exports = {
@@ -16,6 +17,9 @@ module.exports = {
     switch (args[0]) {
       case "create":
       case "c": {
+        settings
+          .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
+          .run("wizard", "state");
         let keyword = undefined;
         let response = undefined;
         const filter = (m) => m.author.id == message.author.id;
@@ -30,16 +34,38 @@ module.exports = {
         keyword_collector.on("collect", (m) => {
           switch (m.content) {
             case "cancel":
+              settings
+                .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
+                .run("commands", "state");
               return message.channel.send("Cancelled!");
             default:
+              if (
+                m.content.startsWith(
+                  settings
+                    .prepare(
+                      `SELECT * FROM guild_${id} WHERE option = 'prefix'`
+                    )
+                    .get().value
+                ) ||
+                (m.content.startsWith("<@") && m.content.endsWith(">"))
+              )
+                settings
+                  .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
+                  .run("commands", "state");
+              return message.channel.send(
+                "Tags can't start with a prefix or mention!"
+              );
               keyword = m.content;
               let tag = tags
                 .prepare(`SELECT * FROM guild_${id} WHERE tag = ?`)
                 .get(keyword);
               if (tag !== undefined)
-                return message.channel.send(
-                  "A tag with that key word already exists!"
-                );
+                settings
+                  .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
+                  .run("commands", "state");
+              return message.channel.send(
+                "A tag with that key word already exists!"
+              );
               message.channel.send(
                 "Please provide the response or type `cancel` to cancel."
               );
@@ -50,6 +76,11 @@ module.exports = {
               response_collector.on("collect", (m) => {
                 switch (m.content) {
                   case "cancel":
+                    settings
+                      .prepare(
+                        `UPDATE guild_${id} SET value = ? WHERE option = ?`
+                      )
+                      .run("commands", "state");
                     return message.channel.send("Cancelled!");
                   default:
                     response = m.content;
@@ -58,11 +89,17 @@ module.exports = {
                         `INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`
                       )
                       .run(keyword, response);
+                    settings
+                      .prepare(
+                        `UPDATE guild_${id} SET value = ? WHERE option = ?`
+                      )
+                      .run("commands", "state");
                     return message.channel.send("Tag created successfully!");
                 }
               });
           }
         });
+        break;
       }
 
       case "delete":

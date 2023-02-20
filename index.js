@@ -154,7 +154,7 @@ function createConfig(id) {
     .run("disconnect_timeout", "30");
   settings
     .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
-    .run("state", "commands");  
+    .run("state", "commands");
   queue
     .prepare(`CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT, author TEXT)`)
     .run();
@@ -183,6 +183,9 @@ client.on("ready", () => {
   client.guilds.cache.forEach((guild) => {
     createConfig(guild.id);
     clearQueue(guild.id);
+    settings
+      .prepare(`UPDATE guild_${guild.id} SET value = ? WHERE option = ?`)
+      .run("commands", "state");
   });
   if (activities !== undefined) {
     let job = new cron.CronJob("00 00 * * * *", gamecycle);
@@ -256,7 +259,11 @@ client.on("messageCreate", (message) => {
   }
 
   try {
-    command.execute(message, args);
+    if (
+      settings.prepare(`SELECT * FROM guild_${id} WHERE option = 'state'`).get()
+        .value === "commands"
+    )
+      command.execute(message, args);
   } catch (error) {
     console.error(error);
     console.log(error.code);

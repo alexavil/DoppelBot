@@ -213,6 +213,16 @@ client.on("messageCreate", (message) => {
   if (!message.guild) return false;
   let id = message.guild.id;
 
+  let responses = tags
+  .prepare(`SELECT * FROM guild_${id}`)
+  .all();
+  
+  console.log(responses);
+  
+  responses.forEach(response => {
+    if (!message.author.bot && message.content == response.tag) message.channel.send(response.response);
+  })
+
   const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
   let prefix = settings
@@ -246,7 +256,7 @@ client.on("messageCreate", (message) => {
   }
 
   try {
-    command.execute(message, args, client, queue);
+    command.execute(message, args);
   } catch (error) {
     console.error(error);
     console.log(error.code);

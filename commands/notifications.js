@@ -5,7 +5,7 @@ module.exports = {
   description: "Set notifications for your server",
   execute(message, args) {
     let id = message.guild.id;
-    let settings = new sqlite3("./settings.db");
+    let settings = new sqlite3("./data/settings.db");
     if (message.author.id !== message.guild.ownerId) return false;
     if (!args.length) {
       let value = settings

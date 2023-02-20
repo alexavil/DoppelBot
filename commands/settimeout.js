@@ -6,7 +6,7 @@ module.exports = {
   userpermissions: "BAN_MEMBERS",
   execute(message, args) {
     let id = message.guild.id;
-    let settings = new sqlite3("./settings.db");
+    let settings = new sqlite3("./data/settings.db");
     if (!args.length) {
       let timer = settings
         .prepare(

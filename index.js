@@ -39,6 +39,7 @@ const settings = new sqlite3("./data/settings.db");
 const queue = new sqlite3("./data/queue.db");
 const tags = new sqlite3("./data/tags.db");
 
+
 const RequiredPerms = [
   [Permissions.FLAGS.VIEW_CHANNEL, "View Channels"],
   [Permissions.FLAGS.READ_MESSAGE_HISTORY, "Read Message History"],

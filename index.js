@@ -56,6 +56,15 @@ if (fs.existsSync("./activities.json")) {
   activities = fs.readJSONSync("./activities.json");
 }
 
+const Sentry = require("@sentry/node");
+
+function initSentry() {
+  Sentry.init({
+      dsn: "https://546220d2015b4064a1c2363c6c6089f2@o4504711913340928.ingest.sentry.io/4504712612872192",
+      tracesSampleRate: 1.0,
+  })
+}
+
 function CheckForPerms() {
   console.log("Checking permissions...");
   client.guilds.cache.forEach((guild) => {
@@ -179,6 +188,7 @@ function gamecycle() {
 client.on("ready", () => {
   prepareGlobalSettings();
   console.log("I am ready!");
+  initSentry();
   let permcheck = new cron.CronJob("00 00 */8 * * *", CheckForPerms);
   permcheck.start();
   client.guilds.cache.forEach((guild) => {
@@ -271,6 +281,7 @@ client.on("messageCreate", (message) => {
     )
       command.execute(message, args);
   } catch (error) {
+    Sentry.captureException(error);
     console.error(error);
     console.log(error.code);
     if (error.code === Discord.Constants.APIErrors.MISSING_PERMISSIONS) {
@@ -282,6 +293,7 @@ client.on("messageCreate", (message) => {
 });
 
 process.on("unhandledRejection", (error) => {
+  Sentry.captureException(error);
   console.error("Error:", error);
 });
 

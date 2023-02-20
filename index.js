@@ -152,6 +152,9 @@ function createConfig(id) {
   settings
     .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
     .run("disconnect_timeout", "30");
+  settings
+    .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
+    .run("state", "commands");  
   queue
     .prepare(`CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT, author TEXT)`)
     .run();

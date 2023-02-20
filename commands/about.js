@@ -5,14 +5,14 @@ module.exports = {
   aliases: ["help"],
   description: "About the bot",
   execute(message) {
-    const settings = new sqlite3("./settings.db");
+    const settings = new sqlite3("./data/settings.db");
     let id = message.guild.id;
     let prefix = settings
       .prepare(`SELECT value FROM guild_${id} WHERE option = 'prefix'`)
       .get().value;
     let version = settings
       .prepare(
-        `SELECT value FROM global_settings WHERE option = 'current_version'`
+        `SELECT value FROM global WHERE option = 'current_version'`
       )
       .get().value;
     const help = new Discord.MessageEmbed()

@@ -35,8 +35,10 @@ for (const file of commandFiles) {
   client.commands.set(command.name, command);
 }
 
-const settings = new sqlite3("./settings.db");
-const queue = new sqlite3("./queue.db");
+const settings = new sqlite3("./data/settings.db");
+const queue = new sqlite3("./data/queue.db");
+const tags = new sqlite3("./data/tags.db");
+
 
 const RequiredPerms = [
   [Permissions.FLAGS.VIEW_CHANNEL, "View Channels"],
@@ -107,12 +109,17 @@ function clearQueue(id) {
 function prepareGlobalSettings() {
   settings
     .prepare(
-      `CREATE TABLE IF NOT EXISTS global_settings (option TEXT UNIQUE, value TEXT)`
+      `CREATE TABLE IF NOT EXISTS global (option TEXT UNIQUE, value TEXT)`
+    )
+    .run();
+  tags
+    .prepare(
+      `CREATE TABLE IF NOT EXISTS global (tag TEXT UNIQUE, response TEXT)`
     )
     .run();
   settings
     .prepare(
-      "insert or ignore into global_settings (option, value) values ('current_version', '')"
+      "insert or ignore into global (option, value) values ('current_version', '')"
     )
     .run();
   child.exec(
@@ -123,7 +130,7 @@ function prepareGlobalSettings() {
       } else {
         settings
           .prepare(
-            "update global_settings set value = ? where option = 'current_version'"
+            "update global set value = ? where option = 'current_version'"
           )
           .run(stdout.toString().substring(0, 7));
       }
@@ -146,14 +153,21 @@ function createConfig(id) {
   settings
     .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
     .run("disconnect_timeout", "30");
+  settings
+    .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
+    .run("state", "commands");
   queue
     .prepare(`CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT, author TEXT)`)
+    .run();
+  tags
+    .prepare(`CREATE TABLE IF NOT EXISTS guild_${id} (tag TEXT, response TEXT)`)
     .run();
 }
 
 function deleteConfig(id) {
   settings.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
   queue.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
+  tags.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
 }
 
 function gamecycle() {
@@ -170,6 +184,9 @@ client.on("ready", () => {
   client.guilds.cache.forEach((guild) => {
     createConfig(guild.id);
     clearQueue(guild.id);
+    settings
+      .prepare(`UPDATE guild_${guild.id} SET value = ? WHERE option = ?`)
+      .run("commands", "state");
   });
   if (activities !== undefined) {
     let job = new cron.CronJob("00 00 * * * *", gamecycle);
@@ -202,6 +219,18 @@ client.on("interactionCreate", (interaction) => {
 client.on("messageCreate", (message) => {
   if (!message.guild) return false;
   let id = message.guild.id;
+
+  let responses = tags.prepare(`SELECT * FROM guild_${id}`).all();
+
+  responses.forEach((response) => {
+    if (
+      !message.author.bot &&
+      message.content == response.tag &&
+      settings.prepare(`SELECT * FROM guild_${id} WHERE option = 'state'`).get()
+        .value === "commands"
+    )
+      message.channel.send(response.response);
+  });
 
   const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -236,7 +265,11 @@ client.on("messageCreate", (message) => {
   }
 
   try {
-    command.execute(message, args, client, queue);
+    if (
+      settings.prepare(`SELECT * FROM guild_${id} WHERE option = 'state'`).get()
+        .value === "commands"
+    )
+      command.execute(message, args);
   } catch (error) {
     console.error(error);
     console.log(error.code);

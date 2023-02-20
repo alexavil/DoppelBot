@@ -8,6 +8,7 @@ module.exports = {
   name: "tags",
   description: "Tags control",
   aliases: ["t"],
+  userpermissions: "BAN_MEMBERS",
   async execute(message, args) {
     const id = message.guild.id;
     if (args.length === 0) {

@@ -115,7 +115,7 @@ function prepareGlobalSettings() {
     .prepare(
       `CREATE TABLE IF NOT EXISTS global (tag TEXT UNIQUE, response TEXT)`
     )
-    .run();  
+    .run();
   settings
     .prepare(
       "insert or ignore into global (option, value) values ('current_version', '')"
@@ -157,7 +157,7 @@ function createConfig(id) {
     .run();
   tags
     .prepare(`CREATE TABLE IF NOT EXISTS guild_${id} (tag TEXT, response TEXT)`)
-    .run();  
+    .run();
 }
 
 function deleteConfig(id) {
@@ -213,15 +213,12 @@ client.on("messageCreate", (message) => {
   if (!message.guild) return false;
   let id = message.guild.id;
 
-  let responses = tags
-  .prepare(`SELECT * FROM guild_${id}`)
-  .all();
-  
-  console.log(responses);
-  
-  responses.forEach(response => {
-    if (!message.author.bot && message.content == response.tag) message.channel.send(response.response);
-  })
+  let responses = tags.prepare(`SELECT * FROM guild_${id}`).all();
+
+  responses.forEach((response) => {
+    if (!message.author.bot && message.content == response.tag)
+      message.channel.send(response.response);
+  });
 
   const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 

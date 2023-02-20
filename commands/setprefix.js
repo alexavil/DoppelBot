@@ -8,12 +8,7 @@ module.exports = {
     let id = message.guild.id;
     let settings = new sqlite3("./data/settings.db");
     if (!args.length) {
-      let prefix = settings
-        .prepare(`SELECT * FROM guild_${id} WHERE option = 'prefix'`)
-        .get().value;
-      return message.reply(
-        "Current prefix: `" + prefix + "`.\nYou can mention the bot as well!"
-      );
+      return message.reply("Invalid prefix!");
     }
     if (args[0].startsWith("<@") && args[0].endsWith(">"))
       return message.reply("Invalid prefix!");

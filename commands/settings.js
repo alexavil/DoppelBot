@@ -27,6 +27,12 @@ module.exports = {
                 )
                 .get().value
             ) + " seconds",
+        },
+        {
+          name: "**Guild Prefix**",
+          value: settings
+            .prepare(`SELECT * FROM guild_${id} WHERE option = 'prefix'`)
+            .get().value,
         }
       );
     message.channel.send({ embeds: [settingsembed] });

@@ -163,6 +163,7 @@ function createConfig(id) {
 function deleteConfig(id) {
   settings.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
   queue.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
+  tags.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
 }
 
 function gamecycle() {

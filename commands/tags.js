@@ -48,13 +48,14 @@ module.exports = {
                     .get().value
                 ) ||
                 (m.content.startsWith("<@") && m.content.endsWith(">"))
-              )
+              ) {
                 settings
                   .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
                   .run("commands", "state");
-              return message.channel.send(
-                "Tags can't start with a prefix or mention!"
-              );
+                return message.channel.send(
+                  "Tags can't start with a prefix or mention!"
+                );
+              }
               keyword = m.content;
               let tag = tags
                 .prepare(`SELECT * FROM guild_${id} WHERE tag = ?`)

@@ -222,7 +222,12 @@ client.on("messageCreate", (message) => {
   let responses = tags.prepare(`SELECT * FROM guild_${id}`).all();
 
   responses.forEach((response) => {
-    if (!message.author.bot && message.content == response.tag)
+    if (
+      !message.author.bot &&
+      message.content == response.tag &&
+      settings.prepare(`SELECT * FROM guild_${id} WHERE option = 'state'`).get()
+        .value === "commands"
+    )
       message.channel.send(response.response);
   });
 

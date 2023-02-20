@@ -60,13 +60,14 @@ module.exports = {
               let tag = tags
                 .prepare(`SELECT * FROM guild_${id} WHERE tag = ?`)
                 .get(keyword);
-              if (tag !== undefined)
+              if (tag !== undefined) {
                 settings
                   .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
                   .run("commands", "state");
-              return message.channel.send(
-                "A tag with that key word already exists!"
-              );
+                return message.channel.send(
+                  "A tag with that key word already exists!"
+                );
+              }
               message.channel.send(
                 "Please provide the response or type `cancel` to cancel."
               );

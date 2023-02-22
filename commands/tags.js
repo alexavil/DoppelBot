@@ -125,6 +125,10 @@ module.exports = {
         let tagsembed = new Discord.MessageEmbed().setTitle(
           `Tags for ${message.guild.name}`
         );
+        if (responses.length === 0) {
+          tagsembed.setDescription("This server has no active tags yet!");
+          return message.channel.send({ embeds: [tagsembed] });
+        }
         responses.forEach((response) => {
           tagsembed.addFields({
             name: `Key Phrase: ${response.tag}`,

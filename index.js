@@ -39,7 +39,6 @@ const settings = new sqlite3("./data/settings.db");
 const queue = new sqlite3("./data/queue.db");
 const tags = new sqlite3("./data/tags.db");
 
-
 const RequiredPerms = [
   [Permissions.FLAGS.VIEW_CHANNEL, "View Channels"],
   [Permissions.FLAGS.READ_MESSAGE_HISTORY, "Read Message History"],
@@ -60,9 +59,9 @@ const Sentry = require("@sentry/node");
 
 function initSentry() {
   Sentry.init({
-      dsn: "https://546220d2015b4064a1c2363c6c6089f2@o4504711913340928.ingest.sentry.io/4504712612872192",
-      tracesSampleRate: 1.0
-  })
+    dsn: "https://546220d2015b4064a1c2363c6c6089f2@o4504711913340928.ingest.sentry.io/4504712612872192",
+    tracesSampleRate: 1.0,
+  });
 }
 
 function CheckForPerms() {
@@ -278,8 +277,8 @@ client.on("messageCreate", (message) => {
     if (
       settings.prepare(`SELECT * FROM guild_${id} WHERE option = 'state'`).get()
         .value === "commands"
-    ) 
-      command.execute(message, args); 
+    )
+      command.execute(message, args);
   } catch (error) {
     if (error.code === Discord.Constants.APIErrors.MISSING_PERMISSIONS) {
       return message.reply(
@@ -301,6 +300,6 @@ process.on("unhandledRejection", (error) => {
 process.on("uncaughtException", (error) => {
   Sentry.captureException(error);
   console.error("Error:", error);
-})
+});
 
 client.login(token);

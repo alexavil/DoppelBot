@@ -1,9 +1,10 @@
 const Discord = require("discord.js");
 const sqlite3 = require("better-sqlite3");
 module.exports = {
-  name: "about",
-  aliases: ["help"],
+  name: "adminhelp",
+  aliases: ["ahelp"],
   description: "About the bot",
+  userpermissions: "BAN_MEMBERS",
   execute(message) {
     const settings = new sqlite3("./data/settings.db");
     let id = message.guild.id;
@@ -18,24 +19,30 @@ module.exports = {
       .setTitle("Hi, I'm DoppelBot! :heart:")
       .addFields(
         {
-          name: "Music commands",
+          name: "Service commands",
           value:
-            "All music commands start with `" +
+            "`" +
             prefix +
-            "music`.\n" +
-            "`play` - play music\n" +
-            "`search` - search for music\n" +
-            "`pause` - pause the current track\n" +
-            "`stop` - stop playing\n" +
-            "`queue` - view the current queue\n" +
-            "`skip` - skip the current track.",
+            "settings` - bring up the settings panel\n" +
+            "`" +
+            prefix +
+            "notifications` - toggle service notifications\n" +
+            "`" +
+            prefix +
+            "setprefix` - change the guild prefix\n" +
+            "`" +
+            prefix +
+            "settimeout` - set VC disconnect timeout (in seconds)",
         },
         {
           name: "Tags",
           value:
-            "Certain servers may use key phrases and give out a response! You can view all the tags with `" +
+            "All tags commands start with `" +
             prefix +
-            "tags list`.",
+            "tags`.\n" +
+            "`create` - create a tag\n" +
+            "`delete` - delete a tag\n" +
+            "`list` - see all tags.",
         }
       )
       .setFooter({ text: `Build: ${version}` });

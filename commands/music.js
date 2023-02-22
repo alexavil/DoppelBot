@@ -34,8 +34,8 @@ module.exports = {
     async function streamCheck(url) {
       let stream = undefined;
       try {
-        stream = await youtube.stream(url)
-      } catch(error) {
+        stream = await youtube.stream(url);
+      } catch (error) {
         if (error.message.includes("Sign in to confirm your age")) {
           message.channel.send("Error: The video is age-restricted.");
           return undefined;
@@ -94,7 +94,7 @@ module.exports = {
           .prepare(`SELECT * FROM guild_${id} ORDER BY ROWID LIMIT 1`)
           .get();
         console.log(track);
-        if ((track || track != undefined) && (stream === undefined)) {
+        if ((track || track != undefined) && stream === undefined) {
           playmusic(channel, track.track, track.author);
         } else {
           timerId = setTimeout(() => {

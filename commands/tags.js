@@ -17,7 +17,10 @@ module.exports = {
     switch (args[0]) {
       case "create":
       case "c": {
-        if (!message.channel.permissionsFor(message.author).has("BAN_MEMBERS")) return message.reply("You do not have permission to use this command!");
+        if (!message.channel.permissionsFor(message.author).has("BAN_MEMBERS"))
+          return message.reply(
+            "You do not have permission to use this command!"
+          );
         settings
           .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
           .run("wizard", "state");
@@ -107,7 +110,10 @@ module.exports = {
 
       case "delete":
       case "d": {
-        if (!message.channel.permissionsFor(message.author).has("BAN_MEMBERS")) return message.reply("You do not have permission to use this command!");
+        if (!message.channel.permissionsFor(message.author).has("BAN_MEMBERS"))
+          return message.reply(
+            "You do not have permission to use this command!"
+          );
         if (
           !args[1] ||
           tags

@@ -83,7 +83,7 @@ module.exports = {
         } else {
           timerId = setTimeout(() => {
             message.channel.send("No more tracks to play, disconnecting!");
-            connection.destroy();
+            if (connection) connection.destroy();
           }, parseInt(settings.prepare(`SELECT * FROM guild_${id} WHERE option = 'disconnect_timeout'`).get().value) * 1000);
         }
       });

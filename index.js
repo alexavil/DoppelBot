@@ -62,6 +62,7 @@ function initSentry() {
   Sentry.init({
       dsn: "https://546220d2015b4064a1c2363c6c6089f2@o4504711913340928.ingest.sentry.io/4504712612872192",
       tracesSampleRate: 1.0,
+      environment: "devtest"
   })
 }
 
@@ -270,7 +271,7 @@ client.on("messageCreate", (message) => {
   if (command.userpermissions) {
     const perms = message.channel.permissionsFor(message.author);
     if (!perms || !perms.has(command.userpermissions)) {
-      return message.reply("you do not have permission to use this command!");
+      return message.reply("You do not have permission to use this command!");
     }
   }
 
@@ -278,17 +279,18 @@ client.on("messageCreate", (message) => {
     if (
       settings.prepare(`SELECT * FROM guild_${id} WHERE option = 'state'`).get()
         .value === "commands"
-    )
-      command.execute(message, args);
+    ) 
+      command.execute(message, args); 
   } catch (error) {
-    Sentry.captureException(error);
-    console.error(error);
-    console.log(error.code);
     if (error.code === Discord.Constants.APIErrors.MISSING_PERMISSIONS) {
-      message.reply(
+      return message.reply(
         "I don't have permissions to do that action! Check the Roles page!"
       );
-    } else message.reply("there was an error trying to execute that command!");
+    }
+    Sentry.captureException(error);
+    console.error(error);
+    console.log(error);
+    message.reply("There was an error trying to execute that command!");
   }
 });
 
@@ -296,5 +298,10 @@ process.on("unhandledRejection", (error) => {
   Sentry.captureException(error);
   console.error("Error:", error);
 });
+
+process.on("uncaughtException", (error) => {
+  Sentry.captureException(error);
+  console.error("Error:", error);
+})
 
 client.login(token);

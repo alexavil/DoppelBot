@@ -94,7 +94,7 @@ module.exports = {
           .prepare(`SELECT * FROM guild_${id} ORDER BY ROWID LIMIT 1`)
           .get();
         console.log(track);
-        if ((track || track != undefined) && stream === undefined) {
+        if ((track || track != undefined)) {
           playmusic(channel, track.track, track.author);
         } else {
           timerId = setTimeout(() => {

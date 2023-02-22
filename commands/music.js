@@ -31,7 +31,22 @@ module.exports = {
     let url = "";
     let channel = message.member.voice.channel;
 
+    async function streamCheck(url) {
+      let stream = undefined;
+      try {
+        stream = await youtube.stream(url)
+      } catch(error) {
+        if (error.message.includes("Sign in to confirm your age")) {
+          message.channel.send("Error: The video is age-restricted.");
+          return undefined;
+        }
+      }
+      return stream;
+    }
+
     async function setupQueue(url) {
+      let stream = await streamCheck(url);
+      if (stream === undefined) return false;
       masterqueue
         .prepare(`INSERT INTO guild_${id} VALUES (?, ?)`)
         .run(url, message.author.id);
@@ -43,6 +58,8 @@ module.exports = {
     }
 
     async function playmusic(channel, url, author) {
+      let stream = await streamCheck(url);
+      if (stream === undefined) return false;
       const connection = joinVoiceChannel({
         channelId: channel.id,
         guildId: channel.guild.id,
@@ -60,7 +77,6 @@ module.exports = {
           })
         );
       }
-      let stream = await youtube.stream(url);
       player = createAudioPlayer();
       const resource = createAudioResource(stream.stream, {
         inputType: stream.type,
@@ -78,7 +94,7 @@ module.exports = {
           .prepare(`SELECT * FROM guild_${id} ORDER BY ROWID LIMIT 1`)
           .get();
         console.log(track);
-        if (track || track != undefined) {
+        if ((track || track != undefined) && (stream === undefined)) {
           playmusic(channel, track.track, track.author);
         } else {
           timerId = setTimeout(() => {

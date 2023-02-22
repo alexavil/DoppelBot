@@ -61,8 +61,7 @@ const Sentry = require("@sentry/node");
 function initSentry() {
   Sentry.init({
       dsn: "https://546220d2015b4064a1c2363c6c6089f2@o4504711913340928.ingest.sentry.io/4504712612872192",
-      tracesSampleRate: 1.0,
-      environment: "devtest"
+      tracesSampleRate: 1.0
   })
 }
 

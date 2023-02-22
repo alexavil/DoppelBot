@@ -40,6 +40,8 @@ module.exports = {
           message.channel.send("Error: The video is age-restricted.");
           return undefined;
         }
+        message.channel.send("Error: The video could not be fetched correctly.");
+        return undefined;
       }
       return stream;
     }

@@ -185,9 +185,9 @@ function gamecycle() {
 }
 
 client.on("ready", () => {
+  initSentry();
   prepareGlobalSettings();
   console.log("I am ready!");
-  initSentry();
   let permcheck = new cron.CronJob("00 00 */8 * * *", CheckForPerms);
   permcheck.start();
   client.guilds.cache.forEach((guild) => {

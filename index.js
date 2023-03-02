@@ -3,26 +3,30 @@ const Discord = require("discord.js");
 const cron = require("cron");
 const token = process.env.TOKEN || process.argv[2];
 const sqlite3 = require("better-sqlite3");
-const { Permissions, Intents } = require("discord.js");
+const { PermissionsBitField, GatewayIntentBits, ButtonStyle, ChannelType, DiscordAPIError } = require("discord.js");
 const child = require("child_process");
 
 const client = new Discord.Client({
   intents: [
-    Intents.FLAGS.GUILDS,
-    Intents.FLAGS.GUILD_MESSAGES,
-    Intents.FLAGS.GUILD_MEMBERS,
-    Intents.FLAGS.GUILD_BANS,
-    Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
-    Intents.FLAGS.GUILD_INTEGRATIONS,
-    Intents.FLAGS.GUILD_WEBHOOKS,
-    Intents.FLAGS.GUILD_INVITES,
-    Intents.FLAGS.GUILD_VOICE_STATES,
-    Intents.FLAGS.GUILD_PRESENCES,
-    Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-    Intents.FLAGS.GUILD_MESSAGE_TYPING,
-    Intents.FLAGS.DIRECT_MESSAGES,
-    Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
-    Intents.FLAGS.DIRECT_MESSAGE_TYPING,
+    GatewayIntentBits.AutoModerationConfiguration,
+    GatewayIntentBits.AutoModerationExecution,
+    GatewayIntentBits.DirectMessageReactions,
+    GatewayIntentBits.DirectMessageTyping,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.GuildEmojisAndStickers,
+    GatewayIntentBits.GuildIntegrations,
+    GatewayIntentBits.GuildInvites,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.GuildMessageTyping,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildModeration,
+    GatewayIntentBits.GuildPresences,
+    GatewayIntentBits.GuildScheduledEvents,
+    GatewayIntentBits.GuildVoiceStates,
+    GatewayIntentBits.GuildWebhooks,
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.MessageContent
   ],
 });
 client.commands = new Discord.Collection();
@@ -40,13 +44,13 @@ const queue = new sqlite3("./data/queue.db");
 const tags = new sqlite3("./data/tags.db");
 
 const RequiredPerms = [
-  [Permissions.FLAGS.VIEW_CHANNEL, "View Channels"],
-  [Permissions.FLAGS.READ_MESSAGE_HISTORY, "Read Message History"],
-  [Permissions.FLAGS.SEND_MESSAGES, "Send Messages"],
-  [Permissions.FLAGS.MANAGE_MESSAGES, "Manage Messages"],
-  [Permissions.FLAGS.CONNECT, "Connect"],
-  [Permissions.FLAGS.SPEAK, "Speak"],
-  [Permissions.FLAGS.ADD_REACTIONS, "Add Reactions"],
+  [PermissionsBitField.Flags.ViewChannel, "View Channels"],
+  [PermissionsBitField.Flags.ReadMessageHistory, "Read Message History"],
+  [PermissionsBitField.Flags.SendMessages, "Send Messages"],
+  [PermissionsBitField.Flags.ManageMessages, "Manage Messages"],
+  [PermissionsBitField.Flags.Connect, "Connect"],
+  [PermissionsBitField.Flags.Speak, "Speak"],
+  [PermissionsBitField.Flags.AddReactions, "Add Reactions"],
 ];
 
 let activities = undefined;
@@ -72,7 +76,7 @@ function CheckForPerms() {
       .prepare(`SELECT * FROM guild_${id} WHERE option = 'notifications'`)
       .get().value;
     if (notifs_value === "false") return console.log("No reasons to check!");
-    let botmember = guild.me;
+    let botmember = guild.members.me;
     let guild_owner = guild.ownerId;
     let message = `The bot is missing the following permissions in ${guild.name}:\n\n`;
     let missing = 0;
@@ -85,12 +89,12 @@ function CheckForPerms() {
     });
     if (missing > 0) {
       message += `\nPlease check your role and member settings!`;
-      const outbtn = new Discord.MessageButton()
+      const outbtn = new Discord.ButtonBuilder()
         .setCustomId(`${guild.id}_opt-out`)
         .setLabel(`Opt-out of service notifications in ${guild.name}`)
-        .setStyle("DANGER");
-      const row = new Discord.MessageActionRow().addComponents(outbtn);
-      const embed = new Discord.MessageEmbed()
+        .setStyle(ButtonStyle.Danger);
+      const row = new Discord.ActionRowBuilder().addComponents(outbtn);
+      const embed = new Discord.EmbedBuilder()
         .setColor("RED")
         .setTitle("Alert!")
         .setDescription(message);
@@ -249,7 +253,7 @@ client.on("messageCreate", (message) => {
 
   if (message.author.bot && message.author.discriminator != "0000")
     return false;
-  if (message.channel.type === "dm") return false;
+  if (message.channel.type === ChannelType.DM) return false;
   const prefixRegex = new RegExp(
     `^(<@!?${client.user.id}>|${escapeRegex(prefix)})\\s*`
   );
@@ -278,9 +282,10 @@ client.on("messageCreate", (message) => {
       settings.prepare(`SELECT * FROM guild_${id} WHERE option = 'state'`).get()
         .value === "commands"
     )
-      command.execute(message, args);
+      command.execute(message, args, client);
   } catch (error) {
-    if (error.code === Discord.Constants.APIErrors.MISSING_PERMISSIONS) {
+    if (error.code === DiscordAPIError.MISSING_PERMISSIONS) {
+      console.log(error);
       return message.reply(
         "I don't have permissions to do that action! Check the Roles page!"
       );

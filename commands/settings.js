@@ -7,7 +7,7 @@ module.exports = {
   userpermissions: "BAN_MEMBERS",
   execute(message) {
     const id = message.guild.id;
-    const settingsembed = new Discord.MessageEmbed()
+    const settingsembed = new Discord.EmbedBuilder()
       .setColor("#0099ff")
       .setTitle("Server Settings for " + message.guild.name)
       .addFields(

@@ -108,7 +108,7 @@ module.exports = {
     }
 
     async function sendEmbed(yt_info) {
-      let searchembed = new Discord.MessageEmbed();
+      let searchembed = new Discord.EmbedBuilder();
       yt_info.forEach((track) => {
         searchembed.addFields({
           name: track.url,
@@ -166,8 +166,6 @@ module.exports = {
         //If URL doesn't include any of the allowed links, return error
         if (!allowedLinks.some((link) => url.startsWith(link))) {
           return message.reply("Provide a valid link!");
-        } else {
-          message.delete().catch();
         }
         //Add to queue
         setupQueue(url);
@@ -193,7 +191,7 @@ module.exports = {
         break;
       case "queue":
       case "q": {
-        let embed = new Discord.MessageEmbed();
+        let embed = new Discord.EmbedBuilder();
         masterqueue
           .prepare(`SELECT * FROM guild_${id}`)
           .all()

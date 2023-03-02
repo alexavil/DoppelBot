@@ -13,7 +13,7 @@ module.exports = {
     let version = settings
       .prepare(`SELECT value FROM global WHERE option = 'current_version'`)
       .get().value;
-    const help = new Discord.MessageEmbed()
+    const help = new Discord.EmbedBuilder()
       .setColor("#0099ff")
       .setTitle("Hi, I'm DoppelBot! :heart:")
       .addFields(

@@ -128,7 +128,7 @@ module.exports = {
       case "list":
       case "l": {
         let responses = tags.prepare(`SELECT * FROM guild_${id}`).all();
-        let tagsembed = new Discord.MessageEmbed().setTitle(
+        let tagsembed = new Discord.EmbedBuilder().setTitle(
           `Tags for ${message.guild.name}`
         );
         if (responses.length === 0) {

@@ -9,7 +9,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@discordjs/voice": "^0.5.5",
+    "@discordjs/voice": "^0.15.0",
     "@sentry/node": "^7.38.0",
     "@sentry/tracing": "^7.38.0",
     "avconv": "^3.1.0",

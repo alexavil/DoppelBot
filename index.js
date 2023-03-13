@@ -3,7 +3,7 @@ const Discord = require("discord.js");
 const cron = require("cron");
 const token = process.env.TOKEN || process.argv[2];
 const sqlite3 = require("better-sqlite3");
-const { PermissionsBitField, GatewayIntentBits, ButtonStyle, ChannelType, DiscordAPIError } = require("discord.js");
+const { PermissionsBitField, GatewayIntentBits, ButtonStyle, ChannelType } = require("discord.js");
 const child = require("child_process");
 
 const client = new Discord.Client({
@@ -284,7 +284,7 @@ client.on("messageCreate", (message) => {
     )
       command.execute(message, args, client);
   } catch (error) {
-    if (error.code === DiscordAPIError.MISSING_PERMISSIONS) {
+    if (error.code === 50013) {
       console.log(error);
       return message.reply(
         "I don't have permissions to do that action! Check the Roles page!"

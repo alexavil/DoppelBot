@@ -1,12 +1,12 @@
 {
-  "name": "doppel_new",
-  "version": "1.0.0",
-  "description": "",
+  "name": "doppelbot",
+  "version": "1.2.2",
+  "description": "A Doppel a day keeps your sadness away.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prettier": "npx prettier ./index.js ./commands/* --write"
   },
-  "author": "",
+  "author": "alexavil",
   "license": "MIT",
   "dependencies": {
     "@discordjs/voice": "^0.15.0",
@@ -23,5 +23,8 @@
     "opusscript": "^0.0.8",
     "play-dl": "^1.1.7",
     "pm2": "^5.2.0"
+  },
+  "devDependencies": {
+    "prettier": "^2.8.4"
   }
 }

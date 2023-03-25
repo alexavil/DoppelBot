@@ -182,12 +182,14 @@ function createConfig(id) {
 }
 
 function validateSettings() {
-  let tables = settings.prepare(`SELECT name FROM sqlite_schema WHERE type='table'`).all();
-  tables.forEach(row => {
+  let tables = settings
+    .prepare(`SELECT name FROM sqlite_schema WHERE type='table'`)
+    .all();
+  tables.forEach((row) => {
     if (row.name === "global") return false;
     let id = row.name.split("_")[1];
     if (!client.guilds.cache.has(id)) deleteConfig(id);
-  })
+  });
 }
 
 function deleteConfig(id) {

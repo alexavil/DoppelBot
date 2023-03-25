@@ -37,8 +37,8 @@ module.exports = {
             Array.from(m.attachments)[0][1].name !== `${id}.json`
           ) {
             settings
-            .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
-            .run("commands", "state");
+              .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
+              .run("commands", "state");
             return message.channel.send(
               "You must provide a valid backup file!"
             );
@@ -67,9 +67,7 @@ module.exports = {
               settings
                 .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
                 .run("commands", "state");
-                return message.channel.send(
-                  "Restore completed successfully!"
-                );  
+              return message.channel.send("Restore completed successfully!");
             });
           });
         }

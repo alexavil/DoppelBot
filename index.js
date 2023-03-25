@@ -181,6 +181,15 @@ function createConfig(id) {
     .run();
 }
 
+function validateSettings() {
+  let tables = settings.prepare(`SELECT name FROM sqlite_schema WHERE type='table'`).all();
+  tables.forEach(row => {
+    if (row.name === "global") return false;
+    let id = row.name.split("_")[1];
+    if (!client.guilds.cache.has(id)) deleteConfig(id);
+  })
+}
+
 function deleteConfig(id) {
   settings.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
   queue.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
@@ -196,6 +205,7 @@ function gamecycle() {
 client.on("ready", () => {
   initSentry();
   prepareGlobalSettings();
+  validateSettings();
   console.log("I am ready!");
   let permcheck = new cron.CronJob("00 00 */8 * * *", CheckForPerms);
   permcheck.start();

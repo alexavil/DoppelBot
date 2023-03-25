@@ -40,7 +40,9 @@ module.exports = {
           message.channel.send("Error: The video is age-restricted.");
           return undefined;
         }
-        message.channel.send("Error: The video could not be fetched correctly.");
+        message.channel.send(
+          "Error: The video could not be fetched correctly."
+        );
         return undefined;
       }
       return stream;
@@ -96,7 +98,7 @@ module.exports = {
           .prepare(`SELECT * FROM guild_${id} ORDER BY ROWID LIMIT 1`)
           .get();
         console.log(track);
-        if ((track || track != undefined)) {
+        if (track || track != undefined) {
           playmusic(channel, track.track, track.author);
         } else {
           timerId = setTimeout(() => {

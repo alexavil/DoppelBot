@@ -3,7 +3,12 @@ const Discord = require("discord.js");
 const cron = require("cron");
 const token = process.env.TOKEN || process.argv[2];
 const sqlite3 = require("better-sqlite3");
-const { PermissionsBitField, GatewayIntentBits, ButtonStyle, ChannelType } = require("discord.js");
+const {
+  PermissionsBitField,
+  GatewayIntentBits,
+  ButtonStyle,
+  ChannelType,
+} = require("discord.js");
 const child = require("child_process");
 
 const client = new Discord.Client({
@@ -26,7 +31,7 @@ const client = new Discord.Client({
     GatewayIntentBits.GuildVoiceStates,
     GatewayIntentBits.GuildWebhooks,
     GatewayIntentBits.Guilds,
-    GatewayIntentBits.MessageContent
+    GatewayIntentBits.MessageContent,
   ],
 });
 client.commands = new Discord.Collection();

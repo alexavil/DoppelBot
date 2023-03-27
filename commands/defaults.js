@@ -48,6 +48,9 @@ module.exports = {
             .run("disconnect_timeout", "30");
           settings
             .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
+            .run("default_instance", "https://invidious.snopyta.org");
+          settings
+            .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
             .run("state", "commands");
           tags
             .prepare(

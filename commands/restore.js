@@ -57,6 +57,9 @@ module.exports = {
               settings
                 .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
                 .run(settings_backup[2].value, "disconnect_timeout");
+              settings
+                .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
+                .run(settings_backup[3].value, "default_instance");
               tags.prepare(`DELETE FROM guild_${id}`).run();
               tags_backup.forEach((tag) => {
                 console.log(tag);

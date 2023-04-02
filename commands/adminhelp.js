@@ -32,7 +32,13 @@ module.exports = {
             "setprefix` - change the guild prefix\n" +
             "`" +
             prefix +
-            "settimeout` - set VC disconnect timeout (in seconds)",
+            "settimeout` - set VC disconnect timeout (in seconds)\n" +
+            "`" +
+            prefix +
+            "setinstance` - set default Invidious instance\n" +
+            "`" +
+            prefix +
+            "sethealth` - set minimum Invidious instance health",
         },
         {
           name: "Tags",

@@ -24,6 +24,7 @@ module.exports = {
     const id = message.guild.id;
     let url = "";
     let channel = message.member.voice.channel;
+    let default_url = settings.prepare(`SELECT * FROM guild_${id} WHERE option = 'default_instance'`).get().value;
 
     async function streamCheck(url) {
       let stream = undefined;
@@ -103,7 +104,7 @@ module.exports = {
       results.forEach((track) => {
         searchembed.addFields({
           name: track.title,
-          value: track.id,
+          value: default_url + "/watch?v=" + track.id,
           inline: false,
         });
       });
@@ -130,8 +131,8 @@ module.exports = {
           collected.forEach((emoji) => {
             console.log(emoji.count);
             if (emoji.count > 1) {
-              url = results[choice].url;
-              setupQueue(url);
+              videoid = results[choice].id;
+              setupQueue(default_url + "/watch?v=" + videoid);
             } else {
               choice++;
             }
@@ -171,7 +172,8 @@ module.exports = {
           }
           let query = args.slice(1).join(" ");
           console.log(query);
-          let results = await InvidJS.searchContent(instances[0], query, { limit: 5 });
+          let instance = await InvidJS.fetchInstances({ url: default_url });
+          let results = await InvidJS.searchContent(instance[0], query, { limit: 5 });
           sendEmbed(results);
         }
         break;

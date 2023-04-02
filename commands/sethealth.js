@@ -7,8 +7,8 @@ module.exports = {
   async execute(message, args) {
     let id = message.guild.id;
     let settings = new sqlite3("./data/settings.db");
-    if (!args.length || args.length > 1 || parseFloat(args[0]) < 0) {
-      return message.reply("Please provide a valid number!");
+    if (!args.length || args.length > 1 || parseFloat(args[0]) < 0 || parseFloat(args[0]) > 100) {
+      return message.reply("Please provide a valid number from 0 to 100!");
     }
     let health = parseFloat(args[0]);
     settings

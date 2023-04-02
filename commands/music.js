@@ -216,6 +216,8 @@ module.exports = {
       }
       case "skip":
       case "s": {
+        const connection = getVoiceConnection(channel.guild.id);
+        if (!connection) return message.channel.send("Nothing to skip!")
         masterqueue
           .prepare(`DELETE FROM guild_${id} ORDER BY ROWID LIMIT 1`)
           .run();
@@ -228,12 +230,13 @@ module.exports = {
           playmusic(channel, track.track, track.author);
         } else {
           message.channel.send("No more tracks to play, disconnecting!");
-          const connection = getVoiceConnection(channel.guild.id);
           if (connection) connection.destroy();
         }
         break;
       }
       case "pause": {
+        const connection = getVoiceConnection(channel.guild.id);
+        if (!connection) return message.channel.send("Nothing to pause!")
         switch (isPaused) {
           case true: {
             player.unpause();

@@ -175,6 +175,9 @@ function createConfig(id) {
     .run("default_instance", "https://invidious.snopyta.org");
   settings
     .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
+    .run("instance_health_threshold", "75");
+  settings
+    .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
     .run("state", "commands");
   queue
     .prepare(`CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT, author TEXT)`)

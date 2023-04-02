@@ -33,6 +33,22 @@ module.exports = {
           value: settings
             .prepare(`SELECT * FROM guild_${id} WHERE option = 'prefix'`)
             .get().value,
+        },
+        {
+          name: "**Default Invidious Instance**",
+          value: settings
+            .prepare(
+              `SELECT * FROM guild_${id} WHERE option = 'default_instance'`
+            )
+            .get().value,
+        },
+        {
+          name: "**Instance Health Threshold**",
+          value: settings
+            .prepare(
+              `SELECT * FROM guild_${id} WHERE option = 'instance_health_threshold'`
+            )
+            .get().value,
         }
       );
     message.channel.send({ embeds: [settingsembed] });

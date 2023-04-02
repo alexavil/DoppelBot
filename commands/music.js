@@ -29,11 +29,15 @@ module.exports = {
     let url = "";
     let channel = message.member.voice.channel;
     let default_url = settings.prepare(`SELECT * FROM guild_${id} WHERE option = 'default_instance'`).get().value;
+    let min_health = settings.prepare(`SELECT * FROM guild_${id} WHERE option = 'instance_health_threshold'`).get().value;
 
     async function streamCheck(url) {
       let stream = undefined;
       try {
         let instance = await InvidJS.fetchInstances({ url: url.split("/w")[0] });
+        if (instance[0].health < min_health) {
+          message.channel.send("WARNING: Instance health is low. Please consider selecting a different instance.");
+        }
         let video = await InvidJS.fetchVideo(instance[0], url.split("=")[1]);
         let format = video.formats.find((format) => format.quality === "AUDIO_QUALITY_MEDIUM");
         stream = await InvidJS.fetchSource(instance[0], video, format, {saveTo: InvidJS.SaveSourceTo.Memory, parts: 5})

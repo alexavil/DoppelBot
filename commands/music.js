@@ -179,6 +179,7 @@ module.exports = {
       case "stop": {
         const connection = getVoiceConnection(channel.guild.id);
         if (connection) connection.destroy();
+        else return message.channel.send("The bot is already stopped!")
         masterqueue.prepare(`DELETE FROM guild_${id}`).run();
         message.channel.send("Stopped!");
         break;

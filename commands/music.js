@@ -163,6 +163,11 @@ module.exports = {
           message.channel.send("Due to migration to InvidJS, your track will be played using the default Invidious instance for this server.");
           url = default_url + "/watch?v=" + url.split("=")[1];
         }
+        //If a string contains just the ID and not a link, redirect to default instance.
+        if (url.match(/[a-zA-Z0-9_-]{11}/)) {
+          message.channel.send("Your track will be played using the default Invidious instance for this server.");
+          url = default_url + "/watch?v=" + url;
+        }
         //Add to queue
         setupQueue(url);
         break;

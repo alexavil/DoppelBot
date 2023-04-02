@@ -1,6 +1,5 @@
 const Discord = require("discord.js");
-const youtube = require("play-dl");
-const play = require("play-dl");
+const InvidJS = require("@invidjs/invid-js");
 const {
   AudioPlayerStatus,
   joinVoiceChannel,
@@ -16,11 +15,6 @@ const masterqueue = new sqlite3("./data/queue.db");
 let timerId = undefined;
 let isPaused = false;
 let player = undefined;
-let allowedLinks = [
-  "https://www.youtube.com",
-  "https://youtu.be",
-  "https://soundcloud.com",
-];
 
 module.exports = {
   name: "music",
@@ -34,15 +28,19 @@ module.exports = {
     async function streamCheck(url) {
       let stream = undefined;
       try {
-        stream = await youtube.stream(url);
+        let instance = await InvidJS.fetchInstances({ url: url.split("/w")[0] });
+        let video = await InvidJS.fetchVideo(instance[0], url.split("=")[1]);
+        let format = video.formats.find((format) => format.quality === "AUDIO_QUALITY_MEDIUM");
+        stream = await InvidJS.fetchSource(instance[0], video, format, {saveTo: InvidJS.SaveSourceTo.Memory, parts: 5})
       } catch (error) {
-        if (error.message.includes("Sign in to confirm your age")) {
-          message.channel.send("Error: The video is age-restricted.");
-          return undefined;
+        switch (error.code) {
+          case InvidJS.ErrorCodes.APIBlocked: {
+            return message.reply("The video could not be fetched due to API restrictions. The instance may not support API calls or may be down.");
+          }
+          case InvidJS.ErrorCodes.APIError: {
+            return message.reply("The video could not be fetched due to an API error. Please try again later.");
+          }
         }
-        message.channel.send(
-          "Error: The video could not be fetched correctly."
-        );
         return undefined;
       }
       return stream;
@@ -72,17 +70,8 @@ module.exports = {
           noSubscriber: NoSubscriberBehavior.Pause,
         },
       });
-      if (url.startsWith(allowedLinks[2])) {
-        await play.getFreeClientID().then((clientID) =>
-          play.setToken({
-            soundcloud: {
-              client_id: clientID,
-            },
-          })
-        );
-      }
       player = createAudioPlayer();
-      const resource = createAudioResource(stream.stream, {
+      const resource = createAudioResource(stream, {
         inputType: stream.type,
       });
       message.channel.send(`Now playing: ${url}\nRequested by <@!${author}>`);
@@ -109,12 +98,12 @@ module.exports = {
       });
     }
 
-    async function sendEmbed(yt_info) {
+    async function sendEmbed(results) {
       let searchembed = new Discord.EmbedBuilder();
-      yt_info.forEach((track) => {
+      results.forEach((track) => {
         searchembed.addFields({
-          name: track.url,
-          value: track.title,
+          name: track.title,
+          value: track.id,
           inline: false,
         });
       });
@@ -141,7 +130,7 @@ module.exports = {
           collected.forEach((emoji) => {
             console.log(emoji.count);
             if (emoji.count > 1) {
-              url = yt_info[choice].url;
+              url = results[choice].url;
               setupQueue(url);
             } else {
               choice++;
@@ -164,11 +153,6 @@ module.exports = {
           return message.reply("Provide a valid link!");
         }
         url = args[1];
-        console.log(url);
-        //If URL doesn't include any of the allowed links, return error
-        if (!allowedLinks.some((link) => url.startsWith(link))) {
-          return message.reply("Provide a valid link!");
-        }
         //Add to queue
         setupQueue(url);
         break;
@@ -187,8 +171,8 @@ module.exports = {
           }
           let query = args.slice(1).join(" ");
           console.log(query);
-          let yt_info = await youtube.search(query, { limit: 5 });
-          sendEmbed(yt_info);
+          let results = await InvidJS.searchContent(instances[0], query, { limit: 5 });
+          sendEmbed(results);
         }
         break;
       case "queue":

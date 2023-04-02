@@ -19,7 +19,7 @@ module.exports = {
     if (!result.length) {
       return message.reply("Please provide a valid Invidious instance URL!");
     }
-    if (result[0].api_allowed  === false) {
+    if (result[0].api_allowed === false) {
       return message.reply("This instance does not allow API calls!");
     }
     settings

@@ -15,6 +15,10 @@ const masterqueue = new sqlite3("./data/queue.db");
 let timerId = undefined;
 let isPaused = false;
 let player = undefined;
+let disallowedLinks = [
+  "https://www.youtube.com/",
+  "https://youtu.be/",
+]
 
 module.exports = {
   name: "music",
@@ -154,6 +158,11 @@ module.exports = {
           return message.reply("Provide a valid link!");
         }
         url = args[1];
+        //If a URL starts with a Youtube link, redirect to default instance.
+        if (disallowedLinks.some((link) => url.startsWith(link))) {
+          message.channel.send("Due to migration to InvidJS, your track will be played using the default Invidious instance for this server.");
+          url = default_url + "/watch?v=" + url.split("=")[1];
+        }
         //Add to queue
         setupQueue(url);
         break;

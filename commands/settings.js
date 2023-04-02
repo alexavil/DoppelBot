@@ -18,6 +18,12 @@ module.exports = {
             .get().value,
         },
         {
+          name: "**Guild Prefix**",
+          value: settings
+            .prepare(`SELECT * FROM guild_${id} WHERE option = 'prefix'`)
+            .get().value,
+        },
+        {
           name: "**Disconnect Timeout**",
           value:
             parseInt(
@@ -27,12 +33,6 @@ module.exports = {
                 )
                 .get().value
             ) + " seconds",
-        },
-        {
-          name: "**Guild Prefix**",
-          value: settings
-            .prepare(`SELECT * FROM guild_${id} WHERE option = 'prefix'`)
-            .get().value,
         },
         {
           name: "**Default Invidious Instance**",

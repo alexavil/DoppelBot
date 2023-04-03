@@ -86,7 +86,6 @@ module.exports = {
       message.channel.send(`Now playing: ${url}\nRequested by <@!${author}>`);
       player.play(resource);
       connection.subscribe(player);
-      console.log(timerId);
       if (timerId !== undefined) clearTimeout(timerId);
       player.on(AudioPlayerStatus.Idle, () => {
         masterqueue
@@ -95,7 +94,6 @@ module.exports = {
         let track = masterqueue
           .prepare(`SELECT * FROM guild_${id} ORDER BY ROWID LIMIT 1`)
           .get();
-        console.log(track);
         if (track || track != undefined) {
           playmusic(channel, track.track, track.author);
         } else {
@@ -137,7 +135,6 @@ module.exports = {
         .awaitReactions({ filter, maxUsers: 2 })
         .then((collected) =>
           collected.forEach((emoji) => {
-            console.log(emoji.count);
             if (emoji.count > 1) {
               videoid = results[choice].id;
               setupQueue(default_url + "/watch?v=" + videoid);
@@ -146,7 +143,7 @@ module.exports = {
             }
           })
         )
-        .catch(console.error);
+        .catch();
     }
 
     if (args.length === 0) {
@@ -190,7 +187,6 @@ module.exports = {
             return message.reply("Provide a valid search query!");
           }
           let query = args.slice(1).join(" ");
-          console.log(query);
           let instance = await InvidJS.fetchInstances({ url: default_url });
           let results = await InvidJS.searchContent(instance[0], query, { limit: 5 });
           sendEmbed(results);
@@ -224,7 +220,6 @@ module.exports = {
         let track = masterqueue
           .prepare(`SELECT * FROM guild_${id} ORDER BY ROWID LIMIT 1`)
           .get();
-        console.log(track);
         if (track || track != undefined) {
           message.channel.send("Skipped!");
           playmusic(channel, track.track, track.author);

@@ -9,11 +9,9 @@ module.exports = {
       let chl = message.mentions.channels.first();
       let attachments = [];
       if (message.attachments) {
-        console.log(message.attachments);
         message.attachments.forEach((att) => {
           let url = att.url;
           attachments.push(url);
-          console.log(attachments);
         });
       }
       if (chl) {

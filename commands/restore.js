@@ -45,7 +45,6 @@ module.exports = {
           }
           fetch(m.attachments.first().url).then((res) => {
             res.json().then((json) => {
-              console.log(json);
               let settings_backup = JSON.parse(json.split("\n")[0]);
               let tags_backup = JSON.parse(json.split("\n")[1]);
               settings
@@ -65,7 +64,6 @@ module.exports = {
                 .run(settings_backup[3].value, "instance_health_threshold");
               tags.prepare(`DELETE FROM guild_${id}`).run();
               tags_backup.forEach((tag) => {
-                console.log(tag);
                 tags
                   .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
                   .run(tag.tag, tag.response);

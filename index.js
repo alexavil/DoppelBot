@@ -74,20 +74,18 @@ function initSentry() {
 }
 
 function CheckForPerms() {
-  console.log("Checking permissions...");
   client.guilds.cache.forEach((guild) => {
     let id = guild.id;
     let notifs_value = settings
       .prepare(`SELECT * FROM guild_${id} WHERE option = 'notifications'`)
       .get().value;
-    if (notifs_value === "false") return console.log("No reasons to check!");
+    if (notifs_value === "false") return false;
     let botmember = guild.members.me;
     let guild_owner = guild.ownerId;
     let message = `The bot is missing the following permissions in ${guild.name}:\n\n`;
     let missing = 0;
     RequiredPerms.forEach((perm) => {
       if (!botmember.permissions.has(perm[0])) {
-        console.log(`Missing ${perm[1]} permission in ${guild.name}!`);
         message += `${perm[1]}\n`;
         missing++;
       }
@@ -108,13 +106,11 @@ function CheckForPerms() {
         .send({ embeds: [embed], components: [row] })
         .catch((err) => {
           if (err.code === Discord.Constants.APIErrors.CANNOT_MESSAGE_USER) {
-            return console.log(
-              `The owner of ${guild.name} has disabled direct messages!`
-            );
+            return false;
           }
         });
     } else {
-      return console.log("All clear!");
+      return true;
     }
   });
 }
@@ -143,7 +139,6 @@ function prepareGlobalSettings() {
     "git fetch -q && git ls-remote --heads --quiet",
     (err, stdout, stderr) => {
       if (err) {
-        console.log(err);
       } else {
         settings
           .prepare(
@@ -308,26 +303,21 @@ client.on("messageCreate", (message) => {
       command.execute(message, args, client);
   } catch (error) {
     if (error.code === 50013) {
-      console.log(error);
       return message.reply(
         "I don't have permissions to do that action! Check the Roles page!"
       );
     }
     Sentry.captureException(error);
-    console.error(error);
-    console.log(error);
     message.reply("There was an error trying to execute that command!");
   }
 });
 
 process.on("unhandledRejection", (error) => {
   Sentry.captureException(error);
-  console.error("Error:", error);
 });
 
 process.on("uncaughtException", (error) => {
   Sentry.captureException(error);
-  console.error("Error:", error);
 });
 
 client.login(token);

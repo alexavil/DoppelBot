@@ -181,17 +181,20 @@ function prepareGlobalSettings() {
     )
     .run();
   child.exec(
-    "git fetch -q && git ls-remote --heads --quiet",
+    "git rev-parse --short HEAD",
     (err, stdout, stderr) => {
       if (err) {
         Sentry.captureException(err);
       } else {
-        if (debug === true) console.log("[DEBUG] Retreived build number successfully!");
+        if (debug === true) {
+          console.log("[DEBUG] Retreived build number successfully!");
+          console.log("[DEBUG] Build number: " + stdout.toString())
+        }
         settings
           .prepare(
             "update global set value = ? where option = 'current_version'"
           )
-          .run(stdout.toString().substring(0, 7));
+          .run(stdout.toString());
       }
     }
   );

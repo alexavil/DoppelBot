@@ -1,5 +1,5 @@
 const sqlite3 = require("better-sqlite3");
-const fs = require("fs-extra");
+const debug = require("../index");
 
 const settings = new sqlite3("./data/settings.db");
 const tags = new sqlite3("./data/tags.db");
@@ -8,8 +8,10 @@ module.exports = {
   name: "defaults",
   description: "Resets your server settings to defaults",
   userpermissions: "ADMINISTRATOR",
-  async execute(message, args) {
+  async execute(message) {
     const id = message.guild.id;
+    if (debug === true)
+      console.log("[DEBUG] Preparing to reset settings for " + id + "...");
     settings
       .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
       .run("wizard", "state");
@@ -24,12 +26,14 @@ module.exports = {
     confirm_collector.on("collect", (m) => {
       switch (m.content) {
         case "cancel": {
+          if (debug === true) console.log("[DEBUG] User cancelled, aborting...");
           settings
             .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
             .run("commands", "state");
           return message.channel.send("Cancelled!");
         }
         case "confirm": {
+          if (debug === true) console.log("[DEBUG] User confirmed, proceeding...");
           settings.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
           tags.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
           settings
@@ -60,11 +64,13 @@ module.exports = {
               `CREATE TABLE IF NOT EXISTS guild_${id} (tag TEXT, response TEXT)`
             )
             .run();
+          if (debug === true) console.log("[DEBUG] Reset finished...");
           return message.channel.send(
             "Your settings have been reset successfully!"
           );
         }
         default: {
+          if (debug === true) console.log("[DEBUG] Invalid input, aborting...");
           settings
             .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
             .run("commands", "state");

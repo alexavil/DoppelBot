@@ -1,12 +1,14 @@
 const Discord = require("discord.js");
 const sqlite3 = require("better-sqlite3");
 const settings = new sqlite3("./data/settings.db");
+const debug = require("../index");
 module.exports = {
   name: "settings",
   description: "Show server settings",
   userpermissions: "BAN_MEMBERS",
   execute(message) {
     const id = message.guild.id;
+    if (debug === true) console.log("[DEBUG] Fetching settings for " + id + "...");
     const settingsembed = new Discord.EmbedBuilder()
       .setColor("#0099ff")
       .setTitle("Server Settings for " + message.guild.name)

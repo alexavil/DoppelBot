@@ -1,4 +1,5 @@
 const sqlite3 = require("better-sqlite3");
+const debug = require("../index");
 module.exports = {
   name: "setprefix",
   aliases: ["prefix"],
@@ -8,10 +9,15 @@ module.exports = {
     let id = message.guild.id;
     let settings = new sqlite3("./data/settings.db");
     if (!args.length) {
+      if (debug === true) console.log("[DEBUG] Invalid input, aborting...");
       return message.reply("Invalid prefix!");
     }
-    if (args[0].startsWith("<@") && args[0].endsWith(">"))
+    if (args[0].startsWith("<@") && args[0].endsWith(">")) {
+      if (debug === true) console.log("[DEBUG] Invalid input, aborting...");
       return message.reply("Invalid prefix!");
+    }
+    if (debug === true)
+      console.log("[DEBUG] New prefix for " + id + ": " + args[0] + "...");
     settings
       .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
       .run(args[0], "prefix");

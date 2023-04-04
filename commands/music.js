@@ -1,5 +1,6 @@
 const Discord = require("discord.js");
 const InvidJS = require("@invidjs/invid-js");
+const debug = require("../index");
 const {
   AudioPlayerStatus,
   joinVoiceChannel,
@@ -15,10 +16,7 @@ const masterqueue = new sqlite3("./data/queue.db");
 let timerId = undefined;
 let isPaused = false;
 let player = undefined;
-let disallowedLinks = [
-  "https://www.youtube.com/",
-  "https://youtu.be/",
-]
+let disallowedLinks = ["https://www.youtube.com/", "https://youtu.be/"];
 
 module.exports = {
   name: "music",
@@ -28,26 +26,51 @@ module.exports = {
     const id = message.guild.id;
     let url = "";
     let channel = message.member.voice.channel;
-    let default_url = settings.prepare(`SELECT * FROM guild_${id} WHERE option = 'default_instance'`).get().value;
-    let min_health = settings.prepare(`SELECT * FROM guild_${id} WHERE option = 'instance_health_threshold'`).get().value;
+    let default_url = settings
+      .prepare(`SELECT * FROM guild_${id} WHERE option = 'default_instance'`)
+      .get().value;
+    let min_health = settings
+      .prepare(
+        `SELECT * FROM guild_${id} WHERE option = 'instance_health_threshold'`
+      )
+      .get().value;
 
     async function streamCheck(url) {
+      if (debug === true) console.log("[DEBUG] Validating url " + url + "...");
       let stream = undefined;
       try {
-        let instance = await InvidJS.fetchInstances({ url: url.split("/w")[0] });
+        let instance = await InvidJS.fetchInstances({
+          url: url.split("/w")[0],
+        });
         if (instance[0].health < min_health) {
-          message.channel.send("WARNING: Instance health is low. Please consider selecting a different instance.");
+          if (debug === true)
+            console.log(
+              "[DEBUG] Provided instance health is low, sending a warning..."
+            );
+          message.channel.send(
+            "WARNING: Instance health is low. Please consider selecting a different instance."
+          );
         }
         let video = await InvidJS.fetchVideo(instance[0], url.split("=")[1]);
-        let format = video.formats.find((format) => format.quality === "AUDIO_QUALITY_MEDIUM");
-        stream = await InvidJS.fetchSource(instance[0], video, format, {saveTo: InvidJS.SaveSourceTo.Memory, parts: 5})
+        let format = video.formats.find(
+          (format) => format.quality === "AUDIO_QUALITY_MEDIUM"
+        );
+        stream = await InvidJS.fetchSource(instance[0], video, format, {
+          saveTo: InvidJS.SaveSourceTo.Memory,
+          parts: 5,
+        });
       } catch (error) {
+        if (debug === true) console.log("[DEBUG] Error: " + error + "...");
         switch (error.code) {
           case InvidJS.ErrorCodes.APIBlocked: {
-            return message.reply("The video could not be fetched due to API restrictions. The instance may not support API calls or may be down.");
+            return message.reply(
+              "The video could not be fetched due to API restrictions. The instance may not support API calls or may be down."
+            );
           }
           case InvidJS.ErrorCodes.APIError: {
-            return message.reply("The video could not be fetched due to an API error. Please try again later.");
+            return message.reply(
+              "The video could not be fetched due to an API error. Please try again later."
+            );
           }
         }
         return undefined;
@@ -56,12 +79,17 @@ module.exports = {
     }
 
     async function setupQueue(url) {
+      if (debug === true) console.log("[DEBUG] Adding url " + url + " to queue...");
       let stream = await streamCheck(url);
       if (stream === undefined) return false;
       masterqueue
         .prepare(`INSERT INTO guild_${id} VALUES (?, ?)`)
         .run(url, message.author.id);
       if (masterqueue.prepare(`SELECT * FROM guild_${id}`).all().length === 1) {
+        if (debug === true)
+          console.log(
+            "[DEBUG] This is the only track in the queue, starting playback..."
+          );
         playmusic(channel, url, message.author.id);
       } else {
         message.channel.send("Added " + url + " to queue!");
@@ -71,6 +99,7 @@ module.exports = {
     async function playmusic(channel, url, author) {
       let stream = await streamCheck(url);
       if (stream === undefined) return false;
+      if (debug === true) console.log("[DEBUG] Creating connection...");
       const connection = joinVoiceChannel({
         channelId: channel.id,
         guildId: channel.guild.id,
@@ -79,6 +108,11 @@ module.exports = {
           noSubscriber: NoSubscriberBehavior.Pause,
         },
       });
+      if (debug === true) {
+        console.log("[DEBUG] Connection created, activating debug mode...");
+        connection.on("debug", console.log);
+      }
+      if (debug === true) console.log("[DEBUG] Creating player and resource...");
       player = createAudioPlayer();
       const resource = createAudioResource(stream, {
         inputType: stream.type,
@@ -88,6 +122,7 @@ module.exports = {
       connection.subscribe(player);
       if (timerId !== undefined) clearTimeout(timerId);
       player.on(AudioPlayerStatus.Idle, () => {
+        if (debug === true) console.log("[DEBUG] Player idle, checking the queue...");
         masterqueue
           .prepare(`DELETE FROM guild_${id} ORDER BY ROWID LIMIT 1`)
           .run();
@@ -95,8 +130,11 @@ module.exports = {
           .prepare(`SELECT * FROM guild_${id} ORDER BY ROWID LIMIT 1`)
           .get();
         if (track || track != undefined) {
+          if (debug === true)
+            console.log("[DEBUG] Queue not empty, continuing playback...");
           playmusic(channel, track.track, track.author);
         } else {
+          if (debug === true) console.log("[DEBUG] Queue empty, starting timer...");
           timerId = setTimeout(() => {
             message.channel.send("No more tracks to play, disconnecting!");
             if (connection) connection.destroy();
@@ -136,6 +174,7 @@ module.exports = {
         .then((collected) =>
           collected.forEach((emoji) => {
             if (emoji.count > 1) {
+              if (debug === true) console.log("[DEBUG] User choice: " + choice + "...");
               videoid = results[choice].id;
               setupQueue(default_url + "/watch?v=" + videoid);
             } else {
@@ -155,45 +194,70 @@ module.exports = {
     switch (args[0]) {
       case "play":
       case "p": {
+        if (debug === true) console.log("[DEBUG] Starting playback for " + id + "...");
         if (!args[1]) {
           return message.reply("Provide a valid link!");
         }
         url = args[1];
-        //If a URL starts with a Youtube link, redirect to default instance.
         if (disallowedLinks.some((link) => url.startsWith(link))) {
-          message.channel.send("Due to migration to InvidJS, your track will be played using the default Invidious instance for this server.");
+          if (debug === true)
+            console.log("[DEBUG] YouTube link detected, redirecting...");
+          message.channel.send(
+            "Due to migration to InvidJS, your track will be played using the default Invidious instance for this server."
+          );
           url = default_url + "/watch?v=" + url.split("=")[1];
         }
-        //If a string contains just the ID and not a link, redirect to default instance.
-        if (url.match(/[a-zA-Z0-9_-]{11}/)) {
-          message.channel.send("Your track will be played using the default Invidious instance for this server.");
+        if (url.match(/[a-zA-Z0-9_-]{11}/) && url.length === 11) {
+          if (debug === true)
+            console.log("[DEBUG] ID detected, using default instance...");
+          message.channel.send(
+            "Your track will be played using the default Invidious instance for this server."
+          );
           url = default_url + "/watch?v=" + url;
         }
-        //Add to queue
         setupQueue(url);
         break;
       }
       case "stop": {
+        if (debug === true)
+          console.log(
+            "[DEBUG] Trying to stop the VC connection for " + id + "..."
+          );
         const connection = getVoiceConnection(channel.guild.id);
         if (connection) connection.destroy();
-        else return message.channel.send("The bot is already stopped!")
+        else return message.channel.send("The bot is already stopped!");
         masterqueue.prepare(`DELETE FROM guild_${id}`).run();
         message.channel.send("Stopped!");
         break;
       }
       case "search":
         {
+          if (debug === true) console.log("[DEBUG] Starting search for " + id + "...");
           if (!args[1]) {
+            if (debug === true) console.log("[DEBUG] Invalid input, aborting...");
             return message.reply("Provide a valid search query!");
           }
           let query = args.slice(1).join(" ");
+          if (debug === true) {
+            console.log("[DEBUG] User query: " + query + "...");
+            console.log("[DEBUG] Searching...");
+          }
           let instance = await InvidJS.fetchInstances({ url: default_url });
-          let results = await InvidJS.searchContent(instance[0], query, { limit: 5 });
+          let results = await InvidJS.searchContent(instance[0], query, {
+            limit: 5,
+          });
+          if (!results.length) {
+            if (debug === true) console.log("[DEBUG] No content was found...");
+            return message.reply(
+              "No content was found based on your search query!"
+            );
+          }
           sendEmbed(results);
         }
         break;
       case "queue":
       case "q": {
+        if (debug === true) console.log("[DEBUG] Requesting queue for " + id + "...");
         let embed = new Discord.EmbedBuilder();
         masterqueue
           .prepare(`SELECT * FROM guild_${id}`)
@@ -212,8 +276,10 @@ module.exports = {
       }
       case "skip":
       case "s": {
+        if (debug === true)
+          console.log("[DEBUG] Trying to skip a track for " + id + "...");
         const connection = getVoiceConnection(channel.guild.id);
-        if (!connection) return message.channel.send("Nothing to skip!")
+        if (!connection) return message.channel.send("Nothing to skip!");
         masterqueue
           .prepare(`DELETE FROM guild_${id} ORDER BY ROWID LIMIT 1`)
           .run();
@@ -221,24 +287,29 @@ module.exports = {
           .prepare(`SELECT * FROM guild_${id} ORDER BY ROWID LIMIT 1`)
           .get();
         if (track || track != undefined) {
+          if (debug === true) console.log("[DEBUG] Found a track, skipping...");
           message.channel.send("Skipped!");
           playmusic(channel, track.track, track.author);
         } else {
+          if (debug === true) console.log("[DEBUG] Skipping and disconnecting...");
           message.channel.send("No more tracks to play, disconnecting!");
           if (connection) connection.destroy();
         }
         break;
       }
       case "pause": {
+        if (debug === true) console.log("[DEBUG] Trying to pause for " + id + "...");
         const connection = getVoiceConnection(channel.guild.id);
-        if (!connection) return message.channel.send("Nothing to pause!")
+        if (!connection) return message.channel.send("Nothing to pause!");
         switch (isPaused) {
           case true: {
+            if (debug === true) console.log("[DEBUG] Unpausing...");
             player.unpause();
             isPaused = false;
             return message.channel.send("Unpaused!");
           }
           case false: {
+            if (debug === true) console.log("[DEBUG] Pausing...");
             player.pause();
             isPaused = true;
             return message.channel.send("Paused!");

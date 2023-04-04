@@ -1,3 +1,4 @@
+const debug = require("../index");
 module.exports = {
   name: "say",
   description: "Make the bot say something!",
@@ -15,11 +16,21 @@ module.exports = {
         });
       }
       if (chl) {
+        if (debug === true)
+          console.log(
+            "[DEBUG] Sending dev-generated message to " + chl.id + "..."
+          );
         let msg = args.slice(1).join(" ");
         chl.send(msg, {
           files: attachments,
         });
       } else {
+        if (debug === true)
+          console.log(
+            "[DEBUG] Sending dev-generated message to " +
+              message.channel.id +
+              "..."
+          );
         let msg = args.join(" ");
         message.channel.send(msg, {
           files: attachments,

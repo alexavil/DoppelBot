@@ -39,13 +39,13 @@ module.exports = {
             "tags list`.",
         }
       );
-    if (debug === true)
+    if (debug.debug === true)
       help.setFooter({
         text: `Build: ${version} (Debug Mode - For testing purposes only)`,
       });
     else help.setFooter({ text: `Build: ${version}` });
     message.channel.send({ embeds: [help] }).then(() => {
-      if (debug === true)
+      if (debug.debug === true)
         console.log("[DEBUG] Successfully sent help message to " + id + "...");
     });
   },

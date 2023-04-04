@@ -14,7 +14,7 @@ module.exports = {
         .get().value;
       switch (value) {
         case "false":
-          if (debug === true)
+          if (debug.debug === true)
             console.log(
               "[DEBUG] Notifications are disabled for " +
                 id +
@@ -25,7 +25,7 @@ module.exports = {
             .run("true", "notifications");
           return message.channel.send(`Service notifications are now enabled!`);
         case "true":
-          if (debug === true)
+          if (debug.debug === true)
             console.log(
               "[DEBUG] Notifications are enabled for " +
                 id +

@@ -25,7 +25,8 @@ module.exports = {
     file_collector.on("collect", (m) => {
       switch (m.content) {
         case "cancel": {
-          if (debug === true) console.log("[DEBUG] User cancelled, aborting...");
+          if (debug.debug === true)
+            console.log("[DEBUG] User cancelled, aborting...");
           settings
             .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
             .run("commands", "state");
@@ -37,7 +38,8 @@ module.exports = {
             Array.from(m.attachments).length > 1 ||
             Array.from(m.attachments)[0][1].name !== `${id}.json`
           ) {
-            if (debug === true) console.log("[DEBUG] Invalid input, aborting...");
+            if (debug.debug === true)
+              console.log("[DEBUG] Invalid input, aborting...");
             settings
               .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
               .run("commands", "state");
@@ -46,14 +48,14 @@ module.exports = {
             );
           }
           fetch(m.attachments.first().url).then((res) => {
-            if (debug === true)
+            if (debug.debug === true)
               console.log(
                 "[DEBUG] User provided a valid JSON file, retrieving..."
               );
             res.json().then((json) => {
               let settings_backup = JSON.parse(json.split("\n")[0]);
               let tags_backup = JSON.parse(json.split("\n")[1]);
-              if (debug === true) {
+              if (debug.debug === true) {
                 console.log("[DEBUG] Fetch successful!");
                 console.log("[DEBUG] Settings JSON: " + settings_backup);
                 console.log("[DEBUG] Tags JSON: " + tags_backup);
@@ -80,7 +82,8 @@ module.exports = {
                   .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
                   .run(tag.tag, tag.response);
               });
-              if (debug === true) console.log("[DEBUG] Restore successful!");
+              if (debug.debug === true)
+                console.log("[DEBUG] Restore successful!");
               settings
                 .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
                 .run("commands", "state");

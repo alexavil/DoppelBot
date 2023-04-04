@@ -10,7 +10,8 @@ module.exports = {
     let id = message.guild.id;
     let settings = new sqlite3("./data/settings.db");
     if (!args.length || args.length > 1) {
-      if (debug === true) console.log("[DEBUG] Invalid input, aborting...");
+      if (debug.debug === true)
+        console.log("[DEBUG] Invalid input, aborting...");
       return message.reply("Please provide a valid Invidious instance URL!");
     }
     let url = args[0];
@@ -19,15 +20,16 @@ module.exports = {
     }
     let result = await InvidJS.fetchInstances({ url: url });
     if (!result.length) {
-      if (debug === true) console.log("[DEBUG] No instances were found...");
+      if (debug.debug === true)
+        console.log("[DEBUG] No instances were found...");
       return message.reply("Please provide a valid Invidious instance URL!");
     }
     if (result[0].api_allowed === false) {
-      if (debug === true)
+      if (debug.debug === true)
         console.log("[DEBUG] Provided instance does not allow API access...");
       return message.reply("This instance does not allow API calls!");
     }
-    if (debug === true)
+    if (debug.debug === true)
       console.log("[DEBUG] New instance for " + id + ": " + url + "...");
     settings
       .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)

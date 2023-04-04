@@ -9,10 +9,11 @@ module.exports = {
     let id = message.guild.id;
     let settings = new sqlite3("./data/settings.db");
     if (!args.length || !Number.isInteger(parseInt(args[0]))) {
-      if (debug === true) console.log("[DEBUG] Invalid input, aborting...");
+      if (debug.debug === true)
+        console.log("[DEBUG] Invalid input, aborting...");
       return message.reply("Invalid value! Please type the time in seconds.");
     }
-    if (debug === true)
+    if (debug.debug === true)
       console.log("[DEBUG] New disconnect for " + id + ": " + args[0] + "...");
     settings
       .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)

@@ -11,14 +11,15 @@ module.exports = {
   userpermissions: "ADMINISTRATOR",
   async execute(message) {
     const id = message.guild.id;
-    if (debug === true) console.log("[DEBUG] Preparing backup for " + id + "...");
+    if (debug.debug === true)
+      console.log("[DEBUG] Preparing backup for " + id + "...");
     let backup = settings
       .prepare(`SELECT * FROM guild_${id} WHERE option != 'state'`)
       .all();
     let tags_backup = tags.prepare(`SELECT * FROM guild_${id}`).all();
     let json = JSON.stringify(backup);
     let tags_json = JSON.stringify(tags_backup);
-    if (debug === true) {
+    if (debug.debug === true) {
       console.log("[DEBUG] Settings JSON: " + json);
       console.log("[DEBUG] Tags JSON: " + tags_json);
     }
@@ -29,7 +30,7 @@ module.exports = {
         files: [`${id}.json`],
       })
       .then(() => {
-        if (debug === true)
+        if (debug.debug === true)
           console.log("[DEBUG] Successfully sent backup to " + id + "...");
       });
     fs.unlink(`${id}.json`);

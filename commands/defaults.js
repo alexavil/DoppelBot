@@ -10,7 +10,7 @@ module.exports = {
   userpermissions: "ADMINISTRATOR",
   async execute(message) {
     const id = message.guild.id;
-    if (debug === true)
+    if (debug.debug === true)
       console.log("[DEBUG] Preparing to reset settings for " + id + "...");
     settings
       .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
@@ -26,14 +26,16 @@ module.exports = {
     confirm_collector.on("collect", (m) => {
       switch (m.content) {
         case "cancel": {
-          if (debug === true) console.log("[DEBUG] User cancelled, aborting...");
+          if (debug.debug === true)
+            console.log("[DEBUG] User cancelled, aborting...");
           settings
             .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
             .run("commands", "state");
           return message.channel.send("Cancelled!");
         }
         case "confirm": {
-          if (debug === true) console.log("[DEBUG] User confirmed, proceeding...");
+          if (debug.debug === true)
+            console.log("[DEBUG] User confirmed, proceeding...");
           settings.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
           tags.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
           settings
@@ -64,13 +66,14 @@ module.exports = {
               `CREATE TABLE IF NOT EXISTS guild_${id} (tag TEXT, response TEXT)`
             )
             .run();
-          if (debug === true) console.log("[DEBUG] Reset finished...");
+          if (debug.debug === true) console.log("[DEBUG] Reset finished...");
           return message.channel.send(
             "Your settings have been reset successfully!"
           );
         }
         default: {
-          if (debug === true) console.log("[DEBUG] Invalid input, aborting...");
+          if (debug.debug === true)
+            console.log("[DEBUG] Invalid input, aborting...");
           settings
             .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
             .run("commands", "state");

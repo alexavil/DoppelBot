@@ -88,7 +88,8 @@ function initSentry() {
 }
 
 function CheckForPerms() {
-  if (debug === true) console.log("[DEBUG] Checking for permissions in every guild...");
+  if (debug === true)
+    console.log("[DEBUG] Checking for permissions in every guild...");
   client.guilds.cache.forEach((guild) => {
     let id = guild.id;
     if (debug === true)
@@ -149,7 +150,8 @@ function CheckForPerms() {
           }
         });
     } else {
-      if (debug === true) console.log("[DEBUG] Guild " + id + " has all permissions.");
+      if (debug === true)
+        console.log("[DEBUG] Guild " + id + " has all permissions.");
       return true;
     }
   });
@@ -180,24 +182,19 @@ function prepareGlobalSettings() {
       "insert or ignore into global (option, value) values ('current_version', '')"
     )
     .run();
-  child.exec(
-    "git rev-parse --short HEAD",
-    (err, stdout, stderr) => {
-      if (err) {
-        Sentry.captureException(err);
-      } else {
-        if (debug === true) {
-          console.log("[DEBUG] Retreived build number successfully!");
-          console.log("[DEBUG] Build number: " + stdout.toString())
-        }
-        settings
-          .prepare(
-            "update global set value = ? where option = 'current_version'"
-          )
-          .run(stdout.toString());
+  child.exec("git rev-parse --short HEAD", (err, stdout, stderr) => {
+    if (err) {
+      Sentry.captureException(err);
+    } else {
+      if (debug === true) {
+        console.log("[DEBUG] Retreived build number successfully!");
+        console.log("[DEBUG] Build number: " + stdout.toString().substring(0, 7));
       }
+      settings
+        .prepare("update global set value = ? where option = 'current_version'")
+        .run(stdout.toString().substring(0, 7));
     }
-  );
+  });
 }
 
 function createConfig(id) {
@@ -247,7 +244,8 @@ function validateSettings() {
 }
 
 function deleteConfig(id) {
-  if (debug === true) console.log("[DEBUG] Deleting config for guild " + id + "...");
+  if (debug === true)
+    console.log("[DEBUG] Deleting config for guild " + id + "...");
   settings.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
   queue.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
   tags.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
@@ -409,4 +407,4 @@ process.on("uncaughtException", (error) => {
 
 client.login(token);
 
-module.exports = debug;
+exports.debug = debug;

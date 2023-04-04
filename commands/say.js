@@ -16,7 +16,7 @@ module.exports = {
         });
       }
       if (chl) {
-        if (debug === true)
+        if (debug.debug === true)
           console.log(
             "[DEBUG] Sending dev-generated message to " + chl.id + "..."
           );
@@ -25,7 +25,7 @@ module.exports = {
           files: attachments,
         });
       } else {
-        if (debug === true)
+        if (debug.debug === true)
           console.log(
             "[DEBUG] Sending dev-generated message to " +
               message.channel.id +

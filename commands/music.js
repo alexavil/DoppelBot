@@ -238,6 +238,35 @@ module.exports = {
         message.channel.send("Stopped!");
         break;
       }
+      case "suggest": 
+        {
+          if (debug.debug === true)
+          console.log("[DEBUG] Starting suggestions for " + id + "...");
+        if (!args[1]) {
+          if (debug.debug === true)
+            console.log("[DEBUG] Invalid input, aborting...");
+          return message.reply("Provide a valid query!");
+        }
+        let query = args.slice(1).join(" ");
+        if (debug.debug === true) {
+          console.log("[DEBUG] User query: " + query + "...");
+          console.log("[DEBUG] Fetching suggestions...");
+        }
+        let instance = await InvidJS.fetchInstances({ url: default_url });
+        let results = await InvidJS.fetchSearchSuggestions(instance[0], query);
+        if (!results.length) {
+          if (debug.debug === true)
+            console.log("[DEBUG] No content was found...");
+          return message.reply(
+            "No suggestions were found based on your search query!"
+          );
+        }
+        let result = "Suggestions for `" + query + "`:";
+        results.forEach((suggestion) => {
+          result += "\n`" + suggestion + "`";
+        });
+        return message.channel.send(result);
+        }
       case "search":
         {
           if (debug.debug === true)

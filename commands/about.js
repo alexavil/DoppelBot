@@ -25,6 +25,7 @@ module.exports = {
             prefix +
             "music`.\n" +
             "`play` - play music\n" +
+            "`suggest` - suggest search queries for a string\n" +
             "`search` - search for music\n" +
             "`pause` - pause the current track\n" +
             "`stop` - stop playing\n" +

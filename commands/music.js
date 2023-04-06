@@ -432,7 +432,7 @@ module.exports = {
         ) {
           masterqueue
             .prepare(
-              `UPDATE guild_${id} SET isLooped = 'false' WHERE ROWID = 1`
+              `UPDATE guild_${id} SET isLooped = 'false' LIMIT 1`
             )
             .run();
         }
@@ -451,7 +451,7 @@ module.exports = {
           case "true": {
             masterqueue
               .prepare(
-                `UPDATE guild_${id} SET isLooped = 'false' WHERE ROWID = 1`
+                `UPDATE guild_${id} SET isLooped = 'false' LIMIT 1`
               )
               .run();
             return message.reply("The current track will not be looped!");
@@ -459,7 +459,7 @@ module.exports = {
           case "false": {
             masterqueue
               .prepare(
-                `UPDATE guild_${id} SET isLooped = 'true' WHERE ROWID = 1`
+                `UPDATE guild_${id} SET isLooped = 'true' LIMIT 1`
               )
               .run();
             return message.reply("The current track will be looped!");

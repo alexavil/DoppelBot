@@ -224,7 +224,7 @@ function createConfig(id) {
     .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
     .run("state", "commands");
   queue
-    .prepare(`CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT, author TEXT)`)
+    .prepare(`CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT, author TEXT, isLooped TEXT)`)
     .run();
   tags
     .prepare(`CREATE TABLE IF NOT EXISTS guild_${id} (tag TEXT, response TEXT)`)

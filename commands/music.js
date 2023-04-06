@@ -319,7 +319,7 @@ module.exports = {
             .prepare(
               `SELECT * FROM guild_${id} WHERE author = ${message.author.id}`
             )
-            .all().length === 0
+            .all().length === 0 && channel.members.size !== 2
         ) {
           return message.reply("You are not allowed to stop!");
         }
@@ -420,11 +420,10 @@ module.exports = {
             .prepare(
               `SELECT * FROM guild_${id} WHERE author = ${message.author.id}`
             )
-            .all().length === 0
+            .all().length === 0 && channel.members.size !== 2
         ) {
           return message.reply("You are not allowed to skip!");
         }
-        //If the current track is looped, disable the loop
         if (
           masterqueue
             .prepare(`SELECT * FROM guild_${id} ORDER BY ROWID LIMIT 1`)

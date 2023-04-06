@@ -187,8 +187,8 @@ function prepareGlobalSettings() {
       Sentry.captureException(err);
     } else {
       if (debug === true) {
-        console.log("[DEBUG] Retreived build number successfully!");
-        console.log("[DEBUG] Build number: " + stdout.toString().substring(0, 7));
+        console.log("[DEBUG] Retreived build hash successfully!");
+        console.log("[DEBUG] Build hash: " + stdout.toString().substring(0, 7));
       }
       settings
         .prepare("update global set value = ? where option = 'current_version'")

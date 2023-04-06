@@ -35,6 +35,67 @@ module.exports = {
       )
       .get().value;
 
+    async function getPlaylist(url) {
+      if (debug.debug === true)
+        console.log("[DEBUG] Validating url " + url + "...");
+      try {
+        let instance = await InvidJS.fetchInstances({
+          url: url.split("/p")[0],
+        });
+        if (instance[0].health < min_health) {
+          if (debug.debug === true)
+            console.log(
+              "[DEBUG] Provided instance health is low, sending a warning..."
+            );
+          message.channel.send(
+            "WARNING: Instance health is low. Please consider selecting a different instance."
+          );
+        }
+        let queuelength = masterqueue
+          .prepare(`SELECT * FROM guild_${id}`)
+          .get().length;
+        let playlist = await InvidJS.fetchPlaylist(
+          instance[0],
+          url.split("=")[1]
+        );
+        playlist.videos.forEach((video) => {
+          masterqueue
+            .prepare(`INSERT INTO guild_${id} VALUES (?, ?)`)
+            .run(
+              url.split("/p")[0] + "/watch?v=" + video.id,
+              message.author.id
+            );
+        });
+        message.reply("Playlist added to queue!");
+        //If the queue is empty, start playing
+        if (queuelength === 0) {
+          if (debug.debug === true)
+            console.log("[DEBUG] Queue is empty, starting playback...");
+          return playmusic(
+            channel,
+            url.split("/p")[0] + "/watch?v=" + playlist.videos[0].id,
+            message.author.id
+          );
+        }
+      } catch (error) {
+        if (debug.debug === true)
+          console.log("[DEBUG] Error: " + error + "...");
+        switch (error.code) {
+          case InvidJS.ErrorCodes.APIBlocked: {
+            return message.reply(
+              "The playlist could not be fetched due to API restrictions. The instance may not support API calls or may be down."
+            );
+          }
+          case InvidJS.ErrorCodes.APIError: {
+            return message.reply(
+              "The playlist could not be fetched due to an API error. Please try again later."
+            );
+          }
+        }
+        return undefined;
+      }
+    }
+
     async function streamCheck(url) {
       if (debug.debug === true)
         console.log("[DEBUG] Validating url " + url + "...");
@@ -211,9 +272,14 @@ module.exports = {
           if (debug.debug === true)
             console.log("[DEBUG] YouTube link detected, redirecting...");
           message.channel.send(
-            "Due to migration to InvidJS, your track will be played using the default Invidious instance for this server."
+            "Due to migration to InvidJS, the content will be played using the default Invidious instance for this server."
           );
-          url = default_url + "/watch?v=" + url.split("=")[1];
+          if (url.includes("/watch?v=")) {
+            url = default_url + "/watch?v=" + url.split("=")[1];
+          }
+          if (url.includes("/playlist?list=")) {
+            url = default_url + "/playlist?list=" + url.split("=")[1];
+          }
         }
         if (url.match(/[a-zA-Z0-9_-]{11}/) && url.length === 11) {
           if (debug.debug === true)
@@ -223,7 +289,8 @@ module.exports = {
           );
           url = default_url + "/watch?v=" + url;
         }
-        setupQueue(url);
+        if (url.includes("/watch?v=")) setupQueue(url);
+        if (url.includes("/playlist?list=")) getPlaylist(url);
         break;
       }
       case "stop": {
@@ -238,9 +305,8 @@ module.exports = {
         message.channel.send("Stopped!");
         break;
       }
-      case "suggest": 
-        {
-          if (debug.debug === true)
+      case "suggest": {
+        if (debug.debug === true)
           console.log("[DEBUG] Starting suggestions for " + id + "...");
         if (!args[1]) {
           if (debug.debug === true)
@@ -266,7 +332,7 @@ module.exports = {
           result += "\n`" + suggestion + "`";
         });
         return message.channel.send(result);
-        }
+      }
       case "search":
         {
           if (debug.debug === true)
@@ -321,23 +387,8 @@ module.exports = {
           console.log("[DEBUG] Trying to skip a track for " + id + "...");
         const connection = getVoiceConnection(channel.guild.id);
         if (!connection) return message.channel.send("Nothing to skip!");
-        masterqueue
-          .prepare(`DELETE FROM guild_${id} ORDER BY ROWID LIMIT 1`)
-          .run();
-        let track = masterqueue
-          .prepare(`SELECT * FROM guild_${id} ORDER BY ROWID LIMIT 1`)
-          .get();
-        if (track || track != undefined) {
-          if (debug.debug === true)
-            console.log("[DEBUG] Found a track, skipping...");
-          message.channel.send("Skipped!");
-          playmusic(channel, track.track, track.author);
-        } else {
-          if (debug.debug === true)
-            console.log("[DEBUG] Skipping and disconnecting...");
-          message.channel.send("No more tracks to play, disconnecting!");
-          if (connection) connection.destroy();
-        }
+        player.stop();
+        message.channel.send("Skipped!");
         break;
       }
       case "pause": {

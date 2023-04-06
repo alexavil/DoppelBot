@@ -20,7 +20,11 @@ module.exports = {
       case "c": {
         if (debug.debug === true)
           console.log("[DEBUG] Starting tag creation for " + id + "...");
-        if (!message.channel.permissionsFor(message.author).has(Discord.PermissionsBitField.Flags.BanMembers))
+        if (
+          !message.channel
+            .permissionsFor(message.author)
+            .has(Discord.PermissionsBitField.Flags.BanMembers)
+        )
           return message.reply(
             "You do not have permission to use this command!"
           );
@@ -129,7 +133,11 @@ module.exports = {
       case "d": {
         if (debug.debug === true)
           console.log("[DEBUG] Starting tag deletion for " + id + "...");
-        if (!message.channel.permissionsFor(message.author).has(Discord.PermissionsBitField.Flags.BanMembers))
+        if (
+          !message.channel
+            .permissionsFor(message.author)
+            .has(Discord.PermissionsBitField.Flags.BanMembers)
+        )
           return message.reply(
             "You do not have permission to use this command!"
           );

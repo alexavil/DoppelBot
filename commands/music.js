@@ -298,6 +298,16 @@ module.exports = {
           console.log(
             "[DEBUG] Trying to stop the VC connection for " + id + "..."
           );
+          if (
+            !message.channel.permissionsFor(message.author).has(Discord.PermissionsBitField.Flags.BanMembers) &&
+            masterqueue
+              .prepare(
+                `SELECT * FROM guild_${id} WHERE author = ${message.author.id}`
+              )
+              .all().length === 0
+          ) {
+            return message.reply("You are not allowed to stop!");
+          }
         const connection = getVoiceConnection(channel.guild.id);
         if (connection) connection.destroy();
         else return message.channel.send("The bot is already stopped!");
@@ -387,6 +397,16 @@ module.exports = {
           console.log("[DEBUG] Trying to skip a track for " + id + "...");
         const connection = getVoiceConnection(channel.guild.id);
         if (!connection) return message.channel.send("Nothing to skip!");
+        if (
+          !message.channel.permissionsFor(message.author).has(Discord.PermissionsBitField.Flags.BanMembers) &&
+          masterqueue
+            .prepare(
+              `SELECT * FROM guild_${id} WHERE author = ${message.author.id}`
+            )
+            .all().length === 0
+        ) {
+          return message.reply("You are not allowed to skip!");
+        }
         player.stop();
         message.channel.send("Skipped!");
         break;

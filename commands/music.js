@@ -53,7 +53,7 @@ module.exports = {
         }
         let queuelength = masterqueue
           .prepare(`SELECT * FROM guild_${id}`)
-          .get().length;
+          .all().length;
         let playlist = await InvidJS.fetchPlaylist(
           instance[0],
           url.split("=")[1]
@@ -68,7 +68,6 @@ module.exports = {
             );
         });
         message.reply("Playlist added to queue!");
-        //If the queue is empty, start playing
         if (queuelength === 0) {
           if (debug.debug === true)
             console.log("[DEBUG] Queue is empty, starting playback...");
@@ -319,7 +318,8 @@ module.exports = {
             .prepare(
               `SELECT * FROM guild_${id} WHERE author = ${message.author.id}`
             )
-            .all().length === 0 && channel.members.size !== 2
+            .all().length === 0 &&
+          channel.members.size !== 2
         ) {
           return message.reply("You are not allowed to stop!");
         }
@@ -391,16 +391,23 @@ module.exports = {
         if (debug.debug === true)
           console.log("[DEBUG] Requesting queue for " + id + "...");
         let embed = new Discord.EmbedBuilder();
-        masterqueue
+        let queuelength = masterqueue
           .prepare(`SELECT * FROM guild_${id}`)
-          .all()
-          .forEach((track) => {
-            embed.addFields({
-              name: track.track,
-              value: `Requested by: <@!${track.author}>`,
-              inline: true,
+          .all().length;
+        if (queuelength !== 0) {
+          masterqueue
+            .prepare(`SELECT * FROM guild_${id}`)
+            .all()
+            .forEach((track) => {
+              embed.addFields({
+                name: track.track,
+                value: `Requested by: <@!${track.author}>`,
+                inline: true,
+              });
             });
-          });
+        } else {
+          embed.setDescription("The queue is empty!");
+        }
         embed.setTitle("Queue");
         embed.setColor("#0099ff");
         message.channel.send({ embeds: [embed] });
@@ -420,7 +427,8 @@ module.exports = {
             .prepare(
               `SELECT * FROM guild_${id} WHERE author = ${message.author.id}`
             )
-            .all().length === 0 && channel.members.size !== 2
+            .all().length === 0 &&
+          channel.members.size !== 2
         ) {
           return message.reply("You are not allowed to skip!");
         }
@@ -430,9 +438,7 @@ module.exports = {
             .get().isLooped === "true"
         ) {
           masterqueue
-            .prepare(
-              `UPDATE guild_${id} SET isLooped = 'false' LIMIT 1`
-            )
+            .prepare(`UPDATE guild_${id} SET isLooped = 'false' LIMIT 1`)
             .run();
         }
         player.stop();
@@ -449,17 +455,13 @@ module.exports = {
         ) {
           case "true": {
             masterqueue
-              .prepare(
-                `UPDATE guild_${id} SET isLooped = 'false' LIMIT 1`
-              )
+              .prepare(`UPDATE guild_${id} SET isLooped = 'false' LIMIT 1`)
               .run();
             return message.reply("The current track will not be looped!");
           }
           case "false": {
             masterqueue
-              .prepare(
-                `UPDATE guild_${id} SET isLooped = 'true' LIMIT 1`
-              )
+              .prepare(`UPDATE guild_${id} SET isLooped = 'true' LIMIT 1`)
               .run();
             return message.reply("The current track will be looped!");
           }

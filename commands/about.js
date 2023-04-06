@@ -30,7 +30,8 @@ module.exports = {
             "`pause` - pause the current track\n" +
             "`stop` - stop playing\n" +
             "`queue` - view the current queue\n" +
-            "`skip` - skip the current track.",
+            "`skip` - skip the current track\n" +
+            "`loop` - loop the current track.",
         },
         {
           name: "Tags",

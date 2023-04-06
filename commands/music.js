@@ -60,10 +60,11 @@ module.exports = {
         );
         playlist.videos.forEach((video) => {
           masterqueue
-            .prepare(`INSERT INTO guild_${id} VALUES (?, ?)`)
+            .prepare(`INSERT INTO guild_${id} VALUES (?, ?, ?)`)
             .run(
               url.split("/p")[0] + "/watch?v=" + video.id,
-              message.author.id
+              message.author.id,
+              "false"
             );
         });
         message.reply("Playlist added to queue!");
@@ -147,8 +148,8 @@ module.exports = {
       let stream = await streamCheck(url);
       if (stream === undefined) return false;
       masterqueue
-        .prepare(`INSERT INTO guild_${id} VALUES (?, ?)`)
-        .run(url, message.author.id);
+        .prepare(`INSERT INTO guild_${id} VALUES (?, ?, ?)`)
+        .run(url, message.author.id, "false");
       if (masterqueue.prepare(`SELECT * FROM guild_${id}`).all().length === 1) {
         if (debug.debug === true)
           console.log(
@@ -189,6 +190,18 @@ module.exports = {
       player.on(AudioPlayerStatus.Idle, () => {
         if (debug.debug === true)
           console.log("[DEBUG] Player idle, checking the queue...");
+        if (
+          masterqueue
+            .prepare(`SELECT * FROM guild_${id} ORDER BY ROWID LIMIT 1`)
+            .get().isLooped === "true"
+        ) {
+          if (debug.debug === true)
+            console.log("[DEBUG] The current track is looped, restarting...");
+          let track = masterqueue
+            .prepare(`SELECT * FROM guild_${id} ORDER BY ROWID LIMIT 1`)
+            .get();
+          return playmusic(channel, track.track, track.author);
+        }
         masterqueue
           .prepare(`DELETE FROM guild_${id} ORDER BY ROWID LIMIT 1`)
           .run();
@@ -298,16 +311,18 @@ module.exports = {
           console.log(
             "[DEBUG] Trying to stop the VC connection for " + id + "..."
           );
-          if (
-            !message.channel.permissionsFor(message.author).has(Discord.PermissionsBitField.Flags.BanMembers) &&
-            masterqueue
-              .prepare(
-                `SELECT * FROM guild_${id} WHERE author = ${message.author.id}`
-              )
-              .all().length === 0
-          ) {
-            return message.reply("You are not allowed to stop!");
-          }
+        if (
+          !message.channel
+            .permissionsFor(message.author)
+            .has(Discord.PermissionsBitField.Flags.BanMembers) &&
+          masterqueue
+            .prepare(
+              `SELECT * FROM guild_${id} WHERE author = ${message.author.id}`
+            )
+            .all().length === 0
+        ) {
+          return message.reply("You are not allowed to stop!");
+        }
         const connection = getVoiceConnection(channel.guild.id);
         if (connection) connection.destroy();
         else return message.channel.send("The bot is already stopped!");
@@ -398,7 +413,9 @@ module.exports = {
         const connection = getVoiceConnection(channel.guild.id);
         if (!connection) return message.channel.send("Nothing to skip!");
         if (
-          !message.channel.permissionsFor(message.author).has(Discord.PermissionsBitField.Flags.BanMembers) &&
+          !message.channel
+            .permissionsFor(message.author)
+            .has(Discord.PermissionsBitField.Flags.BanMembers) &&
           masterqueue
             .prepare(
               `SELECT * FROM guild_${id} WHERE author = ${message.author.id}`
@@ -407,9 +424,47 @@ module.exports = {
         ) {
           return message.reply("You are not allowed to skip!");
         }
+        //If the current track is looped, disable the loop
+        if (
+          masterqueue
+            .prepare(`SELECT * FROM guild_${id} ORDER BY ROWID LIMIT 1`)
+            .get().isLooped === "true"
+        ) {
+          masterqueue
+            .prepare(
+              `UPDATE guild_${id} SET isLooped = 'false' WHERE ROWID = 1`
+            )
+            .run();
+        }
         player.stop();
         message.channel.send("Skipped!");
         break;
+      }
+      case "loop": {
+        if (debug.debug === true)
+          console.log("[DEBUG] Loop requested for " + id + "...");
+        switch (
+          masterqueue
+            .prepare(`SELECT * FROM guild_${id} ORDER BY ROWID LIMIT 1`)
+            .get().isLooped
+        ) {
+          case "true": {
+            masterqueue
+              .prepare(
+                `UPDATE guild_${id} SET isLooped = 'false' WHERE ROWID = 1`
+              )
+              .run();
+            return message.reply("The current track will not be looped!");
+          }
+          case "false": {
+            masterqueue
+              .prepare(
+                `UPDATE guild_${id} SET isLooped = 'true' WHERE ROWID = 1`
+              )
+              .run();
+            return message.reply("The current track will be looped!");
+          }
+        }
       }
       case "pause": {
         if (debug.debug === true)

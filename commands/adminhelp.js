@@ -5,7 +5,7 @@ module.exports = {
   name: "adminhelp",
   aliases: ["ahelp"],
   description: "About the bot",
-  userpermissions: "BAN_MEMBERS",
+  userpermissions: Discord.PermissionsBitField.Flags.BanMembers,
   execute(message) {
     const settings = new sqlite3("./data/settings.db");
     let id = message.guild.id;

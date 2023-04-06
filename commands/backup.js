@@ -1,6 +1,7 @@
 const sqlite3 = require("better-sqlite3");
 const fs = require("fs-extra");
 const debug = require("../index");
+const Discord = require("discord.js");
 
 const settings = new sqlite3("./data/settings.db");
 const tags = new sqlite3("./data/tags.db");
@@ -8,7 +9,7 @@ const tags = new sqlite3("./data/tags.db");
 module.exports = {
   name: "backup",
   description: "Backup your server settings",
-  userpermissions: "ADMINISTRATOR",
+  userpermissions: Discord.PermissionsBitField.Flags.Administrator,
   async execute(message) {
     const id = message.guild.id;
     if (debug.debug === true)

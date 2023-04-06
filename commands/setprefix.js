@@ -1,10 +1,11 @@
 const sqlite3 = require("better-sqlite3");
 const debug = require("../index");
+const Discord = require("discord.js");
 module.exports = {
   name: "setprefix",
   aliases: ["prefix"],
   description: "Set guild prefix",
-  userpermissions: "BAN_MEMBERS",
+  userpermissions: Discord.PermissionsBitField.Flags.BanMembers,
   execute(message, args) {
     let id = message.guild.id;
     let settings = new sqlite3("./data/settings.db");

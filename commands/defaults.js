@@ -1,5 +1,6 @@
 const sqlite3 = require("better-sqlite3");
 const debug = require("../index");
+const Discord = require("discord.js");
 
 const settings = new sqlite3("./data/settings.db");
 const tags = new sqlite3("./data/tags.db");
@@ -7,7 +8,7 @@ const tags = new sqlite3("./data/tags.db");
 module.exports = {
   name: "defaults",
   description: "Resets your server settings to defaults",
-  userpermissions: "ADMINISTRATOR",
+  userpermissions: Discord.PermissionsBitField.Flags.Administrator,
   async execute(message) {
     const id = message.guild.id;
     if (debug.debug === true)

@@ -1,11 +1,12 @@
 const sqlite3 = require("better-sqlite3");
 const InvidJS = require("@invidjs/invid-js");
+const Discord = require("discord.js");
 const debug = require("../index");
 module.exports = {
   name: "setinstance",
   aliases: ["instance"],
   description: "Set default Invidious Instance",
-  userpermissions: "BAN_MEMBERS",
+  userpermissions: Discord.PermissionsBitField.Flags.BanMembers,
   async execute(message, args) {
     let id = message.guild.id;
     let settings = new sqlite3("./data/settings.db");

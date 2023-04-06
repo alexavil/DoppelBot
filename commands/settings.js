@@ -5,7 +5,7 @@ const debug = require("../index");
 module.exports = {
   name: "settings",
   description: "Show server settings",
-  userpermissions: "BAN_MEMBERS",
+  userpermissions: Discord.PermissionsBitField.Flags.BanMembers,
   execute(message) {
     const id = message.guild.id;
     if (debug.debug === true)

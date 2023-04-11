@@ -57,7 +57,6 @@ module.exports = {
       help.setFooter({
         text: `Build: ${version}\nOS: ${os.type()} ${os.release} ${os.arch}\nDebug Mode - For testing purposes only`,
       });
-    else help.setFooter({ text: `Build: ${version}` });
     message.channel.send({ embeds: [help] }).then(() => {
       if (debug.debug === true)
         console.log(

@@ -139,6 +139,12 @@ module.exports = {
             );
             return undefined;
           }
+          case InvidJS.ErrorCodes.BlockedVideo: {
+            message.reply(
+              "This video is blocked - perhaps it's from an auto-generated channel? Please try another video."
+            );
+            return undefined;
+          }
         }
         return undefined;
       }

@@ -93,6 +93,12 @@ module.exports = {
             );
             return undefined;
           }
+          case InvidJS.ErrorCodes.InvalidContent: {
+              message.reply(
+                "This playlist is invalid. Please try another playlist."
+              );
+              return undefined;   
+          }
         }
         return undefined;
       }
@@ -144,6 +150,12 @@ module.exports = {
               "This video is blocked - perhaps it's from an auto-generated channel? Please try another video."
             );
             return undefined;
+          }
+            case InvidJS.ErrorCodes.InvalidContent: {
+              message.reply(
+                "This video is invalid. Please try another video."
+              );
+              return undefined;  
           }
         }
         return undefined;

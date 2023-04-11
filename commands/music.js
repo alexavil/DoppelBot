@@ -94,10 +94,10 @@ module.exports = {
             return undefined;
           }
           case InvidJS.ErrorCodes.InvalidContent: {
-              message.reply(
-                "This playlist is invalid. Please try another playlist."
-              );
-              return undefined;   
+            message.reply(
+              "This playlist is invalid. Please try another playlist."
+            );
+            return undefined;
           }
         }
         return undefined;
@@ -151,11 +151,9 @@ module.exports = {
             );
             return undefined;
           }
-            case InvidJS.ErrorCodes.InvalidContent: {
-              message.reply(
-                "This video is invalid. Please try another video."
-              );
-              return undefined;  
+          case InvidJS.ErrorCodes.InvalidContent: {
+            message.reply("This video is invalid. Please try another video.");
+            return undefined;
           }
         }
         return undefined;

@@ -55,7 +55,9 @@ module.exports = {
       );
     if (debug.debug === true)
       help.setFooter({
-        text: `Build: ${version}\nOS: ${os.type()} ${os.release} ${os.arch}\nDebug Mode - For testing purposes only`,
+        text: `Build: ${version}\nOS: ${os.type()} ${os.release} ${
+          os.arch
+        }\nDebug Mode - For testing purposes only`,
       });
     message.channel.send({ embeds: [help] }).then(() => {
       if (debug.debug === true)

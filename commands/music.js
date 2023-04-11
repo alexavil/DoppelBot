@@ -82,14 +82,16 @@ module.exports = {
           console.log("[DEBUG] Error: " + error + "...");
         switch (error.code) {
           case InvidJS.ErrorCodes.APIBlocked: {
-            return message.reply(
+            message.reply(
               "The playlist could not be fetched due to API restrictions. The instance may not support API calls or may be down."
             );
+            return undefined;
           }
           case InvidJS.ErrorCodes.APIError: {
-            return message.reply(
+            message.reply(
               "The playlist could not be fetched due to an API error. Please try again later."
             );
+            return undefined;
           }
         }
         return undefined;
@@ -126,14 +128,16 @@ module.exports = {
           console.log("[DEBUG] Error: " + error + "...");
         switch (error.code) {
           case InvidJS.ErrorCodes.APIBlocked: {
-            return message.reply(
+            message.reply(
               "The video could not be fetched due to API restrictions. The instance may not support API calls or may be down."
             );
+            return undefined;
           }
           case InvidJS.ErrorCodes.APIError: {
-            return message.reply(
+            message.reply(
               "The video could not be fetched due to an API error. Please try again later."
             );
+            return undefined;
           }
         }
         return undefined;

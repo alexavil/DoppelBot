@@ -11,10 +11,10 @@
   "dependencies": {
     "@discordjs/voice": "^0.16.0",
     "@invidjs/invid-js": "^0.0.1-dev",
-    "@sentry/node": "^7.46.0",
-    "@sentry/tracing": "^7.46.0",
+    "@sentry/node": "^7.47.0",
+    "@sentry/tracing": "^7.47.0",
     "avconv": "^3.1.0",
-    "better-sqlite3": "^8.2.0",
+    "better-sqlite3": "^8.3.0",
     "cron": "^2.3.0",
     "discord.js": "^14.7.1",
     "ffmpeg": "^0.0.4",

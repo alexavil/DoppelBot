@@ -35,6 +35,83 @@ module.exports = {
       )
       .get().value;
 
+    async function getVideo(url) {
+      try {
+        let instances = await InvidJS.fetchInstances({
+          url: url.split("/w")[0],
+        });
+        if (instances[0].health < min_health) {
+          if (debug.debug === true)
+            console.log(
+              "[DEBUG] Provided instance health is low, sending a warning..."
+            );
+          message.channel.send(
+            "WARNING: Instance health is low. Please consider selecting a different instance."
+          );
+        }
+        let instance = instances[0];
+        let video = await InvidJS.fetchVideo(instance, url.split("=")[1]);
+        let format = video.formats.find(
+          (format) => format.quality === InvidJS.AudioQuality.Medium
+        );
+        if (debug.debug === true)
+          console.log("[DEBUG] Validating url " + url + "...");
+        let isValid = undefined;
+        isValid = await InvidJS.validateSource(instance, video, format);
+        if (isValid === true) {
+          let result = {
+            url,
+            instance,
+            video,
+            format,
+            isValid,
+          };
+          masterqueue
+            .prepare(`INSERT INTO guild_${id} VALUES (?, ?, ?)`)
+            .run(url, message.author.id, "false");
+          if (
+            masterqueue.prepare(`SELECT * FROM guild_${id}`).all().length === 1
+          ) {
+            if (debug.debug === true)
+              console.log(
+                "[DEBUG] This is the only track in the queue, starting playback..."
+              );
+            playmusic(channel, result, message.author.id);
+          } else {
+            message.channel.send("Added " + url + " to queue!");
+          }
+        }
+      } catch (error) {
+        if (debug.debug === true)
+          console.log("[DEBUG] Error: " + error + "...");
+        switch (error.code) {
+          case InvidJS.ErrorCodes.APIBlocked: {
+            message.reply(
+              "The video could not be fetched due to API restrictions. The instance may not support API calls or may be down."
+            );
+            return undefined;
+          }
+          case InvidJS.ErrorCodes.APIError: {
+            message.reply(
+              "The video could not be fetched due to an API error. Please try again later."
+            );
+            return undefined;
+          }
+          case InvidJS.ErrorCodes.BlockedVideo: {
+            message.reply(
+              "This video is blocked - perhaps it's from an auto-generated channel? Please try another video."
+            );
+            return undefined;
+          }
+          case InvidJS.ErrorCodes.InvalidContent: {
+            message.reply("This video is invalid. Please try another video.");
+            return undefined;
+          }
+        }
+        return undefined;
+      }
+    }
+
     async function getPlaylist(url) {
       if (debug.debug === true)
         console.log("[DEBUG] Validating url " + url + "...");
@@ -104,85 +181,19 @@ module.exports = {
       }
     }
 
-    async function streamCheck(url) {
-      if (debug.debug === true)
-        console.log("[DEBUG] Validating url " + url + "...");
+    async function playmusic(channel, result, author) {
       let stream = undefined;
-      try {
-        let instance = await InvidJS.fetchInstances({
-          url: url.split("/w")[0],
-        });
-        if (instance[0].health < min_health) {
-          if (debug.debug === true)
-            console.log(
-              "[DEBUG] Provided instance health is low, sending a warning..."
-            );
-          message.channel.send(
-            "WARNING: Instance health is low. Please consider selecting a different instance."
-          );
-        }
-        let video = await InvidJS.fetchVideo(instance[0], url.split("=")[1]);
-        let format = video.formats.find(
-          (format) => format.quality === "AUDIO_QUALITY_MEDIUM"
-        );
-        stream = await InvidJS.fetchSource(instance[0], video, format, {
+      if (result.isValid === undefined || result.isValid === false)
+        return false;
+      stream = await InvidJS.fetchSource(
+        result.instance,
+        result.video,
+        result.format,
+        {
           saveTo: InvidJS.SaveSourceTo.Memory,
           parts: 5,
-        });
-      } catch (error) {
-        if (debug.debug === true)
-          console.log("[DEBUG] Error: " + error + "...");
-        switch (error.code) {
-          case InvidJS.ErrorCodes.APIBlocked: {
-            message.reply(
-              "The video could not be fetched due to API restrictions. The instance may not support API calls or may be down."
-            );
-            return undefined;
-          }
-          case InvidJS.ErrorCodes.APIError: {
-            message.reply(
-              "The video could not be fetched due to an API error. Please try again later."
-            );
-            return undefined;
-          }
-          case InvidJS.ErrorCodes.BlockedVideo: {
-            message.reply(
-              "This video is blocked - perhaps it's from an auto-generated channel? Please try another video."
-            );
-            return undefined;
-          }
-          case InvidJS.ErrorCodes.InvalidContent: {
-            message.reply("This video is invalid. Please try another video.");
-            return undefined;
-          }
         }
-        return undefined;
-      }
-      return stream;
-    }
-
-    async function setupQueue(url) {
-      if (debug.debug === true)
-        console.log("[DEBUG] Adding url " + url + " to queue...");
-      let stream = await streamCheck(url);
-      if (stream === undefined) return false;
-      masterqueue
-        .prepare(`INSERT INTO guild_${id} VALUES (?, ?, ?)`)
-        .run(url, message.author.id, "false");
-      if (masterqueue.prepare(`SELECT * FROM guild_${id}`).all().length === 1) {
-        if (debug.debug === true)
-          console.log(
-            "[DEBUG] This is the only track in the queue, starting playback..."
-          );
-        playmusic(channel, url, message.author.id);
-      } else {
-        message.channel.send("Added " + url + " to queue!");
-      }
-    }
-
-    async function playmusic(channel, url, author) {
-      let stream = await streamCheck(url);
-      if (stream === undefined) return false;
+      );
       if (debug.debug === true) console.log("[DEBUG] Creating connection...");
       const connection = joinVoiceChannel({
         channelId: channel.id,
@@ -202,7 +213,9 @@ module.exports = {
       const resource = createAudioResource(stream, {
         inputType: stream.type,
       });
-      message.channel.send(`Now playing: ${url}\nRequested by <@!${author}>`);
+      message.channel.send(
+        `Now playing: ${result.url}\nRequested by <@!${author}>`
+      );
       player.play(resource);
       connection.subscribe(player);
       if (timerId !== undefined) clearTimeout(timerId);
@@ -321,7 +334,7 @@ module.exports = {
           );
           url = default_url + "/watch?v=" + url;
         }
-        if (url.includes("/watch?v=")) setupQueue(url);
+        if (url.includes("/watch?v=")) getVideo(url);
         if (url.includes("/playlist?list=")) getPlaylist(url);
         break;
       }

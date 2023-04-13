@@ -23,9 +23,9 @@ module.exports = {
     const connection = getVoiceConnection(id);
     if (!connection) return message.channel.send("The bot is already stopped!");
     else {
-    connection.destroy();
-    masterqueue.prepare(`DELETE FROM guild_${id}`).run();
-    return message.reply("Stopped!");
+      connection.destroy();
+      masterqueue.prepare(`DELETE FROM guild_${id}`).run();
+      return message.reply("Stopped!");
     }
   },
 };

@@ -2,7 +2,7 @@ const debug = require("../index");
 const sqlite3 = require("better-sqlite3");
 const { getVoiceConnection } = require("@discordjs/voice");
 
-const masterqueue = new sqlite3("./data/settings.db");
+const masterqueue = new sqlite3("./data/queue.db");
 module.exports = {
   name: "loop",
   description: "Loop the music",

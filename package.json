@@ -4,7 +4,7 @@
   "description": "A Doppel a day keeps your sadness away.",
   "main": "index.js",
   "scripts": {
-    "prettier": "npx prettier ./index.js ./commands/* --write"
+    "prettier": "npx prettier ./index.js ./music.js ./commands/* --write"
   },
   "author": "alexavil",
   "license": "MIT",

@@ -10,6 +10,7 @@ const {
 } = require("@discordjs/voice");
 const sqlite3 = require("better-sqlite3");
 const masterqueue = new sqlite3("./data/queue.db");
+const settings = new sqlite3("./data/settings.db");
 
 const disallowedLinks = ["https://www.youtube.com/", "https://youtu.be/"];
 
@@ -103,7 +104,8 @@ function playMusic(channel, textchannel, stream, fetched) {
         if (debug.debug === true) {
           console.log("[DEBUG] No more tracks to play, starting timeout...");
         }
-        startTimeout(channel.guild.id, connection, textchannel, 30000);
+        let timeout = parseInt(settings.prepare(`SELECT * FROM guild_${channel.guild.id} WHERE option = 'disconnect_timeout'`).get().value) * 1000;
+        startTimeout(channel.guild.id, connection, textchannel, timeout);
       } else {
         if (debug.debug === true) {
           console.log("[DEBUG] Loading the next track...");

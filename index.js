@@ -2,8 +2,9 @@ const fs = require("fs-extra");
 const Discord = require("discord.js");
 const cron = require("cron");
 const token = process.env.TOKEN || process.argv[2];
-const debug_string = process.env.DOPPELBOT_DEBUG || process.argv[3];
-const debug = debug_string === "realtekmode";
+const debug_env = process.env.DOPPELBOT_DEBUG;
+const debug_string =  process.argv[3];
+const debug = debug_string === "realtekmode" || debug_env === "true";
 const sqlite3 = require("better-sqlite3");
 const {
   PermissionsBitField,

@@ -65,6 +65,7 @@ module.exports = {
       .then((collected) =>
         collected.forEach(async (emoji) => {
           if (emoji.count > 1) {
+            common.endTimeout(id);
             if (debug.debug === true)
               console.log("[DEBUG] User choice: " + choice + "...");
             videoid = results[choice].id;

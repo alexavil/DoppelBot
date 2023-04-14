@@ -1,4 +1,6 @@
 const debug = require("../index");
+const common = require("../music");
+const { getVoiceConnection } = require("@discordjs/voice");
 module.exports = {
   name: "pause",
   description: "Pause the music",
@@ -8,17 +10,18 @@ module.exports = {
       console.log("[DEBUG] Trying to pause for " + id + "...");
     const connection = getVoiceConnection(id);
     if (!connection) return message.channel.send("Nothing to pause!");
-    switch (isPaused) {
+    let player = common.getPlayer(id);
+    switch (player.isPaused) {
       case true: {
         if (debug.debug === true) console.log("[DEBUG] Unpausing...");
-        player.unpause();
-        isPaused = false;
+        player.player.unpause();
+        player.isPaused = false;
         return message.channel.send("Unpaused!");
       }
       case false: {
         if (debug.debug === true) console.log("[DEBUG] Pausing...");
-        player.pause();
-        isPaused = true;
+        player.player.pause();
+        player.isPaused = true;
         return message.channel.send("Paused!");
       }
     }

@@ -2,7 +2,6 @@ const InvidJS = require("@invidjs/invid-js");
 const debug = require("../index");
 const common = require("../music");
 const sqlite3 = require("better-sqlite3");
-const { AudioPlayerStatus, createAudioResource } = require("@discordjs/voice");
 
 const masterqueue = new sqlite3("./data/queue.db");
 const settings = new sqlite3("./data/settings.db");

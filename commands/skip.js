@@ -2,6 +2,7 @@ const Discord = require("discord.js");
 const debug = require("../index");
 const { getVoiceConnection } = require("@discordjs/voice");
 const sqlite3 = require("better-sqlite3");
+const common = require("../music");
 
 const masterqueue = new sqlite3("./data/queue.db");
 module.exports = {
@@ -30,7 +31,8 @@ module.exports = {
         .prepare(`UPDATE guild_${id} SET isLooped = 'false' LIMIT 1`)
         .run();
     }
-    player.stop();
+    let player = common.getPlayer(id);
+    player.player.stop();
     return message.reply("Skipped!");
   },
 };

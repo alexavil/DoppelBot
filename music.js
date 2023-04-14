@@ -15,6 +15,7 @@ const settings = new sqlite3("./data/settings.db");
 const disallowedLinks = ["https://www.youtube.com/", "https://youtu.be/"];
 
 let timeouts = [];
+let players = [];
 
 async function getVideo(url) {
   let instances = await InvidJS.fetchInstances({
@@ -65,6 +66,11 @@ function playMusic(channel, textchannel, stream, fetched) {
     });
   } else connection = getVoiceConnection(channel.guild.id);
   let player = createAudioPlayer();
+  players.push({
+    id: channel.guild.id,
+    player: player,
+    isPaused: false
+  });
   const resource = createAudioResource(stream, {
     inputType: stream.type,
   });
@@ -132,18 +138,42 @@ function startTimeout(id, connection, textchannel, timer) {
       console.log("[DEBUG] Stopping music...");
     }
     connection.destroy();
+    removePlayer(id);
+    endTimeout(id);
     textchannel.send(`No more tracks to play, disconnecting!`);
   }, timer);
-  timeouts.push([id, timeout]);
+  timeouts.push({
+    id: id,
+    timer: timeout
+  });
 }
 
 function endTimeout(id) {
   timeouts.forEach((timeout) => {
-    if (timeout[0] === id) {
+    if (timeout.id === id) {
       if (debug.debug === true) {
         console.log("[DEBUG] A new track has been added, clearing timeout...");
       }
-      clearTimeout(timeout[1]);
+      clearTimeout(timeout.timer);
+      timeouts.splice(timeouts.indexOf(timeout), 1);
+    }
+  });
+}
+
+function getPlayer(id) {
+  let result = undefined;
+  players.forEach((player) => {
+    if (player.id === id) {
+      result = player
+    }
+  });
+  return result;
+}
+
+function removePlayer(id) {
+  players.forEach((player) => {
+    if (player.id === id) {
+      players.splice(players.indexOf(player), 1);
     }
   });
 }
@@ -155,4 +185,6 @@ module.exports = {
   playMusic,
   startTimeout,
   endTimeout,
+  getPlayer,
+  removePlayer
 };

@@ -2,6 +2,7 @@ const Discord = require("discord.js");
 const debug = require("../index");
 const { getVoiceConnection } = require("@discordjs/voice");
 const sqlite3 = require("better-sqlite3");
+const common = require("../music");
 
 const masterqueue = new sqlite3("./data/queue.db");
 module.exports = {
@@ -24,6 +25,7 @@ module.exports = {
     if (!connection) return message.channel.send("The bot is already stopped!");
     else {
       connection.destroy();
+      common.removePlayer(id);
       masterqueue.prepare(`DELETE FROM guild_${id}`).run();
       return message.reply("Stopped!");
     }

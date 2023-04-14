@@ -29,7 +29,7 @@ module.exports = {
     let instance = await InvidJS.fetchInstances({ url: default_url });
     let results = await InvidJS.searchContent(instance[0], query, {
       limit: 5,
-      type: InvidJS.ContentTypes.Video
+      type: InvidJS.ContentTypes.Video,
     });
     if (!results.length) {
       if (debug.debug === true) console.log("[DEBUG] No content was found...");
@@ -91,7 +91,8 @@ module.exports = {
                   fetched.format,
                   { saveTo: InvidJS.SaveSourceTo.Memory, parts: 10 }
                 );
-                if (debug.debug === true) console.log("[DEBUG] Creating player...");
+                if (debug.debug === true)
+                  console.log("[DEBUG] Creating player...");
                 message.channel.send(
                   `Now playing: ${fetched.url}\nRequested by <@!${message.author.id}>`
                 );

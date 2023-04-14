@@ -100,9 +100,7 @@ module.exports = {
         message.reply("Playlist added to queue!");
         if (queuelength === 0) {
           let first = masterqueue
-            .prepare(
-              `SELECT * FROM guild_${id} ORDER BY ROWID LIMIT 1`
-            )
+            .prepare(`SELECT * FROM guild_${id} ORDER BY ROWID LIMIT 1`)
             .get();
           let vid = await common.getVideo(first.track);
           if (debug.debug === true)

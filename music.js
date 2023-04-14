@@ -69,7 +69,7 @@ function playMusic(channel, textchannel, stream, fetched) {
   players.push({
     id: channel.guild.id,
     player: player,
-    isPaused: false
+    isPaused: false,
   });
   const resource = createAudioResource(stream, {
     inputType: stream.type,
@@ -110,7 +110,14 @@ function playMusic(channel, textchannel, stream, fetched) {
         if (debug.debug === true) {
           console.log("[DEBUG] No more tracks to play, starting timeout...");
         }
-        let timeout = parseInt(settings.prepare(`SELECT * FROM guild_${channel.guild.id} WHERE option = 'disconnect_timeout'`).get().value) * 1000;
+        let timeout =
+          parseInt(
+            settings
+              .prepare(
+                `SELECT * FROM guild_${channel.guild.id} WHERE option = 'disconnect_timeout'`
+              )
+              .get().value
+          ) * 1000;
         startTimeout(channel.guild.id, connection, textchannel, timeout);
       } else {
         if (debug.debug === true) {
@@ -144,7 +151,7 @@ function startTimeout(id, connection, textchannel, timer) {
   }, timer);
   timeouts.push({
     id: id,
-    timer: timeout
+    timer: timeout,
   });
 }
 
@@ -164,7 +171,7 @@ function getPlayer(id) {
   let result = undefined;
   players.forEach((player) => {
     if (player.id === id) {
-      result = player
+      result = player;
     }
   });
   return result;
@@ -186,5 +193,5 @@ module.exports = {
   startTimeout,
   endTimeout,
   getPlayer,
-  removePlayer
+  removePlayer,
 };

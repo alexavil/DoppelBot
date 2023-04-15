@@ -8,13 +8,13 @@ module.exports = {
   description: "Get the server queue",
   async execute(message) {
     const id = message.guild.id;
-    if (debug.debug === true)
-      console.log("[DEBUG] Requesting queue for " + id + "...");
     let embed = new Discord.EmbedBuilder();
     let queuelength = masterqueue
       .prepare(`SELECT * FROM guild_${id}`)
       .all().length;
     if (queuelength !== 0) {
+      if (debug.debug === true)
+        console.log("[DEBUG] Queue for " + id + " is not empty, fetching tracks...");
       masterqueue
         .prepare(`SELECT * FROM guild_${id}`)
         .all()
@@ -26,6 +26,8 @@ module.exports = {
           });
         });
     } else {
+      if (debug.debug === true)
+        console.log("[DEBUG] Queue for " + id + " is empty...");
       embed.setDescription("The queue is empty!");
     }
     embed.setTitle("Queue");

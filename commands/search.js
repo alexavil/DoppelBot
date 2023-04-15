@@ -11,8 +11,6 @@ module.exports = {
   description: "Search a track",
   async execute(message, args) {
     const id = message.guild.id;
-    if (debug.debug === true)
-      console.log("[DEBUG] Starting search for " + id + "...");
     if (!args[0]) {
       if (debug.debug === true)
         console.log("[DEBUG] Invalid input, aborting...");
@@ -60,6 +58,8 @@ module.exports = {
       reaction.emoji.name === `4️⃣` ||
       (reaction.emoji.name === `5️⃣` && user.id === message.author.id);
     let choice = 0;
+    if (debug.debug === true)
+      console.log("[DEBUG] Choice required - awaiting user input...");
     embedmessage
       .awaitReactions({ filter, maxUsers: 2 })
       .then((collected) =>

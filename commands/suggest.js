@@ -11,8 +11,6 @@ module.exports = {
     let default_url = settings
       .prepare(`SELECT * FROM guild_${id} WHERE option = 'default_instance'`)
       .get().value;
-    if (debug.debug === true)
-      console.log("[DEBUG] Starting suggestions for " + id + "...");
     if (!args[0]) {
       if (debug.debug === true)
         console.log("[DEBUG] Invalid input, aborting...");

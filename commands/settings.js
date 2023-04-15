@@ -8,8 +8,6 @@ module.exports = {
   userpermissions: Discord.PermissionsBitField.Flags.BanMembers,
   execute(message) {
     const id = message.guild.id;
-    if (debug.debug === true)
-      console.log("[DEBUG] Fetching settings for " + id + "...");
     const settingsembed = new Discord.EmbedBuilder()
       .setColor("#0099ff")
       .setTitle("Server Settings for " + message.guild.name)

@@ -38,6 +38,8 @@ module.exports = {
         message.channel.send(
           "Please provide a key word or phrase or type `cancel` to cancel."
         );
+        if (debug.debug === true)
+          console.log("[DEBUG] Keyword required - awaiting user input...");
         let keyword_collector = message.channel.createMessageCollector({
           filter,
           max: 1,
@@ -90,6 +92,8 @@ module.exports = {
               message.channel.send(
                 "Please provide the response or type `cancel` to cancel."
               );
+              if (debug.debug === true)
+                console.log("[DEBUG] Response required - awaiting user input...");
               let response_collector = message.channel.createMessageCollector({
                 filter,
                 max: 1,

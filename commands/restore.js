@@ -19,6 +19,8 @@ module.exports = {
     message.channel.send(
       "Please provide the JSON file you received as a backup or type `cancel` to cancel.\n**This will erase all server settings if you proceed!**"
     );
+    if (debug.debug === true)
+      console.log("[DEBUG] File required - awaiting user input...");
     let file_collector = message.channel.createMessageCollector({
       filter,
       max: 1,

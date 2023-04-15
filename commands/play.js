@@ -12,11 +12,13 @@ module.exports = {
   async execute(message, args) {
     const id = message.guild.id;
     if (!message.member.voice.channel) {
+      if (debug.debug === true)
+        console.log("[DEBUG] No voice channel found, aborting...");
       return message.reply("You need to join a voice channel first!");
     }
-    if (debug.debug === true)
-      console.log("[DEBUG] Starting playback for " + id + "...");
     if (!args[0]) {
+      if (debug.debug === true)
+        console.log("[DEBUG] Invalid input, aborting...");
       return message.reply("Provide a valid link!");
     }
     let default_url = settings
@@ -38,16 +40,16 @@ module.exports = {
     }
     if (url.match(/[a-zA-Z0-9_-]{11}/) && url.length === 11) {
       if (debug.debug === true)
-        console.log("[DEBUG] ID detected, using default instance...");
+        console.log("[DEBUG] ID detected, redirecting to default instance...");
       message.reply(
         "Your track will be played using the default Invidious instance for this server."
       );
       url = default_url + "/watch?v=" + url;
     }
     common.endTimeout(id);
+    if (debug.debug === true)
+      console.log("[DEBUG] Validating " + url + "...");
     if (url.includes("/watch?v=")) {
-      if (debug.debug === true)
-        console.log("[DEBUG] Validating " + url + "...");
       let fetched = await common.getVideo(url);
       let queuelength = masterqueue
         .prepare(`SELECT * FROM guild_${id}`)
@@ -59,8 +61,10 @@ module.exports = {
           .prepare(`INSERT INTO guild_${id} VALUES (?, ?, ?)`)
           .run(url, message.author.id, "false");
         if (queuelength === 0) {
-          if (debug.debug === true)
+          if (debug.debug === true) {
+            console.log("[DEBUG] Starting the first track...");
             console.log("[DEBUG] Downloading stream...");
+          }
           let stream = await InvidJS.fetchSource(
             fetched.instance,
             fetched.video,
@@ -88,6 +92,8 @@ module.exports = {
         .prepare(`SELECT * FROM guild_${id}`)
         .all().length;
       if (fetched !== undefined) {
+        if (debug.debug === true)
+          console.log("[DEBUG] Adding tracks from " + url + " to the queue...");
         fetched.playlist.videos.forEach((video) => {
           masterqueue
             .prepare(`INSERT INTO guild_${id} VALUES (?, ?, ?)`)
@@ -99,9 +105,13 @@ module.exports = {
         });
         message.reply("Playlist added to queue!");
         if (queuelength === 0) {
+          if (debug.debug === true)
+            console.log("[DEBUG] Starting the first track...");
           let first = masterqueue
             .prepare(`SELECT * FROM guild_${id} ORDER BY ROWID LIMIT 1`)
             .get();
+          if (debug.debug === true)
+            console.log("[DEBUG] Validating " + first.track + "...");
           let vid = await common.getVideo(first.track);
           if (debug.debug === true)
             console.log("[DEBUG] Downloading stream...");

@@ -15,7 +15,7 @@ module.exports = {
       return message.reply("Invalid value! Please type the time in seconds.");
     }
     if (debug.debug === true)
-      console.log("[DEBUG] New disconnect for " + id + ": " + args[0] + "...");
+      console.log("[DEBUG] New disconnect timeout for " + id + ": " + args[0] + "...");
     settings
       .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
       .run(args[0], "disconnect_timeout");

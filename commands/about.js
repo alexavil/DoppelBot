@@ -48,9 +48,6 @@ module.exports = {
           os.arch
         }\nDebug Mode - For testing purposes only`,
       });
-    message.channel.send({ embeds: [help] }).then(() => {
-      if (debug.debug === true)
-        console.log("[DEBUG] Successfully sent help message to " + id + "...");
-    });
+    message.channel.send({ embeds: [help] });
   },
 };

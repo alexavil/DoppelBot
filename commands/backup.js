@@ -29,10 +29,6 @@ module.exports = {
       .send({
         content: "Your backup is ready!",
         files: [`${id}.json`],
-      })
-      .then(() => {
-        if (debug.debug === true)
-          console.log("[DEBUG] Successfully sent backup to " + id + "...");
       });
     fs.unlink(`${id}.json`);
   },

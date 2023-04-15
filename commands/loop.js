@@ -10,8 +10,6 @@ module.exports = {
     const id = message.guild.id;
     const channel = message.member.voice.channel;
     const connection = getVoiceConnection(id);
-    if (debug.debug === true)
-      console.log("[DEBUG] Loop requested for " + id + "...");
     if (!channel) return message.reply("You must be in a voice channel!");
     if (!connection) return message.reply("Nothing to loop!");
     switch (
@@ -20,12 +18,16 @@ module.exports = {
         .get().isLooped
     ) {
       case "true": {
+        if (debug.debug === true)
+          console.log("[DEBUG] Unlooping the current track...");
         masterqueue
           .prepare(`UPDATE guild_${id} SET isLooped = 'false' LIMIT 1`)
           .run();
         return message.reply("The current track will not be looped!");
       }
       case "false": {
+        if (debug.debug === true)
+          console.log("[DEBUG] Looping the current track...");
         masterqueue
           .prepare(`UPDATE guild_${id} SET isLooped = 'true' LIMIT 1`)
           .run();

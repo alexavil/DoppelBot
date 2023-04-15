@@ -15,7 +15,7 @@ module.exports = {
         {
           name: "**Service Notifications**",
           value:
-            "Should the bot send notifications to the Server Owner?\nCurrent value: `" +
+            "Should the bot send warnings and notifications?\nCurrent value: `" +
             settings
               .prepare(
                 `SELECT * FROM guild_${id} WHERE option = 'notifications'`
@@ -48,7 +48,7 @@ module.exports = {
         {
           name: "**Default Invidious Instance**",
           value:
-            "Default/fallback Invidious instance for the guild. The bot will attempt to connect to this instance if no other instance is specified in the command or if the provided instance is down.\nCurrent value: `" +
+            "Default Invidious instance for the guild. This instance is used when only the video ID is provided, for searching content, as well as a fallback.\nCurrent value: `" +
             settings
               .prepare(
                 `SELECT * FROM guild_${id} WHERE option = 'default_instance'`

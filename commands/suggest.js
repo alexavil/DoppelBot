@@ -1,3 +1,4 @@
+const Discord = require("discord.js");
 const InvidJS = require("@invidjs/invid-js");
 const debug = require("../index");
 const sqlite3 = require("better-sqlite3");
@@ -29,10 +30,15 @@ module.exports = {
         "No suggestions were found based on your search query!"
       );
     }
-    let result = "Suggestions for `" + query + "`:";
+    let title = "Suggestions for `" + query + "`:";
+    let result = "";
     results.forEach((suggestion) => {
       result += "\n`" + suggestion + "`";
     });
-    return message.channel.send(result);
+    let embed = new Discord.EmbedBuilder()
+      .setColor("#0099ff")
+      .setTitle(title)
+      .setDescription(result)
+    return message.channel.send({ embeds: [embed] });
   },
 };

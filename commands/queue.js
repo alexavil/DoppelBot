@@ -14,7 +14,9 @@ module.exports = {
       .all().length;
     if (queuelength !== 0) {
       if (debug.debug === true)
-        console.log("[DEBUG] Queue for " + id + " is not empty, fetching tracks...");
+        console.log(
+          "[DEBUG] Queue for " + id + " is not empty, fetching tracks..."
+        );
       masterqueue
         .prepare(`SELECT * FROM guild_${id}`)
         .all()

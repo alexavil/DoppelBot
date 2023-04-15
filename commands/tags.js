@@ -93,7 +93,9 @@ module.exports = {
                 "Please provide the response or type `cancel` to cancel."
               );
               if (debug.debug === true)
-                console.log("[DEBUG] Response required - awaiting user input...");
+                console.log(
+                  "[DEBUG] Response required - awaiting user input..."
+                );
               let response_collector = message.channel.createMessageCollector({
                 filter,
                 max: 1,

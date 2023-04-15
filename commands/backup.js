@@ -25,11 +25,10 @@ module.exports = {
       console.log("[DEBUG] Tags JSON: " + tags_json);
     }
     await fs.writeJSON(`${id}.json`, json + "\n" + tags_json);
-    await message.channel
-      .send({
-        content: "Your backup is ready!",
-        files: [`${id}.json`],
-      });
+    await message.channel.send({
+      content: "Your backup is ready!",
+      files: [`${id}.json`],
+    });
     fs.unlink(`${id}.json`);
   },
 };

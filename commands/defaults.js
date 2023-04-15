@@ -69,7 +69,8 @@ module.exports = {
               `CREATE TABLE IF NOT EXISTS guild_${id} (tag TEXT, response TEXT)`
             )
             .run();
-          if (debug.debug === true) console.log("[DEBUG] Reset finished for " + id + "!");
+          if (debug.debug === true)
+            console.log("[DEBUG] Reset finished for " + id + "!");
           return message.channel.send(
             "Your settings have been reset successfully!"
           );

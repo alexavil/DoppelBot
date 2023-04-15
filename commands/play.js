@@ -47,8 +47,7 @@ module.exports = {
       url = default_url + "/watch?v=" + url;
     }
     common.endTimeout(id);
-    if (debug.debug === true)
-      console.log("[DEBUG] Validating " + url + "...");
+    if (debug.debug === true) console.log("[DEBUG] Validating " + url + "...");
     if (url.includes("/watch?v=")) {
       let fetched = await common.getVideo(url);
       let queuelength = masterqueue

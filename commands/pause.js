@@ -11,13 +11,15 @@ module.exports = {
     let player = common.getPlayer(id);
     switch (player.isPaused) {
       case true: {
-        if (debug.debug === true) console.log("[DEBUG] Player is paused, unpausing...");
+        if (debug.debug === true)
+          console.log("[DEBUG] Player is paused, unpausing...");
         player.player.unpause();
         player.isPaused = false;
         return message.channel.send("Unpaused!");
       }
       case false: {
-        if (debug.debug === true) console.log("[DEBUG] Player is not paused, pausing...");
+        if (debug.debug === true)
+          console.log("[DEBUG] Player is not paused, pausing...");
         player.player.pause();
         player.isPaused = true;
         return message.channel.send("Paused!");

@@ -26,14 +26,15 @@ module.exports = {
       .get().value;
     let notifications = settings
       .prepare(`SELECT * FROM guild_${id} WHERE option = 'notifications'`)
-      .get().value;  
+      .get().value;
     url = args[0];
     if (common.disallowedLinks.some((link) => url.startsWith(link))) {
       if (debug.debug === true)
         console.log("[DEBUG] YouTube link detected, redirecting...");
-      if (notifications === "true") message.channel.send(
-        "Due to migration to InvidJS, the content will be played using the default Invidious instance for this server."
-      );
+      if (notifications === "true")
+        message.channel.send(
+          "Due to migration to InvidJS, the content will be played using the default Invidious instance for this server."
+        );
       if (url.includes("/watch?v=")) {
         url = default_url + "/watch?v=" + url.split("=")[1];
       }
@@ -44,9 +45,10 @@ module.exports = {
     if (url.match(/[a-zA-Z0-9_-]{11}/) && url.length === 11) {
       if (debug.debug === true)
         console.log("[DEBUG] ID detected, redirecting to default instance...");
-        if (notifications === "true") message.reply(
-        "Your track will be played using the default Invidious instance for this server."
-      );
+      if (notifications === "true")
+        message.reply(
+          "Your track will be played using the default Invidious instance for this server."
+        );
       url = default_url + "/watch?v=" + url;
     }
     common.endTimeout(id);

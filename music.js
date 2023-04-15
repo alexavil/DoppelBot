@@ -17,40 +17,94 @@ const disallowedLinks = ["https://www.youtube.com/", "https://youtu.be/"];
 let timeouts = [];
 let players = [];
 
-async function getVideo(url) {
-  let instances = await InvidJS.fetchInstances({
-    url: url.split("/w")[0],
-  });
-  let instance = instances[0];
-  let video = await InvidJS.fetchVideo(instance, url.split("=")[1]);
-  let format = video.formats.find(
-    (format) => format.quality === InvidJS.AudioQuality.Medium
-  );
-  let isValid = undefined;
-  isValid = await InvidJS.validateSource(instance, video, format);
-  if (isValid === true) {
+async function getVideo(url, textchannel) {
+  try {
+    let instances = await InvidJS.fetchInstances({
+      url: url.split("/w")[0],
+    });
+    let instance = instances[0];
+    let video = await InvidJS.fetchVideo(instance, url.split("=")[1]);
+    let format = video.formats.find(
+      (format) => format.quality === InvidJS.AudioQuality.Medium
+    );
+    let isValid = undefined;
+    isValid = await InvidJS.validateSource(instance, video, format);
+    if (isValid === true) {
+      let result = {
+        url,
+        instance,
+        video,
+        format,
+      };
+      return result;
+    } else return undefined;
+  } catch (error) {
+    if (debug.debug === true) console.log("[DEBUG] Error: " + error + "...");
+    switch (error.code) {
+      case InvidJS.ErrorCodes.APIBlocked: {
+        textchannel.send(
+          "The video could not be fetched due to API restrictions. The instance may not support API calls or may be down."
+        );
+        return undefined;
+      }
+      case InvidJS.ErrorCodes.APIError: {
+        textchannel.send(
+          "The video could not be fetched due to an API error. Please try again later."
+        );
+        return undefined;
+      }
+      case InvidJS.ErrorCodes.InvalidContent: {
+        textchannel.send("This video is invalid. Please try another video.");
+        return undefined;
+      }
+      case InvidJS.ErrorCodes.BlockedVideo: {
+        textchannel.send(
+          "This video is blocked - perhaps it's from an auto-generated channel? Please try another video."
+        );
+        return undefined;
+      }
+    }
+    return undefined;
+  }
+}
+
+async function getPlaylist(url, textchannel) {
+  try {
+    let instances = await InvidJS.fetchInstances({
+      url: url.split("/p")[0],
+    });
+    let instance = instances[0];
+    let playlist = await InvidJS.fetchPlaylist(instance, url.split("=")[1]);
     let result = {
       url,
       instance,
-      video,
-      format,
+      playlist,
     };
     return result;
-  } else return undefined;
-}
-
-async function getPlaylist(url) {
-  let instances = await InvidJS.fetchInstances({
-    url: url.split("/p")[0],
-  });
-  let instance = instances[0];
-  let playlist = await InvidJS.fetchPlaylist(instance, url.split("=")[1]);
-  let result = {
-    url,
-    instance,
-    playlist,
-  };
-  return result;
+  } catch (error) {
+    if (debug.debug === true) console.log("[DEBUG] Error: " + error + "...");
+    switch (error.code) {
+      case InvidJS.ErrorCodes.APIBlocked: {
+        textchannel.send(
+          "The playlist could not be fetched due to API restrictions. The instance may not support API calls or may be down."
+        );
+        return undefined;
+      }
+      case InvidJS.ErrorCodes.APIError: {
+        textchannel.send(
+          "The playlist could not be fetched due to an API error. Please try again later."
+        );
+        return undefined;
+      }
+      case InvidJS.ErrorCodes.InvalidContent: {
+        textchannel.send(
+          "This playlist is invalid. Please try another playlist."
+        );
+        return undefined;
+      }
+    }
+    return undefined;
+  }
 }
 
 function playMusic(channel, textchannel, stream, fetched) {
@@ -123,7 +177,7 @@ function playMusic(channel, textchannel, stream, fetched) {
         if (debug.debug === true) {
           console.log("[DEBUG] Loading the next track...");
         }
-        let new_track = await getVideo(track.track);
+        let new_track = await getVideo(track.track, textchannel);
         let stream = await InvidJS.fetchSource(
           new_track.instance,
           new_track.video,

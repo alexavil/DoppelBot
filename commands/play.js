@@ -56,7 +56,7 @@ module.exports = {
     common.endTimeout(id);
     if (debug.debug === true) console.log("[DEBUG] Validating " + url + "...");
     if (url.includes("/watch?v=")) {
-      let fetched = await common.getVideo(url);
+      let fetched = await common.getVideo(url, message.channel);
       let queuelength = masterqueue
         .prepare(`SELECT * FROM guild_${id}`)
         .all().length;
@@ -136,7 +136,7 @@ module.exports = {
             .get();
           if (debug.debug === true)
             console.log("[DEBUG] Validating " + first.track + "...");
-          let vid = await common.getVideo(first.track);
+          let vid = await common.getVideo(first.track, message.channel);
           if (debug.debug === true)
             console.log("[DEBUG] Downloading stream...");
           let stream = await InvidJS.fetchSource(

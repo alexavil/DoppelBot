@@ -38,7 +38,7 @@ module.exports = {
     let embed = new Discord.EmbedBuilder()
       .setColor("#0099ff")
       .setTitle(title)
-      .setDescription(result)
+      .setDescription(result);
     return message.channel.send({ embeds: [embed] });
   },
 };

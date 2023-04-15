@@ -75,7 +75,7 @@ module.exports = {
             let url = default_url + "/watch?v=" + videoid;
             if (debug.debug === true)
               console.log("[DEBUG] Validating " + url + "...");
-            let fetched = await common.getVideo(url);
+            let fetched = await common.getVideo(url, message.channel);
             let queuelength = masterqueue
               .prepare(`SELECT * FROM guild_${id}`)
               .all().length;

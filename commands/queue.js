@@ -6,6 +6,7 @@ const masterqueue = new sqlite3("./data/queue.db");
 module.exports = {
   name: "queue",
   description: "Get the server queue",
+  aliases: ["q"],
   async execute(message) {
     const id = message.guild.id;
     let embed = new Discord.EmbedBuilder();

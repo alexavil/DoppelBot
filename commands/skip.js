@@ -8,6 +8,7 @@ const masterqueue = new sqlite3("./data/queue.db");
 module.exports = {
   name: "skip",
   description: "Skip the music",
+  aliases: ["s"],
   async execute(message) {
     const id = message.guild.id;
     const connection = getVoiceConnection(id);

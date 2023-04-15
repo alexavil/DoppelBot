@@ -57,12 +57,12 @@ module.exports = {
             "`",
         },
         {
-          name: "**Instance Health Threshold**",
+          name: "**Lowest Instance Health**",
           value:
             "The bot will send a warning if the instance health is below this number.\nCurrent value: `" +
             settings
               .prepare(
-                `SELECT * FROM guild_${id} WHERE option = 'instance_health_threshold'`
+                `SELECT * FROM guild_${id} WHERE option = 'min_health'`
               )
               .get().value +
             "`",

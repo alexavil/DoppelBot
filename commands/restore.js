@@ -78,7 +78,7 @@ module.exports = {
                 .run(settings_backup[3].value, "default_instance");
               settings
                 .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
-                .run(settings_backup[3].value, "instance_health_threshold");
+                .run(settings_backup[3].value, "min_health");
               tags.prepare(`DELETE FROM guild_${id}`).run();
               tags_backup.forEach((tag) => {
                 tags

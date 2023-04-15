@@ -26,7 +26,7 @@ module.exports = {
       );
     settings
       .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
-      .run(health, "instance_health_threshold");
+      .run(health, "min_health");
     return message.reply(
       "You will be warned if the instance health is below `" + health + "`!"
     );

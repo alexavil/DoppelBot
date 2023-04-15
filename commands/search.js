@@ -19,6 +19,9 @@ module.exports = {
     let default_url = settings
       .prepare(`SELECT * FROM guild_${id} WHERE option = 'default_instance'`)
       .get().value;
+    let min_health = settings
+      .prepare(`SELECT * FROM guild_${id} WHERE option = 'min_health'`)
+      .get().value;
     let query = args.slice(0).join(" ");
     if (debug.debug === true) {
       console.log("[DEBUG] User query: " + query + "...");
@@ -77,6 +80,15 @@ module.exports = {
               .prepare(`SELECT * FROM guild_${id}`)
               .all().length;
             if (fetched !== undefined) {
+              if (fetched.instance.health < min_health) {
+                if (debug.debug === true)
+                  console.log(
+                    "[DEBUG] Instance not healthy enough, sending a warning..."
+                  );
+                message.channel.send(
+                  "ALERT: Instance health too low. Please consider using a different instance."
+                );
+              }
               if (debug.debug === true)
                 console.log("[DEBUG] Adding " + url + " to the queue...");
               masterqueue

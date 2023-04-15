@@ -159,7 +159,7 @@ function endTimeout(id) {
   timeouts.forEach((timeout) => {
     if (timeout.id === id) {
       if (debug.debug === true) {
-        console.log("[DEBUG] A new track has been added, clearing timeout...");
+        console.log("[DEBUG] Clearing timeout...");
       }
       clearTimeout(timeout.timer);
       timeouts.splice(timeouts.indexOf(timeout), 1);

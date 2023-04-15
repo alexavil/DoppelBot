@@ -24,6 +24,9 @@ module.exports = {
     let default_url = settings
       .prepare(`SELECT * FROM guild_${id} WHERE option = 'default_instance'`)
       .get().value;
+    let min_health = settings
+      .prepare(`SELECT * FROM guild_${id} WHERE option = 'min_health'`)
+      .get().value;
     let notifications = settings
       .prepare(`SELECT * FROM guild_${id} WHERE option = 'notifications'`)
       .get().value;
@@ -45,10 +48,9 @@ module.exports = {
     if (url.match(/[a-zA-Z0-9_-]{11}/) && url.length === 11) {
       if (debug.debug === true)
         console.log("[DEBUG] ID detected, redirecting to default instance...");
-      if (notifications === "true")
-        message.reply(
-          "Your track will be played using the default Invidious instance for this server."
-        );
+      message.channel.send(
+        "Your track will be played using the default Invidious instance for this server."
+      );
       url = default_url + "/watch?v=" + url;
     }
     common.endTimeout(id);
@@ -59,6 +61,15 @@ module.exports = {
         .prepare(`SELECT * FROM guild_${id}`)
         .all().length;
       if (fetched !== undefined) {
+        if (fetched.instance.health < min_health) {
+          if (debug.debug === true)
+            console.log(
+              "[DEBUG] Instance not healthy enough, sending a warning..."
+            );
+          message.channel.send(
+            "ALERT: Instance health too low. Please consider using a different instance."
+          );
+        }
         if (debug.debug === true)
           console.log("[DEBUG] Adding " + url + " to the queue...");
         masterqueue
@@ -96,6 +107,15 @@ module.exports = {
         .prepare(`SELECT * FROM guild_${id}`)
         .all().length;
       if (fetched !== undefined) {
+        if (fetched.instance.health < min_health) {
+          if (debug.debug === true)
+            console.log(
+              "[DEBUG] Instance not healthy enough, sending a warning..."
+            );
+          message.channel.send(
+            "ALERT: Instance health too low. Please consider using a different instance."
+          );
+        }
         if (debug.debug === true)
           console.log("[DEBUG] Adding tracks from " + url + " to the queue...");
         fetched.playlist.videos.forEach((video) => {

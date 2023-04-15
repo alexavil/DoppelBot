@@ -44,6 +44,9 @@ module.exports = {
       if (url.includes("/playlist?list=")) {
         url = default_url + "/playlist?list=" + url.split("=")[1];
       }
+      if (url.startsWith("https://youtu.be/")) {
+        url = default_url + "/watch?v=" + url.split("e/")[1];
+      }
     }
     if (url.match(/[a-zA-Z0-9_-]{11}/) && url.length === 11) {
       if (debug.debug === true)

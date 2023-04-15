@@ -331,15 +331,18 @@ client.on("messageCreate", (message) => {
 
   let responses = tags.prepare(`SELECT * FROM guild_${id}`).all();
 
+  if (debug === true) console.log("[DEBUG] Message received...");
+
   responses.forEach((response) => {
     if (
       !message.author.bot &&
-      message.content == response.tag &&
+      message.content === response.tag &&
       settings.prepare(`SELECT * FROM guild_${id} WHERE option = 'state'`).get()
         .value === "commands"
-    )
+    ) {
       if (debug === true) console.log("[DEBUG] Tag found, responding...");
-    message.channel.send(response.response);
+      message.channel.send(response.response);
+    }
   });
 
   const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

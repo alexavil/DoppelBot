@@ -9,6 +9,7 @@ module.exports = {
   aliases: ["q"],
   async execute(message) {
     const id = message.guild.id;
+    let counter = 0;
     let embed = new Discord.EmbedBuilder();
     let queuelength = masterqueue
       .prepare(`SELECT * FROM guild_${id}`)
@@ -22,11 +23,14 @@ module.exports = {
         .prepare(`SELECT * FROM guild_${id}`)
         .all()
         .forEach((track) => {
-          embed.addFields({
-            name: track.track,
-            value: `Requested by: <@!${track.author}>`,
-            inline: true,
-          });
+          if (counter < 25) {
+            embed.addFields({
+              name: track.track,
+              value: `Requested by: <@!${track.author}>`,
+              inline: true,
+            });
+            counter++;
+          }
         });
     } else {
       if (debug.debug === true)

@@ -22,17 +22,30 @@ module.exports = {
         {
           name: "Music commands",
           value:
-            "All music commands start with `" +
+            "`" +
             prefix +
-            "music`.\n" +
-            "`play` - play music\n" +
-            "`suggest` - suggest search queries for a string\n" +
-            "`search` - search for music\n" +
-            "`pause` - pause the current track\n" +
-            "`stop` - stop playing\n" +
-            "`queue` - view the current queue\n" +
-            "`skip` - skip the current track\n" +
-            "`loop` - loop the current track.",
+            "play` - play music\n" +
+            "`" +
+            prefix +
+            "suggest` - suggest search queries for a string\n" +
+            "`" +
+            prefix +
+            "search` - search for music\n" +
+            "`" +
+            prefix +
+            "pause` - pause the current track\n" +
+            "`" +
+            prefix +
+            "stop` - stop playing\n" +
+            "`" +
+            prefix +
+            "queue` - view the current queue\n" +
+            "`" +
+            prefix +
+            "skip` - skip the current track\n" +
+            "`" +
+            prefix +
+            "loop` - loop the current track.",
         },
         {
           name: "Tags",

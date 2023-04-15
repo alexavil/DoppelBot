@@ -4,27 +4,26 @@
   "description": "A Doppel a day keeps your sadness away.",
   "main": "index.js",
   "scripts": {
-    "prettier": "npx prettier ./index.js ./commands/* --write"
+    "prettier": "npx prettier ./index.js ./music.js ./commands/* --write"
   },
   "author": "alexavil",
   "license": "MIT",
   "dependencies": {
-    "@discordjs/voice": "^0.15.0",
-    "@sentry/node": "^7.38.0",
-    "@sentry/tracing": "^7.38.0",
+    "@discordjs/voice": "^0.16.0",
+    "@invidjs/invid-js": "^1.0.0",
+    "@sentry/node": "^7.48.0",
+    "@sentry/tracing": "^7.48.0",
     "avconv": "^3.1.0",
-    "better-sqlite3": "^7.5.3",
-    "cron": "^1.8.2",
+    "better-sqlite3": "^8.3.0",
+    "cron": "^2.3.0",
     "discord.js": "^14.7.1",
     "ffmpeg": "^0.0.4",
-    "ffmpeg-static": "^4.4.0",
-    "fs-extra": "^11.1.0",
+    "ffmpeg-static": "^5.1.0",
+    "fs-extra": "^11.1.1",
     "libsodium-wrappers": "^0.7.9",
-    "opusscript": "^0.0.8",
-    "play-dl": "^1.1.7",
-    "pm2": "^5.2.0"
+    "opusscript": "^0.0.8"
   },
   "devDependencies": {
-    "prettier": "^2.8.4"
+    "prettier": "^2.8.7"
   }
 }

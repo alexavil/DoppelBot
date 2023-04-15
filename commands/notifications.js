@@ -1,4 +1,5 @@
 const sqlite3 = require("better-sqlite3");
+const debug = require("../index");
 module.exports = {
   name: "notifications",
   aliases: ["notifs"],
@@ -13,11 +14,23 @@ module.exports = {
         .get().value;
       switch (value) {
         case "false":
+          if (debug.debug === true)
+            console.log(
+              "[DEBUG] Notifications are disabled for " +
+                id +
+                ", switching on..."
+            );
           settings
             .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
             .run("true", "notifications");
           return message.channel.send(`Service notifications are now enabled!`);
         case "true":
+          if (debug.debug === true)
+            console.log(
+              "[DEBUG] Notifications are enabled for " +
+                id +
+                ", switching off..."
+            );
           settings
             .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
             .run("false", "notifications");

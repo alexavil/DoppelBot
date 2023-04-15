@@ -1,10 +1,12 @@
 const Discord = require("discord.js");
 const sqlite3 = require("better-sqlite3");
+const debug = require("../index");
+const os = require("os");
 module.exports = {
   name: "adminhelp",
   aliases: ["ahelp"],
   description: "About the bot",
-  userpermissions: "BAN_MEMBERS",
+  userpermissions: Discord.PermissionsBitField.Flags.BanMembers,
   execute(message) {
     const settings = new sqlite3("./data/settings.db");
     let id = message.guild.id;
@@ -32,7 +34,13 @@ module.exports = {
             "setprefix` - change the guild prefix\n" +
             "`" +
             prefix +
-            "settimeout` - set VC disconnect timeout (in seconds)",
+            "settimeout` - set VC disconnect timeout (in seconds)\n" +
+            "`" +
+            prefix +
+            "setinstance` - set default Invidious instance\n" +
+            "`" +
+            prefix +
+            "sethealth` - set minimum Invidious instance health",
         },
         {
           name: "Tags",
@@ -44,8 +52,13 @@ module.exports = {
             "`delete` - delete a tag\n" +
             "`list` - see all tags.",
         }
-      )
-      .setFooter({ text: `Build: ${version}` });
+      );
+    if (debug.debug === true)
+      help.setFooter({
+        text: `Build: ${version}\nOS: ${os.type()} ${os.release} ${
+          os.arch
+        }\nDebug Mode - For testing purposes only`,
+      });
     message.channel.send({ embeds: [help] });
   },
 };

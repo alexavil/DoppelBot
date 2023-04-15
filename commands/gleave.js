@@ -1,3 +1,4 @@
+const debug = require("../index");
 module.exports = {
   name: "gleave",
   description: "Leave a guild by ID!",
@@ -8,7 +9,11 @@ module.exports = {
     ) {
       let id = args[0];
       let guild = client.guilds.cache.get(id);
-      guild.leave();
+      if (guild) {
+        if (debug.debug === true)
+          console.log("[DEBUG] Leaving guild " + id + "...");
+        guild.leave();
+      }
       message.delete().catch();
     }
   },

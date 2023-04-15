@@ -37,6 +37,13 @@ const client = new Discord.Client({
     GatewayIntentBits.MessageContent,
   ],
 });
+
+if (!fs.exists("./data/")) fs.mkdirSync("./data/");
+
+const settings = new sqlite3("./data/settings.db");
+const queue = new sqlite3("./data/queue.db");
+const tags = new sqlite3("./data/tags.db");
+
 client.commands = new Discord.Collection();
 const commandFiles = fs
   .readdirSync("./commands")
@@ -46,10 +53,6 @@ for (const file of commandFiles) {
   const command = require(`./commands/${file}`);
   client.commands.set(command.name, command);
 }
-
-const settings = new sqlite3("./data/settings.db");
-const queue = new sqlite3("./data/queue.db");
-const tags = new sqlite3("./data/tags.db");
 
 const RequiredPerms = [
   [PermissionsBitField.Flags.ViewChannel, "View Channels"],

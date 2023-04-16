@@ -24,6 +24,7 @@ module.exports = {
     const connection = getVoiceConnection(id);
     if (!connection) return message.channel.send("The bot is already stopped!");
     else {
+      common.stopCounter(id);
       if (debug.debug === true)
         console.log("[DEBUG] Stopping the connection...");
       connection.destroy();

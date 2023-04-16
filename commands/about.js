@@ -45,7 +45,10 @@ module.exports = {
             "skip` - skip the current track\n" +
             "`" +
             prefix +
-            "loop` - loop the current track.",
+            "loop` - loop the current track\n" +
+            "`" +
+            prefix +
+            "seek` - view the current position of a song",
         },
         {
           name: "Tags",

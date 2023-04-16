@@ -27,11 +27,15 @@ module.exports = {
         limit: 1,
       });
       if (debug.debug === true)
-        console.log("[DEBUG] New instance for " + id + ": " + result[0].url + "...");
+        console.log(
+          "[DEBUG] New instance for " + id + ": " + result[0].url + "..."
+        );
       settings
         .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
         .run(result[0].url, "default_instance");
-      return message.reply("`" + result[0].url + "` is now the default instance!");
+      return message.reply(
+        "`" + result[0].url + "` is now the default instance!"
+      );
     }
     if (url[url.length - 1] === "/") {
       url.slice(0, -1);

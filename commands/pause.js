@@ -7,8 +7,8 @@ module.exports = {
   async execute(message) {
     const id = message.guild.id;
     const connection = getVoiceConnection(id);
-    if (!connection) return message.channel.send("Nothing to pause!");
     let player = common.getPlayer(id);
+    if (!connection) return message.channel.send("Nothing to pause!");
     switch (player.isPaused) {
       case true: {
         if (debug.debug === true)

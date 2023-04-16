@@ -121,15 +121,17 @@ module.exports = {
         }
         if (debug.debug === true)
           console.log("[DEBUG] Adding tracks from " + url + " to the queue...");
-        fetched.playlist.videos.forEach((video) => {
-          masterqueue
-            .prepare(`INSERT INTO guild_${id} VALUES (?, ?, ?)`)
-            .run(
-              fetched.instance.url + "/watch?v=" + video.id,
-              message.author.id,
-              "false"
-            );
+        let statement = masterqueue.prepare(`INSERT INTO guild_${id} VALUES (?, ?, ?)`)  
+        let transaction = masterqueue.transaction(() => {
+          fetched.playlist.videos.forEach((video) => {
+              statement.run(
+                fetched.instance.url + "/watch?v=" + video.id,
+                message.author.id,
+                "false"
+              );
+          });
         });
+        transaction();
         message.reply("Playlist added to queue!");
         if (queuelength === 0) {
           if (debug.debug === true)

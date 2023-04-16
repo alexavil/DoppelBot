@@ -16,6 +16,7 @@ const disallowedLinks = ["https://www.youtube.com/", "https://youtu.be/"];
 
 let timeouts = [];
 let players = [];
+let counters = [];
 
 async function getVideo(url, textchannel) {
   try {
@@ -123,6 +124,7 @@ function playMusic(channel, textchannel, stream, fetched) {
   players.push({
     id: channel.guild.id,
     player: player,
+    time: 0,
     isPaused: false,
   });
   const resource = createAudioResource(stream, {
@@ -130,7 +132,9 @@ function playMusic(channel, textchannel, stream, fetched) {
   });
   player.play(resource);
   connection.subscribe(player);
+  startCounter(channel.guild.id);
   player.on(AudioPlayerStatus.Idle, async () => {
+    stopCounter(channel.guild.id);
     if (
       masterqueue
         .prepare(
@@ -191,6 +195,32 @@ function playMusic(channel, textchannel, stream, fetched) {
       }
     }
   });
+}
+
+function startCounter(id) {
+  let counter = setInterval(() => {
+    let player = getPlayer(id);
+    if (player.isPaused === false) {
+      player.time++;
+      console.log(player.time);
+    }
+  }, 1000);
+  counters.push({
+    id: id,
+    counter: counter,
+  });
+}
+
+function stopCounter(id) {
+  let found = counters.find((counter) => counter.id === id);
+  if (found) {
+    if (debug.debug === true) {
+      console.log("[DEBUG] Clearing counter...");
+    }
+    getPlayer(id).time = 0;
+    clearInterval(found.counter);
+    counters.splice(counters.indexOf(found), 1);
+  } else return undefined;
 }
 
 function startTimeout(id, connection, textchannel, timer) {

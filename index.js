@@ -6,6 +6,7 @@ const debug_env = process.env.DOPPELBOT_DEBUG;
 const debug_string = process.argv[3];
 const debug = debug_string === "debugmode" || debug_env === "true";
 const sqlite3 = require("better-sqlite3");
+const InvidJS = require("@invidjs/invid-js");
 const {
   PermissionsBitField,
   GatewayIntentBits,
@@ -220,7 +221,7 @@ function createConfig(id) {
     .run("disconnect_timeout", "30");
   settings
     .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
-    .run("default_instance", "https://invidious.snopyta.org");
+    .run("default_instance", "");
   settings
     .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
     .run("min_health", "75");
@@ -235,6 +236,28 @@ function createConfig(id) {
   tags
     .prepare(`CREATE TABLE IF NOT EXISTS guild_${id} (tag TEXT, response TEXT)`)
     .run();
+  let instance = settings
+    .prepare(`SELECT * FROM guild_${id} WHERE option = 'default_instance'`)
+    .get().value;
+  if (instance === "") {
+    if (debug === true)
+      console.log(
+        "[DEBUG] No instance defined for " + id + ", choosing one..."
+      );
+    getDefaultInstance(id);
+  }
+}
+
+function getDefaultInstance(id) {
+  InvidJS.fetchInstances({
+    health: 99,
+    api_allowed: true,
+    limit: 1,
+  }).then((result) => {
+    settings
+      .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
+      .run(result[0].url, "default_instance");
+  });
 }
 
 function validateSettings() {

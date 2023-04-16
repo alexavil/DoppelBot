@@ -124,6 +124,7 @@ function playMusic(channel, textchannel, stream, fetched) {
   players.push({
     id: channel.guild.id,
     player: player,
+    video: fetched.video,
     time: 0,
     isPaused: false,
   });

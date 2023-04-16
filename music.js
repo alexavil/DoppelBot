@@ -202,7 +202,6 @@ function startCounter(id) {
     let player = getPlayer(id);
     if (player.isPaused === false) {
       player.time++;
-      console.log(player.time);
     }
   }, 1000);
   counters.push({
@@ -267,6 +266,8 @@ module.exports = {
   getVideo,
   getPlaylist,
   playMusic,
+  startCounter,
+  stopCounter,
   startTimeout,
   endTimeout,
   getPlayer,

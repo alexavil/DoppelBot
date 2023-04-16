@@ -210,33 +210,26 @@ function startTimeout(id, connection, textchannel, timer) {
 }
 
 function endTimeout(id) {
-  timeouts.forEach((timeout) => {
-    if (timeout.id === id) {
-      if (debug.debug === true) {
-        console.log("[DEBUG] Clearing timeout...");
-      }
-      clearTimeout(timeout.timer);
-      timeouts.splice(timeouts.indexOf(timeout), 1);
+  let found = timeouts.find((timeout) => timeout.id === id);
+  if (found) {
+    if (debug.debug === true) {
+      console.log("[DEBUG] Clearing timeout...");
     }
-  });
+    clearTimeout(found.timer);
+    timeouts.splice(timeouts.indexOf(found), 1);
+  } else return undefined;
 }
 
 function getPlayer(id) {
-  let result = undefined;
-  players.forEach((player) => {
-    if (player.id === id) {
-      result = player;
-    }
-  });
-  return result;
+  let found = players.find((player) => player.id === id);
+  if (found) return found;
+  else return undefined;
 }
 
 function removePlayer(id) {
-  players.forEach((player) => {
-    if (player.id === id) {
-      players.splice(players.indexOf(player), 1);
-    }
-  });
+  let found = players.find((player) => player.id === id);
+  if (found) return players.splice(players.indexOf(found), 1);
+  else return undefined;
 }
 
 module.exports = {

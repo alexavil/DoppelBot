@@ -194,6 +194,13 @@ function prepareGlobalSettings() {
       if (debug === true) {
         console.log("[DEBUG] Retreived build hash successfully!");
         console.log("[DEBUG] Build hash: " + stdout.toString().substring(0, 7));
+        console.log(
+          `[DEBUG] InvidJS Version: ${
+            require(".package-lock.json").packages[
+              "node_modules/@invidjs/invid-js"
+            ].version
+          }`
+        );
       }
       settings
         .prepare("update global set value = ? where option = 'current_version'")

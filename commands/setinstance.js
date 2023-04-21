@@ -38,7 +38,7 @@ module.exports = {
       );
     }
     if (url[url.length - 1] === "/") {
-      url.slice(0, -1);
+      url = url.slice(0, -1);
     }
     let result = await InvidJS.fetchInstances({ url: url });
     if (!result.length) {

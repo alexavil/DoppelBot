@@ -1,4 +1,5 @@
 const InvidJS = require("@invidjs/invid-js");
+const Discord = require("discord.js");
 const debug = require("../index");
 const common = require("../music");
 const sqlite3 = require("better-sqlite3");
@@ -87,12 +88,17 @@ module.exports = {
             fetched.instance,
             fetched.video,
             fetched.format,
-            { saveTo: InvidJS.SaveSourceTo.Memory, parts: 10 }
+            { saveTo: InvidJS.SaveSourceTo.Memory, parts: 5 }
           );
           if (debug.debug === true) console.log("[DEBUG] Creating player...");
-          message.channel.send(
-            `Now playing: ${fetched.url}\nRequested by <@!${message.author.id}>`
-          );
+          let thumb = fetched.video.thumbnails.find(
+            (thumbnail) => thumbnail.quality === InvidJS.ImageQuality.HD
+          ).url;
+          let playingembed = new Discord.EmbedBuilder()
+            .setTitle("Now Playing")
+            .setDescription(fetched.video.title + "\n" + fetched.url + `\n\nRequested by <@!${message.author.id}>`)
+            .setImage(thumb)
+            message.channel.send({embeds: [playingembed]});
           common.playMusic(
             message.member.voice.channel,
             message.channel,
@@ -134,7 +140,7 @@ module.exports = {
           });
         });
         transaction();
-        message.reply("Playlist added to queue!");
+        message.reply("Successfully added " + fetched.playlist.videoCount + " items to the queue!");
         if (queuelength === 0) {
           if (debug.debug === true)
             console.log("[DEBUG] Starting the first track...");
@@ -150,12 +156,15 @@ module.exports = {
             vid.instance,
             vid.video,
             vid.format,
-            { saveTo: InvidJS.SaveSourceTo.Memory, parts: 10 }
+            { saveTo: InvidJS.SaveSourceTo.Memory, parts: 5 }
           );
           if (debug.debug === true) console.log("[DEBUG] Creating player...");
-          message.channel.send(
-            `Now playing: ${vid.url}\nRequested by <@!${message.author.id}>`
-          );
+          let thumb = vid.video.thumbnails[0].url;
+          let playingembed = new Discord.EmbedBuilder()
+            .setTitle("Now Playing")
+            .setDescription(vid.video.title + "\n" + vid.url + `\n\nRequested by <@!${message.author.id}>`)
+            .setImage(thumb)
+            message.channel.send({embeds: [playingembed]});
           common.playMusic(
             message.member.voice.channel,
             message.channel,

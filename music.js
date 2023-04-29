@@ -248,7 +248,6 @@ function startTimeout(id, connection, textchannel, timer) {
       console.log("[DEBUG] Stopping music...");
     }
     connection.destroy();
-    removePlayer(id);
     endTimeout(id);
     textchannel.send(`No more tracks to play, disconnecting!`);
   }, timer);
@@ -264,8 +263,8 @@ function endTimeout(id) {
       if (debug.debug === true) {
         console.log("[DEBUG] Clearing timeout...");
       }
-      clearTimeout(found.timer);
-      timeouts.splice(timeouts.indexOf(found), 1);
+      clearTimeout(timeout.timer);
+      timeouts.splice(timeouts.indexOf(timeout), 1);
     }
   });
 }

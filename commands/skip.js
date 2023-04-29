@@ -12,7 +12,6 @@ module.exports = {
   async execute(message) {
     const id = message.guild.id;
     const connection = getVoiceConnection(id);
-    let player = common.getPlayer(id);
     if (!connection) return message.reply("Nothing to skip!");
     if (
       !message.channel
@@ -37,7 +36,8 @@ module.exports = {
     }
     if (debug.debug === true)
       console.log("[DEBUG] Skipping the current track...");
+    let player = common.getPlayer(id);
     player.player.stop();
-    return message.reply("Skipped!");
+    message.reply("Skipped!");
   },
 };

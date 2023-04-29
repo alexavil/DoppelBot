@@ -1,4 +1,5 @@
 const InvidJS = require("@invidjs/invid-js");
+const Discord = require("discord.js");
 const debug = require("./index");
 const {
   joinVoiceChannel,
@@ -24,9 +25,9 @@ async function getVideo(url, textchannel) {
       url: url.split("/w")[0],
     });
     let instance = instances[0];
-    let video = await InvidJS.fetchVideo(instance, url.split("=")[1]);
+    let video = await InvidJS.fetchVideo(instance, url.split("=")[1], {type: InvidJS.FetchTypes.Full});
     let format = video.formats.find(
-      (format) => format.quality === InvidJS.AudioQuality.Medium
+      (format) => format.audio_quality === InvidJS.AudioQuality.Medium
     );
     let isValid = undefined;
     isValid = await InvidJS.validateSource(instance, video, format);
@@ -120,19 +121,25 @@ function playMusic(channel, textchannel, stream, fetched) {
       },
     });
   } else connection = getVoiceConnection(channel.guild.id);
-  let player = createAudioPlayer();
-  players.push({
-    id: channel.guild.id,
-    player: player,
-    video: fetched.video,
-    time: 0,
-    isPaused: false,
-  });
+  let player = undefined;
+  if (getPlayer(channel.guild.id) === undefined) {
+    player = createAudioPlayer();
+    let subscription = connection.subscribe(player);
+    players.push({
+      id: channel.guild.id,
+      player: player,
+      subscription: subscription,
+      video: fetched.video,
+      time: 0,
+      isPaused: false,
+    });
+  } else {
+    player = getPlayer(channel.guild.id).player
+  }
   const resource = createAudioResource(stream, {
     inputType: stream.type,
   });
   player.play(resource);
-  connection.subscribe(player);
   startCounter(channel.guild.id);
   player.on(AudioPlayerStatus.Idle, async () => {
     stopCounter(channel.guild.id);
@@ -150,7 +157,7 @@ function playMusic(channel, textchannel, stream, fetched) {
         fetched.instance,
         fetched.video,
         fetched.format,
-        { saveTo: InvidJS.SaveSourceTo.Memory, parts: 10 }
+        { saveTo: InvidJS.SaveSourceTo.Memory, parts: 5 }
       );
       playMusic(channel, textchannel, stream, fetched);
     } else {
@@ -187,12 +194,17 @@ function playMusic(channel, textchannel, stream, fetched) {
           new_track.instance,
           new_track.video,
           new_track.format,
-          { saveTo: InvidJS.SaveSourceTo.Memory, parts: 10 }
+          { saveTo: InvidJS.SaveSourceTo.Memory, parts: 5 }
         );
         playMusic(channel, textchannel, stream, new_track);
-        textchannel.send(
-          `Now playing: ${track.track}\nRequested by <@!${track.author}>`
-        );
+        let thumb = new_track.video.thumbnails.find(
+          (thumbnail) => thumbnail.quality === InvidJS.ImageQuality.HD
+        ).url;
+        let playingembed = new Discord.EmbedBuilder()
+          .setTitle("Now Playing")
+          .setDescription(new_track.video.title + "\n" + new_track.url + `\n\nRequested by <@!${track.author}>`)
+          .setImage(thumb)
+          textchannel.send({embeds: [playingembed]});
       }
     }
   });
@@ -252,7 +264,9 @@ function endTimeout(id) {
 
 function getPlayer(id) {
   let found = players.find((player) => player.id === id);
-  if (found) return found;
+  if (found) {
+    return found;
+  }
   else return undefined;
 }
 

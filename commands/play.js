@@ -96,9 +96,14 @@ module.exports = {
           ).url;
           let playingembed = new Discord.EmbedBuilder()
             .setTitle("Now Playing")
-            .setDescription(fetched.video.title + "\n" + fetched.url + `\n\nRequested by <@!${message.author.id}>`)
-            .setImage(thumb)
-            message.channel.send({embeds: [playingembed]});
+            .setDescription(
+              fetched.video.title +
+                "\n" +
+                fetched.url +
+                `\n\nRequested by <@!${message.author.id}>`
+            )
+            .setImage(thumb);
+          message.channel.send({ embeds: [playingembed] });
           common.playMusic(
             message.member.voice.channel,
             message.channel,
@@ -140,7 +145,11 @@ module.exports = {
           });
         });
         transaction();
-        message.reply("Successfully added " + fetched.playlist.videoCount + " items to the queue!");
+        message.reply(
+          "Successfully added " +
+            fetched.playlist.videoCount +
+            " items to the queue!"
+        );
         if (queuelength === 0) {
           if (debug.debug === true)
             console.log("[DEBUG] Starting the first track...");
@@ -162,9 +171,14 @@ module.exports = {
           let thumb = vid.video.thumbnails[0].url;
           let playingembed = new Discord.EmbedBuilder()
             .setTitle("Now Playing")
-            .setDescription(vid.video.title + "\n" + vid.url + `\n\nRequested by <@!${message.author.id}>`)
-            .setImage(thumb)
-            message.channel.send({embeds: [playingembed]});
+            .setDescription(
+              vid.video.title +
+                "\n" +
+                vid.url +
+                `\n\nRequested by <@!${message.author.id}>`
+            )
+            .setImage(thumb);
+          message.channel.send({ embeds: [playingembed] });
           common.playMusic(
             message.member.voice.channel,
             message.channel,

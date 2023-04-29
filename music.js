@@ -25,7 +25,9 @@ async function getVideo(url, textchannel) {
       url: url.split("/w")[0],
     });
     let instance = instances[0];
-    let video = await InvidJS.fetchVideo(instance, url.split("=")[1], {type: InvidJS.FetchTypes.Full});
+    let video = await InvidJS.fetchVideo(instance, url.split("=")[1], {
+      type: InvidJS.FetchTypes.Full,
+    });
     let format = video.formats.find(
       (format) => format.audio_quality === InvidJS.AudioQuality.Medium
     );
@@ -134,7 +136,7 @@ function playMusic(channel, textchannel, stream, fetched) {
       isPaused: false,
     });
   } else {
-    player = getPlayer(channel.guild.id).player
+    player = getPlayer(channel.guild.id).player;
   }
   const resource = createAudioResource(stream, {
     inputType: stream.type,
@@ -143,6 +145,7 @@ function playMusic(channel, textchannel, stream, fetched) {
   startCounter(channel.guild.id);
   player.on(AudioPlayerStatus.Idle, async () => {
     stopCounter(channel.guild.id);
+    removePlayer(channel.guild.id);
     if (
       masterqueue
         .prepare(
@@ -159,7 +162,7 @@ function playMusic(channel, textchannel, stream, fetched) {
         fetched.format,
         { saveTo: InvidJS.SaveSourceTo.Memory, parts: 5 }
       );
-      playMusic(channel, textchannel, stream, fetched);
+      return playMusic(channel, textchannel, stream, fetched);
     } else {
       if (debug.debug === true) {
         console.log("[DEBUG] The current track is over, removing...");
@@ -196,15 +199,21 @@ function playMusic(channel, textchannel, stream, fetched) {
           new_track.format,
           { saveTo: InvidJS.SaveSourceTo.Memory, parts: 5 }
         );
-        playMusic(channel, textchannel, stream, new_track);
+
         let thumb = new_track.video.thumbnails.find(
           (thumbnail) => thumbnail.quality === InvidJS.ImageQuality.HD
         ).url;
         let playingembed = new Discord.EmbedBuilder()
           .setTitle("Now Playing")
-          .setDescription(new_track.video.title + "\n" + new_track.url + `\n\nRequested by <@!${track.author}>`)
-          .setImage(thumb)
-          textchannel.send({embeds: [playingembed]});
+          .setDescription(
+            new_track.video.title +
+              "\n" +
+              new_track.url +
+              `\n\nRequested by <@!${track.author}>`
+          )
+          .setImage(thumb);
+        textchannel.send({ embeds: [playingembed] });
+        return playMusic(channel, textchannel, stream, new_track);
       }
     }
   });
@@ -224,15 +233,13 @@ function startCounter(id) {
 }
 
 function stopCounter(id) {
-  let found = counters.find((counter) => counter.id === id);
-  if (found) {
-    if (debug.debug === true) {
-      console.log("[DEBUG] Clearing counter...");
+  counters.forEach((counter) => {
+    if (counter.id === id) {
+      getPlayer(id).time = 0;
+      clearInterval(counter.counter);
+      counters.splice(counters.indexOf(counter), 1);
     }
-    getPlayer(id).time = 0;
-    clearInterval(found.counter);
-    counters.splice(counters.indexOf(found), 1);
-  } else return undefined;
+  });
 }
 
 function startTimeout(id, connection, textchannel, timer) {
@@ -252,28 +259,33 @@ function startTimeout(id, connection, textchannel, timer) {
 }
 
 function endTimeout(id) {
-  let found = timeouts.find((timeout) => timeout.id === id);
-  if (found) {
-    if (debug.debug === true) {
-      console.log("[DEBUG] Clearing timeout...");
+  timeouts.forEach((timeout) => {
+    if (timeout.id === id) {
+      if (debug.debug === true) {
+        console.log("[DEBUG] Clearing timeout...");
+      }
+      clearTimeout(found.timer);
+      timeouts.splice(timeouts.indexOf(found), 1);
     }
-    clearTimeout(found.timer);
-    timeouts.splice(timeouts.indexOf(found), 1);
-  } else return undefined;
+  });
 }
 
 function getPlayer(id) {
-  let found = players.find((player) => player.id === id);
-  if (found) {
-    return found;
-  }
-  else return undefined;
+  let found = undefined;
+  players.forEach((player) => {
+    if (player.id === id) {
+      found = player;
+    }
+  });
+  return found;
 }
 
 function removePlayer(id) {
-  let found = players.find((player) => player.id === id);
-  if (found) return players.splice(players.indexOf(found), 1);
-  else return undefined;
+  players.forEach((player) => {
+    if (player.id === id) {
+      return players.splice(players.indexOf(player), 1);
+    }
+  });
 }
 
 module.exports = {

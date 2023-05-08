@@ -58,16 +58,6 @@ module.exports = {
             "tags list`.",
         }
       );
-    if (debug.debug === true)
-      help.setFooter({
-        text: `Build: ${version}\nInvidJS Version: ${
-          require("../package-lock.json").packages[
-            "node_modules/@invidjs/invid-js"
-          ].version
-        }\nOS: ${os.type()} ${os.release} ${
-          os.arch
-        }\nDebug Mode - For testing purposes only`,
-      });
     message.channel.send({ embeds: [help] });
   },
 };

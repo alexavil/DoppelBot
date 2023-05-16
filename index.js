@@ -80,6 +80,7 @@ if (debug === true) {
   console.log("This mode is not recommended for use in production.");
   console.log("Please proceed with caution.");
   client.on("debug", console.log);
+  client.on("warn", console.log);
 }
 
 const Sentry = require("@sentry/node");

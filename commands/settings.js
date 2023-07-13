@@ -18,7 +18,7 @@ module.exports = {
             "Should the bot send alerts and notifications?\nCurrent value: `" +
             settings
               .prepare(
-                `SELECT * FROM guild_${id} WHERE option = 'notifications'`
+                `SELECT * FROM guild_${id} WHERE option = 'notifications'`,
               )
               .get().value +
             "`",
@@ -39,9 +39,9 @@ module.exports = {
             parseInt(
               settings
                 .prepare(
-                  `SELECT * FROM guild_${id} WHERE option = 'disconnect_timeout'`
+                  `SELECT * FROM guild_${id} WHERE option = 'disconnect_timeout'`,
                 )
-                .get().value
+                .get().value,
             ) +
             " seconds`",
         },
@@ -51,7 +51,7 @@ module.exports = {
             "Default Invidious instance for the guild. This instance is used when only the video ID is provided, for searching content, as well as a fallback.\nCurrent value: `" +
             settings
               .prepare(
-                `SELECT * FROM guild_${id} WHERE option = 'default_instance'`
+                `SELECT * FROM guild_${id} WHERE option = 'default_instance'`,
               )
               .get().value +
             "`",
@@ -64,7 +64,7 @@ module.exports = {
               .prepare(`SELECT * FROM guild_${id} WHERE option = 'min_health'`)
               .get().value +
             "`",
-        }
+        },
       );
     message.channel.send({ embeds: [settingsembed] });
   },

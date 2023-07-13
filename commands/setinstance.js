@@ -27,15 +27,11 @@ module.exports = {
         limit: 1,
       });
       if (debug.debug === true)
-        console.log(
-          `[DEBUG] New instance for ${id}: ${result[0].url}...`
-        );
+        console.log(`[DEBUG] New instance for ${id}: ${result[0].url}...`);
       settings
         .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
         .run(result[0].url, "default_instance");
-      return message.reply(
-        `${result[0].url} is now the default instance!`
-      );
+      return message.reply(`${result[0].url} is now the default instance!`);
     }
     if (url[url.length - 1] === "/") {
       url = url.slice(0, -1);
@@ -49,7 +45,7 @@ module.exports = {
     if (result[0].api_allowed === false) {
       if (debug.debug === true)
         console.log(
-          "[DEBUG] Provided instance does not allow API access, aborting..."
+          "[DEBUG] Provided instance does not allow API access, aborting...",
         );
       return message.reply("This instance does not allow API calls!");
     }
@@ -57,7 +53,7 @@ module.exports = {
       if (debug.debug === true)
         console.log("[DEBUG] Instance too unhealthy, aborting...");
       return message.reply(
-        "ALERT: Instance health too low. The default instance will not be changed."
+        "ALERT: Instance health too low. The default instance will not be changed.",
       );
     }
     if (debug.debug === true)

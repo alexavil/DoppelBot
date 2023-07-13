@@ -27,7 +27,7 @@ module.exports = {
     if (!results.length) {
       if (debug.debug === true) console.log("[DEBUG] No content was found...");
       return message.reply(
-        "No suggestions were found based on your search query!"
+        "No suggestions were found based on your search query!",
       );
     }
     let title = "Suggestions for `" + query + "`:";

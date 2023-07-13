@@ -75,7 +75,7 @@ if (debug === true) {
   console.log("WARNING: DoppelBot is in debug mode!!!");
   console.log("Debug mode is intended to be used for testing purposes only.");
   console.log(
-    "In this mode, DoppelBot will log most actions and commands, including sensitive information. We highly recommend redirecting the output to a file."
+    "In this mode, DoppelBot will log most actions and commands, including sensitive information. We highly recommend redirecting the output to a file.",
   );
   console.log("This mode is not recommended for use in production.");
   console.log("Please proceed with caution.");
@@ -106,7 +106,7 @@ function CheckForPerms() {
     if (notifs_value === "false") {
       if (debug === true)
         console.log(
-          `[DEBUG] Guild ${id} has notifications disabled. Skipping...`
+          `[DEBUG] Guild ${id} has notifications disabled. Skipping...`,
         );
       return false;
     }
@@ -118,7 +118,7 @@ function CheckForPerms() {
       if (!botmember.permissions.has(perm[0])) {
         if (debug === true)
           console.log(
-            `[DEBUG] Guild ${id} is missing ${perm[1]}. Adding to message...`
+            `[DEBUG] Guild ${id} is missing ${perm[1]}. Adding to message...`,
           );
         message += `${perm[1]}\n`;
         missing++;
@@ -127,7 +127,7 @@ function CheckForPerms() {
     if (missing > 0) {
       if (debug === true)
         console.log(
-          `[DEBUG] Guild ${id} is missing permissions, sending alert...`
+          `[DEBUG] Guild ${id} is missing permissions, sending alert...`,
         );
       message += `\nPlease check your role and member settings!`;
       const outbtn = new Discord.ButtonBuilder()
@@ -146,7 +146,7 @@ function CheckForPerms() {
           if (err.code === Discord.Constants.APIErrors.CANNOT_MESSAGE_USER) {
             if (debug === true)
               console.log(
-                `[DEBUG] Cannot message owner of guild ${id}. Skipping...`
+                `[DEBUG] Cannot message owner of guild ${id}. Skipping...`,
               );
             return false;
           }
@@ -161,9 +161,7 @@ function CheckForPerms() {
 
 function clearQueue(id) {
   if (debug === true)
-    console.log(
-      `[DEBUG] Bot has restarted, clearing queue for guild ${id}...`
-    );
+    console.log(`[DEBUG] Bot has restarted, clearing queue for guild ${id}...`);
   queue.prepare(`DELETE FROM guild_${id}`).run();
 }
 
@@ -171,17 +169,17 @@ function prepareGlobalSettings() {
   if (debug === true) console.log("[DEBUG] Validating global settings...");
   settings
     .prepare(
-      `CREATE TABLE IF NOT EXISTS global (option TEXT UNIQUE, value TEXT)`
+      `CREATE TABLE IF NOT EXISTS global (option TEXT UNIQUE, value TEXT)`,
     )
     .run();
   tags
     .prepare(
-      `CREATE TABLE IF NOT EXISTS global (tag TEXT UNIQUE, response TEXT)`
+      `CREATE TABLE IF NOT EXISTS global (tag TEXT UNIQUE, response TEXT)`,
     )
     .run();
   settings
     .prepare(
-      "insert or ignore into global (option, value) values ('current_version', '')"
+      "insert or ignore into global (option, value) values ('current_version', '')",
     )
     .run();
   child.exec("git rev-parse --short HEAD", (err, stdout, stderr) => {
@@ -196,7 +194,7 @@ function prepareGlobalSettings() {
             require(".package-lock.json").packages[
               "node_modules/@invidjs/invid-js"
             ].version
-          }`
+          }`,
         );
       }
       settings
@@ -211,7 +209,7 @@ function createConfig(id) {
     console.log(`[DEBUG] Creating/validating config for guild ${id}...`);
   settings
     .prepare(
-      `CREATE TABLE IF NOT EXISTS guild_${id} (option TEXT UNIQUE, value TEXT)`
+      `CREATE TABLE IF NOT EXISTS guild_${id} (option TEXT UNIQUE, value TEXT)`,
     )
     .run();
   settings
@@ -234,7 +232,7 @@ function createConfig(id) {
     .run("state", "commands");
   queue
     .prepare(
-      `CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT, author TEXT, isLooped TEXT)`
+      `CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT, author TEXT, isLooped TEXT)`,
     )
     .run();
   tags
@@ -245,9 +243,7 @@ function createConfig(id) {
     .get().value;
   if (instance === "") {
     if (debug === true)
-      console.log(
-        `[DEBUG] No instance defined for ${id}, choosing one...`
-      );
+      console.log(`[DEBUG] No instance defined for ${id}, choosing one...`);
     getDefaultInstance(id);
   }
 }
@@ -277,8 +273,7 @@ function validateSettings() {
 }
 
 function deleteConfig(id) {
-  if (debug === true)
-    console.log(`[DEBUG] Deleting config for guild ${id}...`);
+  if (debug === true) console.log(`[DEBUG] Deleting config for guild ${id}...`);
   settings.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
   queue.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
   tags.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
@@ -320,7 +315,7 @@ client.on("ready", () => {
 client.on("guildCreate", (guild) => {
   if (debug === true)
     console.log(
-      `[DEBUG] A new guild (${guild.id}) has been added, running jobs...`
+      `[DEBUG] A new guild (${guild.id}) has been added, running jobs...`,
     );
   createConfig(guild.id);
 });
@@ -328,7 +323,7 @@ client.on("guildCreate", (guild) => {
 client.on("guildDelete", (guild) => {
   if (debug === true)
     console.log(
-      `[DEBUG] A guild (${guild.id}) has been removed, running jobs...`
+      `[DEBUG] A guild (${guild.id}) has been removed, running jobs...`,
     );
   deleteConfig(guild.id);
 });
@@ -338,14 +333,14 @@ client.on("interactionCreate", (interaction) => {
     let id = interaction.customId.split("_")[0];
     if (debug === true)
       console.log(
-        `[DEBUG] A guild ${guild.id} has switched service notifications off...`
+        `[DEBUG] A guild ${guild.id} has switched service notifications off...`,
       );
     settings
       .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
       .run("false", "notifications");
     interaction.update({ components: [] });
     return interaction.channel.send(
-      "Notifications are now disabled! You can re-enable them at any time using `d!notifications`."
+      "Notifications are now disabled! You can re-enable them at any time using `d!notifications`.",
     );
   }
 });
@@ -380,7 +375,7 @@ client.on("messageCreate", (message) => {
     return false;
   if (message.channel.type === ChannelType.DM) return false;
   const prefixRegex = new RegExp(
-    `^(<@!?${client.user.id}>|${escapeRegex(prefix)})\\s*`
+    `^(<@!?${client.user.id}>|${escapeRegex(prefix)})\\s*`,
   );
   if (!prefixRegex.test(message.content)) return false;
 
@@ -390,7 +385,7 @@ client.on("messageCreate", (message) => {
   const command =
     client.commands.get(commandName) ||
     client.commands.find(
-      (cmd) => cmd.aliases && cmd.aliases.includes(commandName)
+      (cmd) => cmd.aliases && cmd.aliases.includes(commandName),
     );
 
   if (!command) return false;
@@ -400,7 +395,7 @@ client.on("messageCreate", (message) => {
     if (!perms || !perms.has(command.userpermissions)) {
       if (debug === true)
         console.log(
-          "[DEBUG] Attempted to execute command, but user has no permissions!"
+          "[DEBUG] Attempted to execute command, but user has no permissions!",
         );
       return message.reply("You do not have permission to use this command!");
     }
@@ -412,16 +407,14 @@ client.on("messageCreate", (message) => {
         .value === "commands"
     ) {
       if (debug === true)
-        console.log(
-          `[DEBUG] Trying to execute ${commandName} in ${id}...`
-        );
+        console.log(`[DEBUG] Trying to execute ${commandName} in ${id}...`);
       command.execute(message, args, client);
     }
   } catch (error) {
     if (debug === true) console.log("[DEBUG] Error: " + error.message);
     if (error.code === 50013) {
       return message.reply(
-        "I don't have permissions to do that action! Check the Roles page!"
+        "I don't have permissions to do that action! Check the Roles page!",
       );
     }
     Sentry.captureException(error);

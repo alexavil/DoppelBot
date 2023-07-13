@@ -83,10 +83,10 @@ module.exports = {
               if (fetched.instance.health < min_health) {
                 if (debug.debug === true)
                   console.log(
-                    "[DEBUG] Instance not healthy enough, sending a warning..."
+                    "[DEBUG] Instance not healthy enough, sending a warning...",
                   );
                 message.channel.send(
-                  "ALERT: Instance health too low. Please consider using a different instance."
+                  "ALERT: Instance health too low. Please consider using a different instance.",
                 );
               }
               if (debug.debug === true)
@@ -101,18 +101,18 @@ module.exports = {
                   fetched.instance,
                   fetched.video,
                   fetched.format,
-                  { saveTo: InvidJS.SaveSourceTo.Memory, parts: 10 }
+                  { saveTo: InvidJS.SaveSourceTo.Memory, parts: 10 },
                 );
                 if (debug.debug === true)
                   console.log("[DEBUG] Creating player...");
                 message.channel.send(
-                  `Now playing: ${fetched.url}\nRequested by <@!${message.author.id}>`
+                  `Now playing: ${fetched.url}\nRequested by <@!${message.author.id}>`,
                 );
                 common.playMusic(
                   message.member.voice.channel,
                   message.channel,
                   stream,
-                  fetched
+                  fetched,
                 );
               } else {
                 message.reply(`Added ${fetched.url} to the queue!`);
@@ -121,7 +121,7 @@ module.exports = {
           } else {
             choice++;
           }
-        })
+        }),
       )
       .catch();
   },

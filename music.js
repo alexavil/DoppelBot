@@ -29,7 +29,7 @@ async function getVideo(url, textchannel) {
       type: InvidJS.FetchTypes.Full,
     });
     let format = video.formats.find(
-      (format) => format.audio_quality === InvidJS.AudioQuality.Medium
+      (format) => format.audio_quality === InvidJS.AudioQuality.Medium,
     );
     let isValid = undefined;
     isValid = await InvidJS.validateSource(instance, video, format);
@@ -47,13 +47,13 @@ async function getVideo(url, textchannel) {
     switch (error.code) {
       case InvidJS.ErrorCodes.APIBlocked: {
         textchannel.send(
-          "The video could not be fetched due to API restrictions. The instance may not support API calls or may be down."
+          "The video could not be fetched due to API restrictions. The instance may not support API calls or may be down.",
         );
         return undefined;
       }
       case InvidJS.ErrorCodes.APIError: {
         textchannel.send(
-          "The video could not be fetched due to an API error. Please try again later."
+          "The video could not be fetched due to an API error. Please try again later.",
         );
         return undefined;
       }
@@ -63,7 +63,7 @@ async function getVideo(url, textchannel) {
       }
       case InvidJS.ErrorCodes.BlockedVideo: {
         textchannel.send(
-          "This video is blocked - perhaps it's from an auto-generated channel? Please try another video."
+          "This video is blocked - perhaps it's from an auto-generated channel? Please try another video.",
         );
         return undefined;
       }
@@ -90,19 +90,19 @@ async function getPlaylist(url, textchannel) {
     switch (error.code) {
       case InvidJS.ErrorCodes.APIBlocked: {
         textchannel.send(
-          "The playlist could not be fetched due to API restrictions. The instance may not support API calls or may be down."
+          "The playlist could not be fetched due to API restrictions. The instance may not support API calls or may be down.",
         );
         return undefined;
       }
       case InvidJS.ErrorCodes.APIError: {
         textchannel.send(
-          "The playlist could not be fetched due to an API error. Please try again later."
+          "The playlist could not be fetched due to an API error. Please try again later.",
         );
         return undefined;
       }
       case InvidJS.ErrorCodes.InvalidContent: {
         textchannel.send(
-          "This playlist is invalid. Please try another playlist."
+          "This playlist is invalid. Please try another playlist.",
         );
         return undefined;
       }
@@ -149,7 +149,7 @@ function playMusic(channel, textchannel, stream, fetched) {
     if (
       masterqueue
         .prepare(
-          `SELECT * FROM guild_${channel.guild.id} ORDER BY ROWID LIMIT 1`
+          `SELECT * FROM guild_${channel.guild.id} ORDER BY ROWID LIMIT 1`,
         )
         .get().isLooped === "true"
     ) {
@@ -160,7 +160,7 @@ function playMusic(channel, textchannel, stream, fetched) {
         fetched.instance,
         fetched.video,
         fetched.format,
-        { saveTo: InvidJS.SaveSourceTo.Memory, parts: 5 }
+        { saveTo: InvidJS.SaveSourceTo.Memory, parts: 5 },
       );
       return playMusic(channel, textchannel, stream, fetched);
     } else {
@@ -172,7 +172,7 @@ function playMusic(channel, textchannel, stream, fetched) {
         .run();
       let track = masterqueue
         .prepare(
-          `SELECT * FROM guild_${channel.guild.id} ORDER BY ROWID LIMIT 1`
+          `SELECT * FROM guild_${channel.guild.id} ORDER BY ROWID LIMIT 1`,
         )
         .get();
       if (track === undefined) {
@@ -183,9 +183,9 @@ function playMusic(channel, textchannel, stream, fetched) {
           parseInt(
             settings
               .prepare(
-                `SELECT * FROM guild_${channel.guild.id} WHERE option = 'disconnect_timeout'`
+                `SELECT * FROM guild_${channel.guild.id} WHERE option = 'disconnect_timeout'`,
               )
-              .get().value
+              .get().value,
           ) * 1000;
         startTimeout(channel.guild.id, connection, textchannel, timeout);
       } else {
@@ -197,15 +197,16 @@ function playMusic(channel, textchannel, stream, fetched) {
           new_track.instance,
           new_track.video,
           new_track.format,
-          { saveTo: InvidJS.SaveSourceTo.Memory, parts: 5 }
+          { saveTo: InvidJS.SaveSourceTo.Memory, parts: 5 },
         );
 
         let thumb = new_track.video.thumbnails.find(
-          (thumbnail) => thumbnail.quality === InvidJS.ImageQuality.HD
+          (thumbnail) => thumbnail.quality === InvidJS.ImageQuality.HD,
         ).url;
         let playingembed = new Discord.EmbedBuilder()
           .setTitle("Now Playing")
-          .setDescription(`${new_track.video.title}\n${new_track.url}\n\nRequested by <@!${track.author}>`
+          .setDescription(
+            `${new_track.video.title}\n${new_track.url}\n\nRequested by <@!${track.author}>`,
           )
           .setImage(thumb);
         textchannel.send({ embeds: [playingembed] });

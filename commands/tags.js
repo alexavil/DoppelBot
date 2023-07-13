@@ -26,7 +26,7 @@ module.exports = {
             .has(Discord.PermissionsBitField.Flags.BanMembers)
         )
           return message.reply(
-            "You do not have permission to use this command!"
+            "You do not have permission to use this command!",
           );
         settings
           .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
@@ -36,7 +36,7 @@ module.exports = {
         const filter = (m) => m.author.id == message.author.id;
 
         message.channel.send(
-          "Please provide a key word or phrase or type `cancel` to cancel."
+          "Please provide a key word or phrase or type `cancel` to cancel.",
         );
         if (debug.debug === true)
           console.log("[DEBUG] Keyword required - awaiting user input...");
@@ -58,9 +58,9 @@ module.exports = {
                 m.content.startsWith(
                   settings
                     .prepare(
-                      `SELECT * FROM guild_${id} WHERE option = 'prefix'`
+                      `SELECT * FROM guild_${id} WHERE option = 'prefix'`,
                     )
-                    .get().value
+                    .get().value,
                 ) ||
                 (m.content.startsWith("<@") && m.content.endsWith(">"))
               ) {
@@ -70,7 +70,7 @@ module.exports = {
                   .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
                   .run("commands", "state");
                 return message.channel.send(
-                  "Tags can't start with a prefix or mention!"
+                  "Tags can't start with a prefix or mention!",
                 );
               }
               keyword = m.content;
@@ -86,15 +86,15 @@ module.exports = {
                   .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
                   .run("commands", "state");
                 return message.channel.send(
-                  "A tag with that key word already exists!"
+                  "A tag with that key word already exists!",
                 );
               }
               message.channel.send(
-                "Please provide the response or type `cancel` to cancel."
+                "Please provide the response or type `cancel` to cancel.",
               );
               if (debug.debug === true)
                 console.log(
-                  "[DEBUG] Response required - awaiting user input..."
+                  "[DEBUG] Response required - awaiting user input...",
                 );
               let response_collector = message.channel.createMessageCollector({
                 filter,
@@ -107,7 +107,7 @@ module.exports = {
                       console.log("[DEBUG] User cancelled, aborting...");
                     settings
                       .prepare(
-                        `UPDATE guild_${id} SET value = ? WHERE option = ?`
+                        `UPDATE guild_${id} SET value = ? WHERE option = ?`,
                       )
                       .run("commands", "state");
                     return message.channel.send("Cancelled!");
@@ -119,12 +119,12 @@ module.exports = {
                     }
                     tags
                       .prepare(
-                        `INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`
+                        `INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`,
                       )
                       .run(keyword, response);
                     settings
                       .prepare(
-                        `UPDATE guild_${id} SET value = ? WHERE option = ?`
+                        `UPDATE guild_${id} SET value = ? WHERE option = ?`,
                       )
                       .run("commands", "state");
                     return message.channel.send("Tag created successfully!");
@@ -145,7 +145,7 @@ module.exports = {
             .has(Discord.PermissionsBitField.Flags.BanMembers)
         )
           return message.reply(
-            "You do not have permission to use this command!"
+            "You do not have permission to use this command!",
           );
         if (
           !args[1] ||
@@ -167,7 +167,7 @@ module.exports = {
           console.log(`[DEBUG] Fetching tag list for ${id}...`);
         let responses = tags.prepare(`SELECT * FROM guild_${id}`).all();
         let tagsembed = new Discord.EmbedBuilder().setTitle(
-          `Tags for ${message.guild.name}`
+          `Tags for ${message.guild.name}`,
         );
         if (responses.length === 0) {
           if (debug.debug === true) console.log("[DEBUG] No tags found...");

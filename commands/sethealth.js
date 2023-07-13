@@ -22,14 +22,12 @@ module.exports = {
     }
     let health = parseFloat(args[0]);
     if (debug.debug === true)
-      console.log(
-        `[DEBUG] New instance health for ${id}: ${health}...`
-      );
+      console.log(`[DEBUG] New instance health for ${id}: ${health}...`);
     settings
       .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
       .run(health, "min_health");
     return message.reply(
-      `You will be warned if the instance health is below ${health}!`
+      `You will be warned if the instance health is below ${health}!`,
     );
   },
 };

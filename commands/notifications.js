@@ -18,7 +18,7 @@ module.exports = {
             console.log(
               "[DEBUG] Notifications are disabled for " +
                 id +
-                ", switching on..."
+                ", switching on...",
             );
           settings
             .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
@@ -29,13 +29,13 @@ module.exports = {
             console.log(
               "[DEBUG] Notifications are enabled for " +
                 id +
-                ", switching off..."
+                ", switching off...",
             );
           settings
             .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
             .run("false", "notifications");
           return message.channel.send(
-            `Service notifications are now disabled!`
+            `Service notifications are now disabled!`,
           );
       }
     } else return false;

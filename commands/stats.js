@@ -7,11 +7,19 @@ module.exports = {
   name: "stats",
   description: "Show stats",
   async execute(message, args, client) {
-    if (debug.debug === false || !message.channel.permissionsFor(message.author).has(Discord.PermissionFlagsBits.Administrator)) return false;
+    if (
+      debug.debug === false ||
+      !message.channel
+        .permissionsFor(message.author)
+        .has(Discord.PermissionFlagsBits.Administrator)
+    )
+      return false;
     const settings = new sqlite3("./data/settings.db");
     let id = message.guild.id;
     let default_instance = settings
-      .prepare(`SELECT value FROM guild_${id} WHERE option = 'default_instance'`)
+      .prepare(
+        `SELECT value FROM guild_${id} WHERE option = 'default_instance'`,
+      )
       .get().value;
     let instance = await InvidJS.fetchInstances({ url: default_instance });
     let version = settings
@@ -35,29 +43,25 @@ module.exports = {
           name: "Bot Stats",
           value: `Total servers: ${Array.from(client.guilds.cache).length}
           Total users: ${Array.from(client.users.cache).length}`,
-        }
+        },
       );
-      let invstats;
-      try {
-        invstats = await InvidJS.fetchStats(instance[0]);
-        stats.addFields(
-          {
-            name: "Default Instance Stats",
-            value: `URL: ${default_instance}
+    let invstats;
+    try {
+      invstats = await InvidJS.fetchStats(instance[0]);
+      stats.addFields({
+        name: "Default Instance Stats",
+        value: `URL: ${default_instance}
             Invidious Version: ${invstats.software.version}
-            Latest reported health: ${instance[0].health}`
-          }
-        )
-      } catch (error) {
-        if (error.code === InvidJS.ErrorCodes.MissingArgument) {
-          stats.addFields(
-            {
-              name: "Default Instance Stats",
-              value: `Failed to fetch default instance - it might be unavailable!`
-            }
-          )
-        }
+            Latest reported health: ${instance[0].health}`,
+      });
+    } catch (error) {
+      if (error.code === InvidJS.ErrorCodes.MissingArgument) {
+        stats.addFields({
+          name: "Default Instance Stats",
+          value: `Failed to fetch default instance - it might be unavailable!`,
+        });
       }
+    }
     message.channel.send({ embeds: [stats] });
   },
 };

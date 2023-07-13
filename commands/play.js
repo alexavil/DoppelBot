@@ -37,7 +37,7 @@ module.exports = {
         console.log("[DEBUG] YouTube link detected, redirecting...");
       if (notifications === "true")
         message.channel.send(
-          "Due to migration to InvidJS, the content will be played using the default Invidious instance for this server."
+          "Due to migration to InvidJS, the content will be played using the default Invidious instance for this server.",
         );
       if (url.includes("/watch?v=")) {
         url = default_url + "/watch?v=" + url.split("=")[1];
@@ -53,7 +53,7 @@ module.exports = {
       if (debug.debug === true)
         console.log("[DEBUG] ID detected, redirecting to default instance...");
       message.channel.send(
-        "Your track will be played using the default Invidious instance for this server."
+        "Your track will be played using the default Invidious instance for this server.",
       );
       url = default_url + "/watch?v=" + url;
     }
@@ -68,10 +68,10 @@ module.exports = {
         if (fetched.instance.health < min_health) {
           if (debug.debug === true)
             console.log(
-              "[DEBUG] Instance not healthy enough, sending a warning..."
+              "[DEBUG] Instance not healthy enough, sending a warning...",
             );
           message.channel.send(
-            "ALERT: Instance health too low. Please consider using a different instance."
+            "ALERT: Instance health too low. Please consider using a different instance.",
           );
         }
         if (debug.debug === true)
@@ -88,11 +88,11 @@ module.exports = {
             fetched.instance,
             fetched.video,
             fetched.format,
-            { saveTo: InvidJS.SaveSourceTo.Memory, parts: 5 }
+            { saveTo: InvidJS.SaveSourceTo.Memory, parts: 5 },
           );
           if (debug.debug === true) console.log("[DEBUG] Creating player...");
           let thumb = fetched.video.thumbnails.find(
-            (thumbnail) => thumbnail.quality === InvidJS.ImageQuality.HD
+            (thumbnail) => thumbnail.quality === InvidJS.ImageQuality.HD,
           ).url;
           let playingembed = new Discord.EmbedBuilder()
             .setTitle("Now Playing")
@@ -100,7 +100,7 @@ module.exports = {
               fetched.video.title +
                 "\n" +
                 fetched.url +
-                `\n\nRequested by <@!${message.author.id}>`
+                `\n\nRequested by <@!${message.author.id}>`,
             )
             .setImage(thumb);
           message.channel.send({ embeds: [playingembed] });
@@ -108,7 +108,7 @@ module.exports = {
             message.member.voice.channel,
             message.channel,
             stream,
-            fetched
+            fetched,
           );
         } else {
           message.reply(`Added ${fetched.url} to the queue!`);
@@ -124,29 +124,29 @@ module.exports = {
         if (fetched.instance.health < min_health) {
           if (debug.debug === true)
             console.log(
-              "[DEBUG] Instance not healthy enough, sending a warning..."
+              "[DEBUG] Instance not healthy enough, sending a warning...",
             );
           message.channel.send(
-            "ALERT: Instance health too low. Please consider using a different instance."
+            "ALERT: Instance health too low. Please consider using a different instance.",
           );
         }
         if (debug.debug === true)
           console.log(`[DEBUG] Adding tracks from ${url} to the queue...`);
         let statement = masterqueue.prepare(
-          `INSERT INTO guild_${id} VALUES (?, ?, ?)`
+          `INSERT INTO guild_${id} VALUES (?, ?, ?)`,
         );
         let transaction = masterqueue.transaction(() => {
           fetched.playlist.videos.forEach((video) => {
             statement.run(
               fetched.instance.url + "/watch?v=" + video.id,
               message.author.id,
-              "false"
+              "false",
             );
           });
         });
         transaction();
         message.reply(
-          `Successfully added ${fetched.playlist.videoCount} items to the queue!`
+          `Successfully added ${fetched.playlist.videoCount} items to the queue!`,
         );
         if (queuelength === 0) {
           if (debug.debug === true)
@@ -163,7 +163,7 @@ module.exports = {
             vid.instance,
             vid.video,
             vid.format,
-            { saveTo: InvidJS.SaveSourceTo.Memory, parts: 5 }
+            { saveTo: InvidJS.SaveSourceTo.Memory, parts: 5 },
           );
           if (debug.debug === true) console.log("[DEBUG] Creating player...");
           let thumb = vid.video.thumbnails[0].url;
@@ -173,7 +173,7 @@ module.exports = {
               vid.video.title +
                 "\n" +
                 vid.url +
-                `\n\nRequested by <@!${message.author.id}>`
+                `\n\nRequested by <@!${message.author.id}>`,
             )
             .setImage(thumb);
           message.channel.send({ embeds: [playingembed] });
@@ -181,7 +181,7 @@ module.exports = {
             message.member.voice.channel,
             message.channel,
             stream,
-            vid
+            vid,
           );
         }
       }

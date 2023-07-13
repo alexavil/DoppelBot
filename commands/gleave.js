@@ -10,8 +10,7 @@ module.exports = {
       let id = args[0];
       let guild = client.guilds.cache.get(id);
       if (guild) {
-        if (debug.debug === true)
-          console.log(`[DEBUG] Leaving guild ${id}...`);
+        if (debug.debug === true) console.log(`[DEBUG] Leaving guild ${id}...`);
         guild.leave();
       }
       message.delete().catch();

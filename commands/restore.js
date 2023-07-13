@@ -17,7 +17,7 @@ module.exports = {
     const filter = (m) => m.author.id == message.author.id;
 
     message.channel.send(
-      "Please provide the JSON file you received as a backup or type `cancel` to cancel.\n**This will erase all server settings if you proceed!**"
+      "Please provide the JSON file you received as a backup or type `cancel` to cancel.\n**This will erase all server settings if you proceed!**",
     );
     if (debug.debug === true)
       console.log("[DEBUG] File required - awaiting user input...");
@@ -47,13 +47,13 @@ module.exports = {
               .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
               .run("commands", "state");
             return message.channel.send(
-              "You must provide a valid backup file!"
+              "You must provide a valid backup file!",
             );
           }
           fetch(m.attachments.first().url).then((res) => {
             if (debug.debug === true)
               console.log(
-                "[DEBUG] User provided a valid JSON file, retrieving..."
+                "[DEBUG] User provided a valid JSON file, retrieving...",
               );
             res.json().then((json) => {
               let settings_backup = JSON.parse(json.split("\n")[0]);

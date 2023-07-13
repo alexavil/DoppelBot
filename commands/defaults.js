@@ -18,7 +18,7 @@ module.exports = {
       .run("wizard", "state");
     const filter = (m) => m.author.id == message.author.id;
     message.channel.send(
-      "**ALERT:** This action will wipe your server settings and tags - use at your own risk!\nPlease type `confirm` to proceed or `cancel` to cancel."
+      "**ALERT:** This action will wipe your server settings and tags - use at your own risk!\nPlease type `confirm` to proceed or `cancel` to cancel.",
     );
     if (debug.debug === true)
       console.log("[DEBUG] Confirmation required - awaiting user input...");
@@ -43,7 +43,7 @@ module.exports = {
           tags.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
           settings
             .prepare(
-              `CREATE TABLE IF NOT EXISTS guild_${id} (option TEXT UNIQUE, value TEXT)`
+              `CREATE TABLE IF NOT EXISTS guild_${id} (option TEXT UNIQUE, value TEXT)`,
             )
             .run();
           settings
@@ -66,13 +66,13 @@ module.exports = {
             .run("state", "commands");
           tags
             .prepare(
-              `CREATE TABLE IF NOT EXISTS guild_${id} (tag TEXT, response TEXT)`
+              `CREATE TABLE IF NOT EXISTS guild_${id} (tag TEXT, response TEXT)`,
             )
             .run();
           if (debug.debug === true)
             console.log(`[DEBUG] Reset finished for ${id}!`);
           return message.channel.send(
-            "Your settings have been reset successfully!"
+            "Your settings have been reset successfully!",
           );
         }
         default: {

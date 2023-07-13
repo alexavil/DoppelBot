@@ -4,7 +4,7 @@ const debug = require("../index");
 const os = require("os");
 module.exports = {
   name: "adminhelp",
-  aliases: ["ahelp"],
+  aliases: ["ahelp", "adm", "admhelp"],
   description: "About the bot",
   userpermissions: Discord.PermissionsBitField.Flags.BanMembers,
   execute(message) {
@@ -23,34 +23,20 @@ module.exports = {
         {
           name: "Service commands",
           value:
-            "`" +
-            prefix +
-            "settings` - bring up the settings panel\n" +
-            "`" +
-            prefix +
-            "notifications` - toggle service notifications\n" +
-            "`" +
-            prefix +
-            "setprefix` - change the guild prefix\n" +
-            "`" +
-            prefix +
-            "settimeout` - set VC disconnect timeout (in seconds)\n" +
-            "`" +
-            prefix +
-            "setinstance` - set default Invidious instance\n" +
-            "`" +
-            prefix +
-            "sethealth` - set minimum Invidious instance health",
+          `${prefix}settings - bring up the settings panel
+          ${prefix}notifications - toggle service notifications
+          ${prefix}prefix - change the guild prefix
+          ${prefix}settimeout - set VC disconnect timeout (in seconds)
+          ${prefix}setinstance - set default Invidious instance
+          ${prefix}sethealth - set minimum Invidious instance health`
         },
         {
           name: "Tags",
           value:
-            "All tags commands start with `" +
-            prefix +
-            "tags`.\n" +
-            "`create` - create a tag\n" +
-            "`delete` - delete a tag\n" +
-            "`list` - see all tags.",
+            `All tags commands start with ${prefix}tags.
+            create - create a tag
+            delete - delete a tag
+            list - see all tags.`,
         }
       );
     message.channel.send({ embeds: [help] });

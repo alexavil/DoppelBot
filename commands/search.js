@@ -24,7 +24,7 @@ module.exports = {
       .get().value;
     let query = args.slice(0).join(" ");
     if (debug.debug === true) {
-      console.log("[DEBUG] User query: " + query + "...");
+      console.log(`[DEBUG] User query: ${query}...`);
       console.log("[DEBUG] Searching...");
     }
     let instance = await InvidJS.fetchInstances({ url: default_url });
@@ -70,11 +70,11 @@ module.exports = {
           if (emoji.count > 1) {
             common.endTimeout(id);
             if (debug.debug === true)
-              console.log("[DEBUG] User choice: " + choice + "...");
+              console.log(`[DEBUG] User choice: ${choice}...`);
             videoid = results[choice].id;
             let url = default_url + "/watch?v=" + videoid;
             if (debug.debug === true)
-              console.log("[DEBUG] Validating " + url + "...");
+              console.log(`[DEBUG] Validating ${url}...`);
             let fetched = await common.getVideo(url, message.channel);
             let queuelength = masterqueue
               .prepare(`SELECT * FROM guild_${id}`)
@@ -90,7 +90,7 @@ module.exports = {
                 );
               }
               if (debug.debug === true)
-                console.log("[DEBUG] Adding " + url + " to the queue...");
+                console.log(`[DEBUG] Adding ${url} to the queue...`);
               masterqueue
                 .prepare(`INSERT INTO guild_${id} VALUES (?, ?, ?)`)
                 .run(url, message.author.id, "false");

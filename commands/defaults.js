@@ -12,7 +12,7 @@ module.exports = {
   async execute(message) {
     const id = message.guild.id;
     if (debug.debug === true)
-      console.log("[DEBUG] Preparing to reset settings for " + id + "...");
+      console.log(`[DEBUG] Preparing to reset settings for ${id}...`);
     settings
       .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
       .run("wizard", "state");
@@ -70,7 +70,7 @@ module.exports = {
             )
             .run();
           if (debug.debug === true)
-            console.log("[DEBUG] Reset finished for " + id + "!");
+            console.log(`[DEBUG] Reset finished for ${id}!`);
           return message.channel.send(
             "Your settings have been reset successfully!"
           );

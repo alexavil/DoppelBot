@@ -58,7 +58,7 @@ module.exports = {
       url = default_url + "/watch?v=" + url;
     }
     common.endTimeout(id);
-    if (debug.debug === true) console.log("[DEBUG] Validating " + url + "...");
+    if (debug.debug === true) console.log(`[DEBUG] Validating ${url}...`);
     if (url.includes("/watch?v=")) {
       let fetched = await common.getVideo(url, message.channel);
       let queuelength = masterqueue
@@ -75,7 +75,7 @@ module.exports = {
           );
         }
         if (debug.debug === true)
-          console.log("[DEBUG] Adding " + url + " to the queue...");
+          console.log(`[DEBUG] Adding ${url} to the queue...`);
         masterqueue
           .prepare(`INSERT INTO guild_${id} VALUES (?, ?, ?)`)
           .run(url, message.author.id, "false");
@@ -131,7 +131,7 @@ module.exports = {
           );
         }
         if (debug.debug === true)
-          console.log("[DEBUG] Adding tracks from " + url + " to the queue...");
+          console.log(`[DEBUG] Adding tracks from ${url} to the queue...`);
         let statement = masterqueue.prepare(
           `INSERT INTO guild_${id} VALUES (?, ?, ?)`
         );
@@ -146,9 +146,7 @@ module.exports = {
         });
         transaction();
         message.reply(
-          "Successfully added " +
-            fetched.playlist.videoCount +
-            " items to the queue!"
+          `Successfully added ${fetched.playlist.videoCount} items to the queue!`
         );
         if (queuelength === 0) {
           if (debug.debug === true)
@@ -157,7 +155,7 @@ module.exports = {
             .prepare(`SELECT * FROM guild_${id} ORDER BY ROWID LIMIT 1`)
             .get();
           if (debug.debug === true)
-            console.log("[DEBUG] Validating " + first.track + "...");
+            console.log(`[DEBUG] Validating ${first.track}...`);
           let vid = await common.getVideo(first.track, message.channel);
           if (debug.debug === true)
             console.log("[DEBUG] Downloading stream...");

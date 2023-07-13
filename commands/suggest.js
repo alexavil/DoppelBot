@@ -19,7 +19,7 @@ module.exports = {
     }
     let query = args.slice(0).join(" ");
     if (debug.debug === true) {
-      console.log("[DEBUG] User query: " + query + "...");
+      console.log(`[DEBUG] User query: ${query}...`);
       console.log("[DEBUG] Fetching suggestions...");
     }
     let instance = await InvidJS.fetchInstances({ url: default_url });

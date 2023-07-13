@@ -43,7 +43,7 @@ async function getVideo(url, textchannel) {
       return result;
     } else return undefined;
   } catch (error) {
-    if (debug.debug === true) console.log("[DEBUG] Error: " + error + "...");
+    if (debug.debug === true) console.log("[DEBUG] Error: " + error);
     switch (error.code) {
       case InvidJS.ErrorCodes.APIBlocked: {
         textchannel.send(
@@ -86,7 +86,7 @@ async function getPlaylist(url, textchannel) {
     };
     return result;
   } catch (error) {
-    if (debug.debug === true) console.log("[DEBUG] Error: " + error + "...");
+    if (debug.debug === true) console.log("[DEBUG] Error: " + error);
     switch (error.code) {
       case InvidJS.ErrorCodes.APIBlocked: {
         textchannel.send(
@@ -205,11 +205,7 @@ function playMusic(channel, textchannel, stream, fetched) {
         ).url;
         let playingembed = new Discord.EmbedBuilder()
           .setTitle("Now Playing")
-          .setDescription(
-            new_track.video.title +
-              "\n" +
-              new_track.url +
-              `\n\nRequested by <@!${track.author}>`
+          .setDescription(`${new_track.video.title}\n${new_track.url}\n\nRequested by <@!${track.author}>`
           )
           .setImage(thumb);
         textchannel.send({ embeds: [playingembed] });

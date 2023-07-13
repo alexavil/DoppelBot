@@ -19,7 +19,7 @@ module.exports = {
       case "create":
       case "c": {
         if (debug.debug === true)
-          console.log("[DEBUG] Starting tag creation for " + id + "...");
+          console.log(`[DEBUG] Starting tag creation for ${id}...`);
         if (
           !message.channel
             .permissionsFor(message.author)
@@ -138,7 +138,7 @@ module.exports = {
       case "delete":
       case "d": {
         if (debug.debug === true)
-          console.log("[DEBUG] Starting tag deletion for " + id + "...");
+          console.log(`[DEBUG] Starting tag deletion for ${id}...`);
         if (
           !message.channel
             .permissionsFor(message.author)
@@ -164,7 +164,7 @@ module.exports = {
       case "list":
       case "l": {
         if (debug.debug === true)
-          console.log("[DEBUG] Fetching tag list for " + id + "...");
+          console.log(`[DEBUG] Fetching tag list for ${id}...`);
         let responses = tags.prepare(`SELECT * FROM guild_${id}`).all();
         let tagsembed = new Discord.EmbedBuilder().setTitle(
           `Tags for ${message.guild.name}`

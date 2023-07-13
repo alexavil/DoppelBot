@@ -17,7 +17,7 @@ module.exports = {
     if (queuelength !== 0) {
       if (debug.debug === true)
         console.log(
-          "[DEBUG] Queue for " + id + " is not empty, fetching tracks..."
+          `[DEBUG] Queue for ${id} is not empty, fetching tracks...`
         );
       masterqueue
         .prepare(`SELECT * FROM guild_${id}`)
@@ -34,7 +34,7 @@ module.exports = {
         });
     } else {
       if (debug.debug === true)
-        console.log("[DEBUG] Queue for " + id + " is empty...");
+        console.log(`[DEBUG] Queue for ${id} is empty...`);
       embed.setDescription("The queue is empty!");
     }
     embed.setTitle("Queue");

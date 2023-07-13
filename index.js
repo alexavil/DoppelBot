@@ -99,14 +99,14 @@ function CheckForPerms() {
   client.guilds.cache.forEach((guild) => {
     let id = guild.id;
     if (debug === true)
-      console.log("[DEBUG] Checking for permissions in guild " + id + "...");
+      console.log(`[DEBUG] Checking for permissions in guild ${id}...`);
     let notifs_value = settings
       .prepare(`SELECT * FROM guild_${id} WHERE option = 'notifications'`)
       .get().value;
     if (notifs_value === "false") {
       if (debug === true)
         console.log(
-          "[DEBUG] Guild " + id + " has notifications disabled. Skipping..."
+          `[DEBUG] Guild ${id} has notifications disabled. Skipping...`
         );
       return false;
     }
@@ -118,11 +118,7 @@ function CheckForPerms() {
       if (!botmember.permissions.has(perm[0])) {
         if (debug === true)
           console.log(
-            "[DEBUG] Guild " +
-              id +
-              " is missing " +
-              perm[1] +
-              ". Adding to message..."
+            `[DEBUG] Guild ${id} is missing ${perm[1]}. Adding to message...`
           );
         message += `${perm[1]}\n`;
         missing++;
@@ -131,7 +127,7 @@ function CheckForPerms() {
     if (missing > 0) {
       if (debug === true)
         console.log(
-          "[DEBUG] Guild " + id + " is missing permissions, sending alert..."
+          `[DEBUG] Guild ${id} is missing permissions, sending alert...`
         );
       message += `\nPlease check your role and member settings!`;
       const outbtn = new Discord.ButtonBuilder()
@@ -150,14 +146,14 @@ function CheckForPerms() {
           if (err.code === Discord.Constants.APIErrors.CANNOT_MESSAGE_USER) {
             if (debug === true)
               console.log(
-                "[DEBUG] Cannot message owner of guild " + id + ". Skipping..."
+                `[DEBUG] Cannot message owner of guild ${id}. Skipping...`
               );
             return false;
           }
         });
     } else {
       if (debug === true)
-        console.log("[DEBUG] Guild " + id + " has all permissions.");
+        console.log(`[DEBUG] Guild ${id} has all permissions.`);
       return true;
     }
   });
@@ -166,7 +162,7 @@ function CheckForPerms() {
 function clearQueue(id) {
   if (debug === true)
     console.log(
-      "[DEBUG] Bot has restarted, clearing queue for guild " + id + "..."
+      `[DEBUG] Bot has restarted, clearing queue for guild ${id}...`
     );
   queue.prepare(`DELETE FROM guild_${id}`).run();
 }
@@ -212,7 +208,7 @@ function prepareGlobalSettings() {
 
 function createConfig(id) {
   if (debug === true)
-    console.log("[DEBUG] Creating/validating config for guild " + id + "...");
+    console.log(`[DEBUG] Creating/validating config for guild ${id}...`);
   settings
     .prepare(
       `CREATE TABLE IF NOT EXISTS guild_${id} (option TEXT UNIQUE, value TEXT)`
@@ -250,7 +246,7 @@ function createConfig(id) {
   if (instance === "") {
     if (debug === true)
       console.log(
-        "[DEBUG] No instance defined for " + id + ", choosing one..."
+        `[DEBUG] No instance defined for ${id}, choosing one...`
       );
     getDefaultInstance(id);
   }
@@ -282,7 +278,7 @@ function validateSettings() {
 
 function deleteConfig(id) {
   if (debug === true)
-    console.log("[DEBUG] Deleting config for guild " + id + "...");
+    console.log(`[DEBUG] Deleting config for guild ${id}...`);
   settings.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
   queue.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
   tags.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
@@ -292,7 +288,7 @@ function gamecycle() {
   let games = activities.games;
   let gamestring = Math.floor(Math.random() * games.length);
   if (debug === true)
-    console.log("[DEBUG] Setting bot activity to " + games[gamestring] + "...");
+    console.log(`[DEBUG] Setting bot activity to ${games[gamestring]}...`);
   client.user.setActivity(games[gamestring]);
 }
 
@@ -324,7 +320,7 @@ client.on("ready", () => {
 client.on("guildCreate", (guild) => {
   if (debug === true)
     console.log(
-      "[DEBUG] A new guild " + guild.id + " has been added, running jobs..."
+      `[DEBUG] A new guild (${guild.id}) has been added, running jobs...`
     );
   createConfig(guild.id);
 });
@@ -332,7 +328,7 @@ client.on("guildCreate", (guild) => {
 client.on("guildDelete", (guild) => {
   if (debug === true)
     console.log(
-      "[DEBUG] A guild " + guild.id + " has been removed, running jobs..."
+      `[DEBUG] A guild (${guild.id}) has been removed, running jobs...`
     );
   deleteConfig(guild.id);
 });
@@ -342,9 +338,7 @@ client.on("interactionCreate", (interaction) => {
     let id = interaction.customId.split("_")[0];
     if (debug === true)
       console.log(
-        "[DEBUG] A guild " +
-          guild.id +
-          " has switched service notifications off..."
+        `[DEBUG] A guild ${guild.id} has switched service notifications off...`
       );
     settings
       .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
@@ -419,7 +413,7 @@ client.on("messageCreate", (message) => {
     ) {
       if (debug === true)
         console.log(
-          "[DEBUG] Trying to execute " + commandName + " in " + id + "..."
+          `[DEBUG] Trying to execute ${commandName} in ${id}...`
         );
       command.execute(message, args, client);
     }

@@ -20,10 +20,10 @@ module.exports = {
       return message.reply("Invalid prefix!");
     }
     if (debug.debug === true)
-      console.log("[DEBUG] New prefix for " + id + ": " + args[0] + "...");
+      console.log(`[DEBUG] New prefix for ${id}: ${args[0]}...`);
     settings
       .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
       .run(args[0], "prefix");
-    return message.reply("New prefix set to `" + args[0] + "`.");
+    return message.reply(`New prefix set to ${args[0]}.`);
   },
 };

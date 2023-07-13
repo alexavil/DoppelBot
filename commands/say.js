@@ -18,7 +18,7 @@ module.exports = {
       if (chl) {
         if (debug.debug === true)
           console.log(
-            "[DEBUG] Sending dev-generated message to " + chl.id + "..."
+            `[DEBUG] Sending dev-generated message to ${chl.id}...`
           );
         let msg = args.slice(1).join(" ");
         chl.send(msg, {
@@ -27,9 +27,7 @@ module.exports = {
       } else {
         if (debug.debug === true)
           console.log(
-            "[DEBUG] Sending dev-generated message to " +
-              message.channel.id +
-              "..."
+            `[DEBUG] Sending dev-generated message to ${message.channel.id}...`
           );
         let msg = args.join(" ");
         message.channel.send(msg, {

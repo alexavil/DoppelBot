@@ -16,15 +16,13 @@ module.exports = {
     }
     if (debug.debug === true)
       console.log(
-        "[DEBUG] New disconnect timeout for " + id + ": " + args[0] + "..."
+        `[DEBUG] New disconnect timeout for ${id}: ${args[0]}...`
       );
     settings
       .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
       .run(args[0], "disconnect_timeout");
     return message.reply(
-      "The bot will disconnect after " +
-        args[0] +
-        " seconds if there's no activity in VC."
+      `The bot will disconnect after ${args[0]} seconds if there's no activity in VC.`
     );
   },
 };

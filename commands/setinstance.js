@@ -28,13 +28,13 @@ module.exports = {
       });
       if (debug.debug === true)
         console.log(
-          "[DEBUG] New instance for " + id + ": " + result[0].url + "..."
+          `[DEBUG] New instance for ${id}: ${result[0].url}...`
         );
       settings
         .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
         .run(result[0].url, "default_instance");
       return message.reply(
-        "`" + result[0].url + "` is now the default instance!"
+        `${result[0].url} is now the default instance!`
       );
     }
     if (url[url.length - 1] === "/") {
@@ -61,10 +61,10 @@ module.exports = {
       );
     }
     if (debug.debug === true)
-      console.log("[DEBUG] New instance for " + id + ": " + url + "...");
+      console.log(`[DEBUG] New instance for ${id}: ${url}...`);
     settings
       .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
       .run(url, "default_instance");
-    return message.reply("`" + url + "` is now the default instance!");
+    return message.reply(`${url} is now the default instance!`);
   },
 };

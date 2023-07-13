@@ -14,7 +14,6 @@ module.exports = {
       .prepare(`SELECT value FROM guild_${id} WHERE option = 'default_instance'`)
       .get().value;
     let instance = await InvidJS.fetchInstances({ url: default_instance });
-    let invstats = await InvidJS.fetchStats(instance[0]);
     let version = settings
       .prepare(`SELECT value FROM global WHERE option = 'current_version'`)
       .get().value;
@@ -36,14 +35,29 @@ module.exports = {
           name: "Bot Stats",
           value: `Total servers: ${Array.from(client.guilds.cache).length}
           Total users: ${Array.from(client.users.cache).length}`,
-        },
-        {
+        }
+      );
+      let invstats;
+      try {
+        invstats = await InvidJS.fetchStats(instance[0]);
+        stats.addFields(
+          {
             name: "Default Instance Stats",
             value: `URL: ${default_instance}
             Invidious Version: ${invstats.software.version}
             Latest reported health: ${instance[0].health}`
+          }
+        )
+      } catch (error) {
+        if (error.code === InvidJS.ErrorCodes.MissingArgument) {
+          stats.addFields(
+            {
+              name: "Default Instance Stats",
+              value: `Failed to fetch default instance - it might be unavailable!`
+            }
+          )
         }
-      );
+      }
     message.channel.send({ embeds: [stats] });
   },
 };

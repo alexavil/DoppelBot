@@ -40,7 +40,9 @@ module.exports = {
             OS: \`${os.type()} ${os.release} ${os.arch}\`
             Node Version: \`${process.version}\`
             Discord.js Version: \`${Discord.version}\`
-            Available RAM: \`${Math.round(os.freemem() / 1024 / 1024)} / ${Math.round(os.totalmem() / 1024 / 1024)} MB\`,
+            Available RAM: \`${Math.round(
+              os.freemem() / 1024 / 1024,
+            )} / ${Math.round(os.totalmem() / 1024 / 1024)} MB\`,
             CPU Usage: \`${os.loadavg()[0].toFixed(2)}%\``,
         },
         {

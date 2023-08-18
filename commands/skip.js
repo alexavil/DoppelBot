@@ -12,6 +12,7 @@ module.exports = {
   async execute(message) {
     const id = message.guild.id;
     const connection = getVoiceConnection(id);
+    const channel = message.member.voice.channel;
     if (!connection) return message.reply("Nothing to skip!");
     if (
       !message.channel

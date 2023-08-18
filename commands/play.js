@@ -103,7 +103,7 @@ module.exports = {
                 `\n\nRequested by <@!${message.author.id}>`,
             )
             .setImage(thumb)
-            .setFooter("Powered by InvidJS");
+            .setFooter({ text: "Powered by InvidJS" });
           message.channel.send({ embeds: [playingembed] });
           common.playMusic(
             message.member.voice.channel,
@@ -177,7 +177,7 @@ module.exports = {
                 `\n\nRequested by <@!${message.author.id}>`,
             )
             .setImage(thumb)
-            .setFooter("Powered by InvidJS");
+            .setFooter({ text: "Powered by InvidJS" });
           message.channel.send({ embeds: [playingembed] });
           common.playMusic(
             message.member.voice.channel,

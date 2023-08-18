@@ -17,7 +17,7 @@ module.exports = {
       .filter((v, i) => v !== "00" || i > 0)
       .join(":");
     return message.channel.send(
-      `Current time: ${length} / ${player.video.lengthString}`,
+      `Current time: ${length} / ${player.video.length}`,
     );
   },
 };

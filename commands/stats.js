@@ -31,18 +31,22 @@ module.exports = {
       .addFields(
         {
           name: "System Information",
-          value: `DoppelBot Build: ${version}
-            InvidJS Version: ${
+          value: `DoppelBot Version: \`${version}\`
+            InvidJS Version: \`${
               require("../package-lock.json").packages[
                 "node_modules/@invidjs/invid-js"
               ].version
-            }
-            OS: ${os.type()} ${os.release} ${os.arch}`,
+            }\`
+            OS: \`${os.type()} ${os.release} ${os.arch}\`
+            Node Version: \`${process.version}\`
+            Discord.js Version: \`${Discord.version}\`
+            Available RAM: \`${Math.round(os.freemem() / 1024 / 1024)} / ${Math.round(os.totalmem() / 1024 / 1024)} MB\`,
+            CPU Usage: \`${os.loadavg()[0].toFixed(2)}%\``,
         },
         {
           name: "Bot Stats",
-          value: `Total servers: ${Array.from(client.guilds.cache).length}
-          Total users: ${Array.from(client.users.cache).length}`,
+          value: `Total servers: \`${Array.from(client.guilds.cache).length}\`
+          Total users: \`${Array.from(client.users.cache).length}\``,
         },
       );
     let invstats;
@@ -50,9 +54,9 @@ module.exports = {
       invstats = await InvidJS.fetchStats(instance[0]);
       stats.addFields({
         name: "Default Instance Stats",
-        value: `URL: ${default_instance}
-            Invidious Version: ${invstats.software.version}
-            Latest reported health: ${instance[0].health}`,
+        value: `URL: \`${default_instance}\`
+            Invidious Version: \`${invstats.software.version}\`
+            Latest reported health: \`${instance[0].health}\``,
       });
     } catch (error) {
       if (error.code === InvidJS.ErrorCodes.MissingArgument) {

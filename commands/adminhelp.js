@@ -22,19 +22,19 @@ module.exports = {
       .addFields(
         {
           name: "Service commands",
-          value: `${prefix}settings - bring up the settings panel
-          ${prefix}notifications - toggle service notifications
-          ${prefix}prefix - change the guild prefix
-          ${prefix}settimeout - set VC disconnect timeout (in seconds)
-          ${prefix}setinstance - set default Invidious instance
-          ${prefix}sethealth - set minimum Invidious instance health`,
+          value: `\`${prefix}settings\` - bring up the settings panel
+          \`${prefix}notifications\` - toggle service notifications
+          \`${prefix}prefix\` - change the guild prefix
+          \`${prefix}settimeout\` - set VC disconnect timeout (in seconds)
+          \`${prefix}setinstance\` - set default Invidious instance
+          \`${prefix}sethealth\` - set minimum Invidious instance health`,
         },
         {
           name: "Tags",
           value: `All tags commands start with ${prefix}tags.
-            create - create a tag
-            delete - delete a tag
-            list - see all tags.`,
+          \`create\` - create a tag
+          \`delete\` - delete a tag
+            \`list\` - see all tags.`,
         },
       );
     message.channel.send({ embeds: [help] });

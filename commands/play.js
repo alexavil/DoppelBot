@@ -102,7 +102,8 @@ module.exports = {
                 fetched.url +
                 `\n\nRequested by <@!${message.author.id}>`,
             )
-            .setImage(thumb);
+            .setImage(thumb)
+            .setFooter("Powered by InvidJS");
           message.channel.send({ embeds: [playingembed] });
           common.playMusic(
             message.member.voice.channel,
@@ -175,7 +176,8 @@ module.exports = {
                 vid.url +
                 `\n\nRequested by <@!${message.author.id}>`,
             )
-            .setImage(thumb);
+            .setImage(thumb)
+            .setFooter("Powered by InvidJS");
           message.channel.send({ embeds: [playingembed] });
           common.playMusic(
             message.member.voice.channel,

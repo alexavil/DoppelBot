@@ -208,7 +208,8 @@ function playMusic(channel, textchannel, stream, fetched) {
           .setDescription(
             `${new_track.video.title}\n${new_track.url}\n\nRequested by <@!${track.author}>`,
           )
-          .setImage(thumb);
+          .setImage(thumb)
+          .setFooter("Powered by InvidJS");
         textchannel.send({ embeds: [playingembed] });
         return playMusic(channel, textchannel, stream, new_track);
       }

@@ -46,6 +46,7 @@ module.exports = {
     });
     searchembed.setTitle("Please select a track:");
     searchembed.setColor("#0099ff");
+    searchembed.setFooter("Powered by InvidJS");
     let embedmessage = await message.channel.send({
       embeds: [searchembed],
     });

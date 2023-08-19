@@ -1,7 +1,5 @@
 const Discord = require("discord.js");
 const sqlite3 = require("better-sqlite3");
-const debug = require("../index");
-const os = require("os");
 module.exports = {
   name: "about",
   aliases: ["help"],
@@ -11,9 +9,6 @@ module.exports = {
     let id = message.guild.id;
     let prefix = settings
       .prepare(`SELECT value FROM guild_${id} WHERE option = 'prefix'`)
-      .get().value;
-    let version = settings
-      .prepare(`SELECT value FROM global WHERE option = 'current_version'`)
       .get().value;
     const help = new Discord.EmbedBuilder()
       .setColor("#0099ff")

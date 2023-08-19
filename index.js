@@ -213,8 +213,8 @@ function createConfig(id) {
     )
     .run();
   let statement = settings.prepare(
-      `INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`,
-  );  
+    `INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`,
+  );
   let transaction = settings.transaction(() => {
     statement.run("prefix", "d!");
     statement.run("notifications", "false");

@@ -1,6 +1,7 @@
 const sqlite3 = require("better-sqlite3");
 const debug = require("../index");
 const Discord = require("discord.js");
+const InvidJS = require("@invidjs/invid-js");
 
 const settings = new sqlite3("./data/settings.db");
 const tags = new sqlite3("./data/tags.db");
@@ -46,24 +47,27 @@ module.exports = {
               `CREATE TABLE IF NOT EXISTS guild_${id} (option TEXT UNIQUE, value TEXT)`,
             )
             .run();
-          settings
-            .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
-            .run("prefix", "d!");
-          settings
-            .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
-            .run("notifications", "false");
-          settings
-            .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
-            .run("disconnect_timeout", "30");
-          settings
-            .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
-            .run("default_instance", "https://invidious.snopyta.org");
-          settings
-            .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
-            .run("min_health", "75");
-          settings
-            .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
-            .run("state", "commands");
+          let statement = settings.prepare(
+            `INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`,
+          );
+          let transaction = settings.transaction(() => {
+            statement.run("prefix", "d!");
+            statement.run("notifications", "false");
+            statement.run("disconnect_timeout", "30");
+            statement.run("default_instance", "");
+            statement.run("min_health", "75");
+            statement.run("state", "commands");
+          });
+          transaction();
+          InvidJS.fetchInstances({
+            health: 99,
+            api_allowed: true,
+            limit: 1,
+          }).then((result) => {
+            settings
+              .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
+              .run(result[0].url, "default_instance");
+          });
           tags
             .prepare(
               `CREATE TABLE IF NOT EXISTS guild_${id} (tag TEXT, response TEXT)`,

@@ -212,24 +212,18 @@ function createConfig(id) {
       `CREATE TABLE IF NOT EXISTS guild_${id} (option TEXT UNIQUE, value TEXT)`,
     )
     .run();
-  settings
-    .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
-    .run("prefix", "d!");
-  settings
-    .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
-    .run("notifications", "false");
-  settings
-    .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
-    .run("disconnect_timeout", "30");
-  settings
-    .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
-    .run("default_instance", "");
-  settings
-    .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
-    .run("min_health", "75");
-  settings
-    .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
-    .run("state", "commands");
+  let statement = settings.prepare(
+      `INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`,
+  );  
+  let transaction = settings.transaction(() => {
+    statement.run("prefix", "d!");
+    statement.run("notifications", "false");
+    statement.run("disconnect_timeout", "30");
+    statement.run("default_instance", "");
+    statement.run("min_health", "75");
+    statement.run("state", "commands");
+  });
+  transaction();
   queue
     .prepare(
       `CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT, author TEXT, isLooped TEXT)`,

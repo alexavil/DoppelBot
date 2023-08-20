@@ -117,7 +117,7 @@ module.exports = {
       }
     }
     if (url.includes("/playlist?list=")) {
-      let fetched = await common.getPlaylist(url);
+      let fetched = await common.getPlaylist(url, message.channel);
       let queuelength = masterqueue
         .prepare(`SELECT * FROM guild_${id}`)
         .all().length;

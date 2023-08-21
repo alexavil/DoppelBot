@@ -79,12 +79,17 @@ if (debug === true) {
   console.log("This mode is not recommended for use in production.");
   console.log("Please proceed with caution.");
   console.log("[DEBUG] Retreived build hash successfully!");
-  console.log("[DEBUG] Build hash: " + require('child_process').execSync('git rev-parse --short HEAD').toString().trim());
+  console.log(
+    "[DEBUG] Build hash: " +
+      require("child_process")
+        .execSync("git rev-parse --short HEAD")
+        .toString()
+        .trim(),
+  );
   console.log(
     `[DEBUG] InvidJS Version: ${
-      require(".package-lock.json").packages[
-        "node_modules/@invidjs/invid-js"
-      ].version
+      require(".package-lock.json").packages["node_modules/@invidjs/invid-js"]
+        .version
     }`,
   );
   client.on("debug", console.log);

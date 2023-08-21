@@ -23,8 +23,13 @@ module.exports = {
       .get().value;
     let instance = await InvidJS.fetchInstances({ url: default_instance });
     let version = require("../package-lock.json").version;
-    let invidjs_version = require("../package-lock.json").packages["node_modules/@invidjs/invid-js"].version;
-    let commit = require('child_process').execSync('git rev-parse --short HEAD').toString().trim();
+    let invidjs_version = require("../package-lock.json").packages[
+      "node_modules/@invidjs/invid-js"
+    ].version;
+    let commit = require("child_process")
+      .execSync("git rev-parse --short HEAD")
+      .toString()
+      .trim();
     const stats = new Discord.EmbedBuilder()
       .setColor("#0099ff")
       .setTitle("DoppelBot Instance Stats")

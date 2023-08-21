@@ -172,11 +172,6 @@ function prepareGlobalSettings() {
       `CREATE TABLE IF NOT EXISTS global (option TEXT UNIQUE, value TEXT)`,
     )
     .run();
-  tags
-    .prepare(
-      `CREATE TABLE IF NOT EXISTS global (tag TEXT UNIQUE, response TEXT)`,
-    )
-    .run();
   settings
     .prepare(
       "insert or ignore into global (option, value) values ('current_version', '')",

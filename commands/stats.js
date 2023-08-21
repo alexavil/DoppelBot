@@ -22,9 +22,9 @@ module.exports = {
       )
       .get().value;
     let instance = await InvidJS.fetchInstances({ url: default_instance });
-    let version = settings
-      .prepare(`SELECT value FROM global WHERE option = 'current_version'`)
-      .get().value;
+    let version = require("../package-lock.json").version;
+    let invidjs_version = require("../package-lock.json").packages["node_modules/@invidjs/invid-js"].version;
+    let commit = require('child_process').execSync('git rev-parse --short HEAD').toString().trim();
     const stats = new Discord.EmbedBuilder()
       .setColor("#0099ff")
       .setTitle("DoppelBot Instance Stats")
@@ -32,11 +32,8 @@ module.exports = {
         {
           name: "System Information",
           value: `DoppelBot Version: \`${version}\`
-            InvidJS Version: \`${
-              require("../package-lock.json").packages[
-                "node_modules/@invidjs/invid-js"
-              ].version
-            }\`
+            Commit: \`${commit}\`
+            InvidJS Version: \`${invidjs_version}\`
             OS: \`${os.type()} ${os.release} ${os.arch}\`
             Node Version: \`${process.version}\`
             Discord.js Version: \`${Discord.version}\`

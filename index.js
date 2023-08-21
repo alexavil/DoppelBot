@@ -13,7 +13,6 @@ const {
   ButtonStyle,
   ChannelType,
 } = require("discord.js");
-const child = require("child_process");
 
 const client = new Discord.Client({
   intents: [
@@ -79,6 +78,15 @@ if (debug === true) {
   );
   console.log("This mode is not recommended for use in production.");
   console.log("Please proceed with caution.");
+  console.log("[DEBUG] Retreived build hash successfully!");
+  console.log("[DEBUG] Build hash: " + require('child_process').execSync('git rev-parse --short HEAD').toString().trim());
+  console.log(
+    `[DEBUG] InvidJS Version: ${
+      require(".package-lock.json").packages[
+        "node_modules/@invidjs/invid-js"
+      ].version
+    }`,
+  );
   client.on("debug", console.log);
   client.on("warn", console.log);
 }
@@ -165,40 +173,6 @@ function clearQueue(id) {
   queue.prepare(`DELETE FROM guild_${id}`).run();
 }
 
-function prepareGlobalSettings() {
-  if (debug === true) console.log("[DEBUG] Validating global settings...");
-  settings
-    .prepare(
-      `CREATE TABLE IF NOT EXISTS global (option TEXT UNIQUE, value TEXT)`,
-    )
-    .run();
-  settings
-    .prepare(
-      "insert or ignore into global (option, value) values ('current_version', '')",
-    )
-    .run();
-  child.exec("git rev-parse --short HEAD", (err, stdout, stderr) => {
-    if (err) {
-      Sentry.captureException(err);
-    } else {
-      if (debug === true) {
-        console.log("[DEBUG] Retreived build hash successfully!");
-        console.log("[DEBUG] Build hash: " + stdout.toString().substring(0, 7));
-        console.log(
-          `[DEBUG] InvidJS Version: ${
-            require(".package-lock.json").packages[
-              "node_modules/@invidjs/invid-js"
-            ].version
-          }`,
-        );
-      }
-      settings
-        .prepare("update global set value = ? where option = 'current_version'")
-        .run(stdout.toString().substring(0, 7));
-    }
-  });
-}
-
 function createConfig(id) {
   if (debug === true)
     console.log(`[DEBUG] Creating/validating config for guild ${id}...`);
@@ -278,7 +252,6 @@ function gamecycle() {
 
 client.on("ready", () => {
   initSentry();
-  prepareGlobalSettings();
   validateSettings();
   let permcheck = new cron.CronJob("00 00 */8 * * *", CheckForPerms);
   permcheck.start();

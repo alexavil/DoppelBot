@@ -38,7 +38,7 @@ const client = new Discord.Client({
   ],
 });
 
-if (!fs.exists("./data/")) fs.mkdirSync("./data/");
+if (!fs.existsSync("./data/")) fs.mkdirSync("./data/");
 
 const settings = new sqlite3("./data/settings.db");
 const queue = new sqlite3("./data/queue.db");
@@ -98,6 +98,7 @@ function initSentry() {
   Sentry.init({
     dsn: "https://546220d2015b4064a1c2363c6c6089f2@o4504711913340928.ingest.sentry.io/4504712612872192",
     tracesSampleRate: 1.0,
+    environment: debug ? "testing" : "production",
   });
 }
 

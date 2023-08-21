@@ -1,6 +1,6 @@
 {
   "name": "doppelbot",
-  "version": "1.2.2",
+  "version": "2.2.1",
   "description": "A Doppel a day keeps your sadness away.",
   "main": "index.js",
   "scripts": {

@@ -102,7 +102,7 @@ module.exports = {
                   fetched.instance,
                   fetched.video,
                   fetched.format,
-                  { saveTo: InvidJS.SaveSourceTo.Memory, parts: 10 },
+                  { saveTo: InvidJS.SaveSourceTo.Memory, parts: 5 },
                 );
                 if (debug.debug === true)
                   console.log("[DEBUG] Creating player...");

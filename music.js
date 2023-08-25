@@ -18,8 +18,33 @@ const disallowedLinks = ["https://www.youtube.com/", "https://youtu.be/"];
 let timeouts = [];
 let players = [];
 let counters = [];
+let resources = [];
 
-async function getVideo(url, textchannel) {
+function addToQueue(id, file, author, isLooped) {
+  masterqueue
+    .prepare(`INSERT INTO guild_${id} VALUES (?, ?, ?)`)
+    .run(file, author, isLooped);
+}
+
+function removeFromQueue(id) {
+  masterqueue
+    .prepare(`DELETE FROM guild_${id} ORDER BY rowid LIMIT 1`)
+    .run();
+}
+
+function getFromQueue(id) {
+  return masterqueue
+    .prepare(`SELECT rowid, * FROM guild_${id} ORDER BY rowid LIMIT 1`)
+    .get();
+}
+
+function getQueueLength(id) {
+  return masterqueue
+  .prepare(`SELECT * FROM guild_${id}`)
+  .all().length;
+}
+
+async function getVideo(url, caller) {
   try {
     let instances = await InvidJS.fetchInstances({
       url: url.split("/w")[0],
@@ -34,35 +59,43 @@ async function getVideo(url, textchannel) {
     let isValid = undefined;
     isValid = await InvidJS.validateSource(instance, video, format);
     if (isValid === true) {
-      let result = {
-        url,
-        instance,
-        video,
-        format,
-      };
-      return result;
+      if (debug.debug === true)
+        console.log("[DEBUG] Input valid, adding to queue...");
+      addToQueue(caller.guild.id, url, caller.author.id, "false");
+      if (debug.debug === true)
+        console.log("[DEBUG] Downloading stream...");
+      let resource = await downloadTrack(instance, video, format);
+      addResource(caller.guild.id, resource, getQueueLength(caller.guild.id));
+      if (getQueueLength(caller.guild.id) === 1) {
+        if (debug.debug === true)
+          console.log("[DEBUG] This is the first track, starting playback...");
+        announceTrack(url, caller.author.id, video, caller);
+        playMusic(caller.member.voice.channel, video, resource, caller);
+      } else {
+        caller.reply(`Added ${url} to the queue!`);
+      }
     } else return undefined;
   } catch (error) {
     if (debug.debug === true) console.log("[DEBUG] Error: " + error);
     switch (error.code) {
       case InvidJS.ErrorCodes.APIBlocked: {
-        textchannel.send(
+        caller.reply(
           "The video could not be fetched due to API restrictions. The instance may not support API calls or may be down.",
         );
         return undefined;
       }
       case InvidJS.ErrorCodes.APIError: {
-        textchannel.send(
+        caller.reply(
           "The video could not be fetched due to an API error. Please try again later.",
         );
         return undefined;
       }
       case InvidJS.ErrorCodes.InvalidContent: {
-        textchannel.send("This video is invalid. Please try another video.");
+        caller.reply("This video is invalid. Please try another video.");
         return undefined;
       }
       case InvidJS.ErrorCodes.BlockedVideo: {
-        textchannel.send(
+        caller.reply(
           "This video is blocked - perhaps it's from an auto-generated channel? Please try another video.",
         );
         return undefined;
@@ -72,36 +105,34 @@ async function getVideo(url, textchannel) {
   }
 }
 
-async function getPlaylist(url, textchannel) {
+async function getPlaylist(url, caller) {
   try {
     let instances = await InvidJS.fetchInstances({
       url: url.split("/p")[0],
     });
     let instance = instances[0];
     let playlist = await InvidJS.fetchPlaylist(instance, url.split("=")[1]);
-    let result = {
-      url,
-      instance,
-      playlist,
-    };
-    return result;
+    playlist.videos.forEach(video => {
+      let videoUrl = instance.url + "/watch?v=" + video.id;
+      getVideo(videoUrl, caller);
+    })
   } catch (error) {
     if (debug.debug === true) console.log("[DEBUG] Error: " + error);
     switch (error.code) {
       case InvidJS.ErrorCodes.APIBlocked: {
-        textchannel.send(
+        caller.reply(
           "The playlist could not be fetched due to API restrictions. The instance may not support API calls or may be down.",
         );
         return undefined;
       }
       case InvidJS.ErrorCodes.APIError: {
-        textchannel.send(
+        caller.reply(
           "The playlist could not be fetched due to an API error. Please try again later.",
         );
         return undefined;
       }
       case InvidJS.ErrorCodes.InvalidContent: {
-        textchannel.send(
+        caller.reply(
           "This playlist is invalid. Please try another playlist.",
         );
         return undefined;
@@ -111,7 +142,52 @@ async function getPlaylist(url, textchannel) {
   }
 }
 
-function playMusic(channel, textchannel, stream, fetched) {
+async function getVideoInfo(url) {
+  let instances = await InvidJS.fetchInstances({
+    url: url.split("/w")[0],
+  });
+  let instance = instances[0];
+  let video = await InvidJS.fetchVideo(instance, url.split("=")[1], {
+    type: InvidJS.FetchTypes.Full,
+  });
+  let format = video.formats.find(
+    (format) => format.audio_quality === InvidJS.AudioQuality.Medium,
+  );
+  return {
+    video,
+    instance,
+    format
+  }
+}
+
+async function downloadTrack(instance, video, format) {
+  let blob = await InvidJS.fetchSource(
+    instance,
+    video,
+    format,
+    { saveTo: InvidJS.SaveSourceTo.Memory, parts: 5 },
+  );
+  return blob;
+}
+
+function announceTrack(url, author, video, caller) {
+  let thumb = video.thumbnails.find(
+    (thumbnail) => thumbnail.quality === InvidJS.ImageQuality.HD,
+  ).url;
+  let playingembed = new Discord.EmbedBuilder()
+    .setTitle("Now Playing")
+    .setDescription(
+      video.title +
+        "\n" +
+        url +
+        `\n\nRequested by <@!${author}>`,
+    )
+    .setImage(thumb)
+    .setFooter({ text: "Powered by InvidJS" });
+    caller.channel.send({ embeds: [playingembed] });
+}
+
+function playMusic(channel, video, blob, caller) {
   let connection = undefined;
   if (getVoiceConnection(channel.guild.id) === undefined) {
     connection = joinVoiceChannel({
@@ -131,88 +207,72 @@ function playMusic(channel, textchannel, stream, fetched) {
       id: channel.guild.id,
       player: player,
       subscription: subscription,
-      video: fetched.video,
+      video: video,
       time: 0,
-      isPaused: false,
+      isPaused: false
     });
   } else {
     player = getPlayer(channel.guild.id).player;
   }
-  const resource = createAudioResource(stream, {
+  let stream = blob.stream();
+  let resource = createAudioResource(stream, {
     inputType: stream.type,
   });
   player.play(resource);
   startCounter(channel.guild.id);
-  player.on(AudioPlayerStatus.Idle, async () => {
+  player.on(AudioPlayerStatus.Idle, () => {
     stopCounter(channel.guild.id);
     removePlayer(channel.guild.id);
-    if (
-      masterqueue
-        .prepare(
-          `SELECT * FROM guild_${channel.guild.id} ORDER BY ROWID LIMIT 1`,
-        )
-        .get().isLooped === "true"
-    ) {
-      if (debug.debug === true) {
-        console.log("[DEBUG] Restarting a looped track...");
-      }
-      let stream = await InvidJS.fetchSource(
-        fetched.instance,
-        fetched.video,
-        fetched.format,
-        { saveTo: InvidJS.SaveSourceTo.Memory, parts: 5 },
-      );
-      return playMusic(channel, textchannel, stream, fetched);
+    if (getFromQueue(channel.guild.id).isLooped === "false") {
+      removeResource(channel.guild.id, getFromQueue(channel.guild.id).rowid);
+      removeFromQueue(channel.guild.id);
+    }
+    if (getQueueLength(channel.guild.id) > 0) {
+      let pos = getFromQueue(channel.guild.id).rowid;
+      let res = getResource(channel.guild.id, pos);
+      return getVideoInfo(getFromQueue(channel.guild.id).track).then(info => {
+        announceTrack(getFromQueue(channel.guild.id).track, getFromQueue(channel.guild.id).author, info.video, caller);
+        playMusic(channel, info.video, res.track, caller);
+      });
     } else {
       if (debug.debug === true) {
-        console.log("[DEBUG] The current track is over, removing...");
+        console.log("[DEBUG] No more tracks to play, starting timeout...");
       }
-      masterqueue
-        .prepare(`DELETE FROM guild_${channel.guild.id} LIMIT 1`)
-        .run();
-      let track = masterqueue
-        .prepare(
-          `SELECT * FROM guild_${channel.guild.id} ORDER BY ROWID LIMIT 1`,
-        )
-        .get();
-      if (track === undefined) {
-        if (debug.debug === true) {
-          console.log("[DEBUG] No more tracks to play, starting timeout...");
-        }
-        let timeout =
-          parseInt(
-            settings
-              .prepare(
-                `SELECT * FROM guild_${channel.guild.id} WHERE option = 'disconnect_timeout'`,
-              )
-              .get().value,
-          ) * 1000;
-        startTimeout(channel.guild.id, connection, textchannel, timeout);
-      } else {
-        if (debug.debug === true) {
-          console.log("[DEBUG] Loading the next track...");
-        }
-        let new_track = await getVideo(track.track, textchannel);
-        let stream = await InvidJS.fetchSource(
-          new_track.instance,
-          new_track.video,
-          new_track.format,
-          { saveTo: InvidJS.SaveSourceTo.Memory, parts: 5 },
-        );
+      let timeout =
+        parseInt(
+          settings
+            .prepare(
+              `SELECT * FROM guild_${channel.guild.id} WHERE option = 'disconnect_timeout'`,
+            )
+            .get().value,
+        ) * 1000;
+      return startTimeout(channel.guild.id, connection, caller.channel, timeout);
+    }
+  });
+}
 
-        let thumb = new_track.video.thumbnails.find(
-          (thumbnail) => thumbnail.quality === InvidJS.ImageQuality.HD,
-        ).url;
-        let playingembed = new Discord.EmbedBuilder()
-          .setTitle("Now Playing")
-          .setDescription(
-            `${new_track.video.title}\n${new_track.url}\n\nRequested by <@!${track.author}>`,
-          )
-          .setImage(thumb)
-          .setFooter({ text: "Powered by InvidJS" });
-        textchannel.send({ embeds: [playingembed] });
-        return playMusic(channel, textchannel, stream, new_track);
-      }
+function addResource(id, resource, pos) {
+  resources.push({
+    id: id,
+    track: resource,
+    pos: pos
+  })
+}
+
+function getResource(id, pos) {
+  let found = undefined;
+  resources.forEach((track) => {
+    if (track.id === id && track.pos === pos) {
+      found = track;
+    }
+  });
+  return found;
+}
+
+function removeResource(id, pos) {
+  resources.forEach((track) => {
+    if (track.id === id && track.pos === pos) {
+      resources.splice(resources.indexOf(track), 1);
     }
   });
 }
@@ -296,4 +356,12 @@ module.exports = {
   endTimeout,
   getPlayer,
   removePlayer,
+  addToQueue,
+  removeFromQueue,
+  getFromQueue,
+  getQueueLength,
+  downloadTrack,
+  addResource,
+  getResource,
+  removeResource
 };

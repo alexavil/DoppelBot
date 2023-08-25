@@ -44,7 +44,7 @@ function getQueueLength(id) {
   .all().length;
 }
 
-async function getVideo(url, caller) {
+async function getVideo(url, caller, isSilent) {
   try {
     let instances = await InvidJS.fetchInstances({
       url: url.split("/w")[0],
@@ -62,6 +62,7 @@ async function getVideo(url, caller) {
       if (debug.debug === true)
         console.log("[DEBUG] Input valid, adding to queue...");
       addToQueue(caller.guild.id, url, caller.author.id, "false");
+      if (isSilent === false) caller.channel.send(`Added ${url} to the queue!`);
       if (debug.debug === true)
         console.log("[DEBUG] Downloading stream...");
       let resource = await downloadTrack(instance, video, format);
@@ -71,8 +72,6 @@ async function getVideo(url, caller) {
           console.log("[DEBUG] This is the first track, starting playback...");
         announceTrack(url, caller.author.id, video, caller);
         playMusic(caller.member.voice.channel, video, resource, caller);
-      } else {
-        caller.reply(`Added ${url} to the queue!`);
       }
     } else return undefined;
   } catch (error) {
@@ -112,10 +111,12 @@ async function getPlaylist(url, caller) {
     });
     let instance = instances[0];
     let playlist = await InvidJS.fetchPlaylist(instance, url.split("=")[1]);
-    playlist.videos.forEach(video => {
+    caller.channel.send(`Successfully added ${playlist.videoCount} items to the queue!`);
+    for (let i = 0; i < playlist.videos.length; i++) {
+      const video = playlist.videos[i];
       let videoUrl = instance.url + "/watch?v=" + video.id;
-      getVideo(videoUrl, caller);
-    })
+      await getVideo(videoUrl, caller, true);
+    }
   } catch (error) {
     if (debug.debug === true) console.log("[DEBUG] Error: " + error);
     switch (error.code) {
@@ -165,7 +166,7 @@ async function downloadTrack(instance, video, format) {
     instance,
     video,
     format,
-    { saveTo: InvidJS.SaveSourceTo.Memory, parts: 5 },
+    { saveTo: InvidJS.SaveSourceTo.Memory, parts: 10 },
   );
   return blob;
 }

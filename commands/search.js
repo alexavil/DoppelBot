@@ -74,7 +74,7 @@ module.exports = {
               console.log(`[DEBUG] User choice: ${choice}...`);
             videoid = results[choice].id;
             let url = default_url + "/watch?v=" + videoid;
-            await common.getVideo(url, message);
+            await common.getVideo(url, message, false);
           } else {
             choice++;
           }

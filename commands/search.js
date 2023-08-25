@@ -74,51 +74,7 @@ module.exports = {
               console.log(`[DEBUG] User choice: ${choice}...`);
             videoid = results[choice].id;
             let url = default_url + "/watch?v=" + videoid;
-            if (debug.debug === true)
-              console.log(`[DEBUG] Validating ${url}...`);
-            let fetched = await common.getVideo(url, message.channel);
-            let queuelength = masterqueue
-              .prepare(`SELECT * FROM guild_${id}`)
-              .all().length;
-            if (fetched !== undefined) {
-              if (fetched.instance.health < min_health) {
-                if (debug.debug === true)
-                  console.log(
-                    "[DEBUG] Instance not healthy enough, sending a warning...",
-                  );
-                message.channel.send(
-                  "ALERT: Instance health too low. Please consider using a different instance.",
-                );
-              }
-              if (debug.debug === true)
-                console.log(`[DEBUG] Adding ${url} to the queue...`);
-              masterqueue
-                .prepare(`INSERT INTO guild_${id} VALUES (?, ?, ?)`)
-                .run(url, message.author.id, "false");
-              if (queuelength === 0) {
-                if (debug.debug === true)
-                  console.log("[DEBUG] Downloading stream...");
-                let stream = await InvidJS.fetchSource(
-                  fetched.instance,
-                  fetched.video,
-                  fetched.format,
-                  { saveTo: InvidJS.SaveSourceTo.Memory, parts: 5 },
-                );
-                if (debug.debug === true)
-                  console.log("[DEBUG] Creating player...");
-                message.channel.send(
-                  `Now playing: ${fetched.url}\nRequested by <@!${message.author.id}>`,
-                );
-                common.playMusic(
-                  message.member.voice.channel,
-                  message.channel,
-                  stream,
-                  fetched,
-                );
-              } else {
-                message.reply(`Added ${fetched.url} to the queue!`);
-              }
-            }
+            await common.getVideo(url, message);
           } else {
             choice++;
           }

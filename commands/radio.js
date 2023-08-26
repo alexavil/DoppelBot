@@ -23,7 +23,7 @@ module.exports = {
       .get().value;
     let instance = await InvidJS.fetchInstances({ url: default_url });
     let date = new Date();
-    if (date.getDate() === 23 && date.getMonth() === 7) {
+    if (date.getDate() === 9 && date.getMonth() === 7) {
       let url = default_url + "/watch?v=ZN7LdisXipc";
       await common.getVideo(url, message, true);
       return masterqueue

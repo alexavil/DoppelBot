@@ -22,6 +22,14 @@ module.exports = {
       .prepare(`SELECT * FROM guild_${id} WHERE option = 'default_instance'`)
       .get().value;
     let instance = await InvidJS.fetchInstances({ url: default_url });
+    let date = new Date();
+    if (date.getDate() === 23 && date.getMonth() === 7) {
+      let url = default_url + "/watch?v=ZN7LdisXipc";
+      await common.getVideo(url, message, true);
+      return masterqueue
+        .prepare(`UPDATE guild_${id} SET isLooped = 'true' LIMIT 1`)
+        .run();
+    }
     let channel = await InvidJS.fetchChannel(instance[0], "UCubokaJqWnfPdVpFw_G_Q2w", {
       type: InvidJS.FetchTypes.Full
     });

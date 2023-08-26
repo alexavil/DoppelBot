@@ -197,6 +197,7 @@ function createConfig(id) {
     statement.run("default_instance", "");
     statement.run("min_health", "75");
     statement.run("state", "commands");
+    statement.run("music_mode", "queue");
   });
   transaction();
   queue
@@ -268,6 +269,9 @@ client.on("ready", () => {
     settings
       .prepare(`UPDATE guild_${guild.id} SET value = ? WHERE option = ?`)
       .run("commands", "state");
+    settings
+      .prepare(`UPDATE guild_${guild.id} SET value = ? WHERE option = ?`)
+      .run("queue", "music_mode");  
   });
   if (activities !== undefined) {
     if (debug === true)

@@ -3,12 +3,15 @@ const sqlite3 = require("better-sqlite3");
 const { getVoiceConnection } = require("@discordjs/voice");
 
 const masterqueue = new sqlite3("./data/queue.db");
+const settings = new sqlite3("./data/settings.db");
 module.exports = {
   name: "loop",
   description: "Loop the music",
   aliases: ["l"],
   async execute(message) {
     const id = message.guild.id;
+    if (settings.prepare(`SELECT * FROM guild_${id} WHERE option = ?`).get("music_mode").value === "radio")
+      return message.reply("You can't use this command while tuned to 85.2 FM!");
     const channel = message.member.voice.channel;
     const connection = getVoiceConnection(id);
     if (!channel) return message.reply("You must be in a voice channel!");

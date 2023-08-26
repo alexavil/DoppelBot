@@ -308,6 +308,9 @@ function startTimeout(id, connection, textchannel, timer) {
     }
     connection.destroy();
     endTimeout(id);
+    settings
+      .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
+      .run("queue", "music_mode");
     textchannel.send(`No more tracks to play, disconnecting!`);
   }, timer);
   timeouts.push({

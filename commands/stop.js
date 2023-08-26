@@ -5,6 +5,7 @@ const sqlite3 = require("better-sqlite3");
 const common = require("../music");
 
 const masterqueue = new sqlite3("./data/queue.db");
+const settings = new sqlite3("./data/settings.db");
 module.exports = {
   name: "stop",
   description: "Stop the music",
@@ -24,6 +25,9 @@ module.exports = {
     const connection = getVoiceConnection(id);
     if (!connection) return message.channel.send("The bot is already stopped!");
     else {
+      settings
+        .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
+        .run("queue", "music_mode");
       common.stopCounter(id);
       if (debug.debug === true)
         console.log("[DEBUG] Stopping the connection...");

@@ -62,7 +62,6 @@ async function getVideo(url, caller, isSilent, isAnnounced) {
         caller.guild.id,
         resource,
         id,
-        getQueueLength(caller.guild.id),
       );
       if (getQueueLength(caller.guild.id) === 1) {
         if (debug.debug === true)
@@ -96,7 +95,6 @@ async function getVideo(url, caller, isSilent, isAnnounced) {
           caller.guild.id,
           resource,
           id,
-          getQueueLength(caller.guild.id),
         );
         if (getQueueLength(caller.guild.id) === 1) {
           if (debug.debug === true)
@@ -257,9 +255,8 @@ function playMusic(channel, video, blob, caller) {
       removeFromQueue(channel.guild.id);
     }
     if (getQueueLength(channel.guild.id) > 0) {
-      let pos = getFromQueue(channel.guild.id).rowid;
-      let res = getResource(channel.guild.id, pos);
       return getVideoInfo(getFromQueue(channel.guild.id).track).then((info) => {
+        let res = getResource(channel.guild.id, info.video.id);
         announceTrack(
           getFromQueue(channel.guild.id).track,
           getFromQueue(channel.guild.id).author,
@@ -290,12 +287,11 @@ function playMusic(channel, video, blob, caller) {
   });
 }
 
-function addResource(id, resource, videoId, pos) {
+function addResource(id, resource, videoId) {
   resources.push({
     id: id,
     track: resource,
     videoId: videoId,
-    pos: pos,
   });
 }
 

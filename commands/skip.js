@@ -12,8 +12,14 @@ module.exports = {
   aliases: ["s"],
   async execute(message) {
     const id = message.guild.id;
-    if (settings.prepare(`SELECT * FROM guild_${id} WHERE option = ?`).get("music_mode").value === "radio")
-      return message.reply("You can't use this command while tuned to 85.2 FM!");
+    if (
+      settings
+        .prepare(`SELECT * FROM guild_${id} WHERE option = ?`)
+        .get("music_mode").value === "radio"
+    )
+      return message.reply(
+        "You can't use this command while tuned to 85.2 FM!",
+      );
     const connection = getVoiceConnection(id);
     const channel = message.member.voice.channel;
     if (!connection) return message.reply("Nothing to skip!");

@@ -27,9 +27,7 @@ function addToQueue(id, file, author, isLooped) {
 }
 
 function removeFromQueue(id) {
-  masterqueue
-    .prepare(`DELETE FROM guild_${id} ORDER BY rowid LIMIT 1`)
-    .run();
+  masterqueue.prepare(`DELETE FROM guild_${id} ORDER BY rowid LIMIT 1`).run();
 }
 
 function getFromQueue(id) {
@@ -39,41 +37,78 @@ function getFromQueue(id) {
 }
 
 function getQueueLength(id) {
-  return masterqueue
-  .prepare(`SELECT * FROM guild_${id}`)
-  .all().length;
+  return masterqueue.prepare(`SELECT * FROM guild_${id}`).all().length;
 }
 
-async function getVideo(url, caller, isSilent) {
+async function getVideo(url, caller, isSilent, isAnnounced) {
   try {
-    let instances = await InvidJS.fetchInstances({
-      url: url.split("/w")[0],
-    });
-    let instance = instances[0];
-    let video = await InvidJS.fetchVideo(instance, url.split("=")[1], {
-      type: InvidJS.FetchTypes.Full,
-    });
-    let format = video.formats.find(
-      (format) => format.audio_quality === InvidJS.AudioQuality.Medium,
-    );
-    let isValid = undefined;
-    isValid = await InvidJS.validateSource(instance, video, format);
-    if (isValid === true) {
+    let id = url.split("=")[1];
+    if (resources.some((resource) => resource.videoId === id)) {
       if (debug.debug === true)
-        console.log("[DEBUG] Input valid, adding to queue...");
+        console.log(
+          "[DEBUG] Resource already exists in another guild, adding the data to new resource...",
+        );
+      let resource = resources.find((resource) => resource.videoId === id).track;
+      let instances = await InvidJS.fetchInstances({
+        url: url.split("/w")[0],
+      });
+      let instance = instances[0];
+      let video = await InvidJS.fetchVideo(instance, url.split("=")[1], {
+        type: InvidJS.FetchTypes.Full,
+      });
       addToQueue(caller.guild.id, url, caller.author.id, "false");
       if (isSilent === false) caller.channel.send(`Added ${url} to the queue!`);
-      if (debug.debug === true)
-        console.log("[DEBUG] Downloading stream...");
-      let resource = await downloadTrack(instance, video, format);
-      addResource(caller.guild.id, resource, getQueueLength(caller.guild.id));
+      addResource(
+        caller.guild.id,
+        resource,
+        id,
+        getQueueLength(caller.guild.id),
+      );
       if (getQueueLength(caller.guild.id) === 1) {
         if (debug.debug === true)
           console.log("[DEBUG] This is the first track, starting playback...");
-        announceTrack(url, caller.author.id, video, caller);
-        playMusic(caller.member.voice.channel, video, resource, caller);
+        if (isAnnounced === true)
+          announceTrack(url, caller.author.id, video, caller);
+        return playMusic(caller.member.voice.channel, video, resource, caller);
       }
-    } else return undefined;
+    } else {
+      let instances = await InvidJS.fetchInstances({
+        url: url.split("/w")[0],
+      });
+      let instance = instances[0];
+      let video = await InvidJS.fetchVideo(instance, url.split("=")[1], {
+        type: InvidJS.FetchTypes.Full,
+      });
+      let format = video.formats.find(
+        (format) => format.audio_quality === InvidJS.AudioQuality.Medium,
+      );
+      let isValid = undefined;
+      isValid = await InvidJS.validateSource(instance, video, format);
+      if (isValid === true) {
+        if (debug.debug === true)
+          console.log("[DEBUG] Input valid, adding to queue...");
+        addToQueue(caller.guild.id, url, caller.author.id, "false");
+        if (isSilent === false)
+          caller.channel.send(`Added ${url} to the queue!`);
+        if (debug.debug === true) console.log("[DEBUG] Downloading stream...");
+        let resource = await downloadTrack(instance, video, format);
+        addResource(
+          caller.guild.id,
+          resource,
+          id,
+          getQueueLength(caller.guild.id),
+        );
+        if (getQueueLength(caller.guild.id) === 1) {
+          if (debug.debug === true)
+            console.log(
+              "[DEBUG] This is the first track, starting playback...",
+            );
+          if (isAnnounced === true)
+            announceTrack(url, caller.author.id, video, caller);
+          playMusic(caller.member.voice.channel, video, resource, caller);
+        }
+      } else return undefined;
+    }
   } catch (error) {
     if (debug.debug === true) console.log("[DEBUG] Error: " + error);
     switch (error.code) {
@@ -111,11 +146,13 @@ async function getPlaylist(url, caller) {
     });
     let instance = instances[0];
     let playlist = await InvidJS.fetchPlaylist(instance, url.split("=")[1]);
-    caller.channel.send(`Successfully added ${playlist.videoCount} items to the queue!`);
+    caller.channel.send(
+      `Successfully added ${playlist.videoCount} items to the queue!`,
+    );
     for (let i = 0; i < playlist.videos.length; i++) {
       const video = playlist.videos[i];
       let videoUrl = instance.url + "/watch?v=" + video.id;
-      await getVideo(videoUrl, caller, true);
+      await getVideo(videoUrl, caller, true, true);
     }
   } catch (error) {
     if (debug.debug === true) console.log("[DEBUG] Error: " + error);
@@ -133,9 +170,7 @@ async function getPlaylist(url, caller) {
         return undefined;
       }
       case InvidJS.ErrorCodes.InvalidContent: {
-        caller.reply(
-          "This playlist is invalid. Please try another playlist.",
-        );
+        caller.reply("This playlist is invalid. Please try another playlist.");
         return undefined;
       }
     }
@@ -157,17 +192,15 @@ async function getVideoInfo(url) {
   return {
     video,
     instance,
-    format
-  }
+    format,
+  };
 }
 
 async function downloadTrack(instance, video, format) {
-  let blob = await InvidJS.fetchSource(
-    instance,
-    video,
-    format,
-    { saveTo: InvidJS.SaveSourceTo.Memory, parts: 10 },
-  );
+  let blob = await InvidJS.fetchSource(instance, video, format, {
+    saveTo: InvidJS.SaveSourceTo.Memory,
+    parts: 10,
+  });
   return blob;
 }
 
@@ -177,15 +210,10 @@ function announceTrack(url, author, video, caller) {
   ).url;
   let playingembed = new Discord.EmbedBuilder()
     .setTitle("Now Playing")
-    .setDescription(
-      video.title +
-        "\n" +
-        url +
-        `\n\nRequested by <@!${author}>`,
-    )
+    .setDescription(video.title + "\n" + url + `\n\nRequested by <@!${author}>`)
     .setImage(thumb)
     .setFooter({ text: "Powered by InvidJS" });
-    caller.channel.send({ embeds: [playingembed] });
+  caller.channel.send({ embeds: [playingembed] });
 }
 
 function playMusic(channel, video, blob, caller) {
@@ -210,7 +238,7 @@ function playMusic(channel, video, blob, caller) {
       subscription: subscription,
       video: video,
       time: 0,
-      isPaused: false
+      isPaused: false,
     });
   } else {
     player = getPlayer(channel.guild.id).player;
@@ -231,8 +259,13 @@ function playMusic(channel, video, blob, caller) {
     if (getQueueLength(channel.guild.id) > 0) {
       let pos = getFromQueue(channel.guild.id).rowid;
       let res = getResource(channel.guild.id, pos);
-      return getVideoInfo(getFromQueue(channel.guild.id).track).then(info => {
-        announceTrack(getFromQueue(channel.guild.id).track, getFromQueue(channel.guild.id).author, info.video, caller);
+      return getVideoInfo(getFromQueue(channel.guild.id).track).then((info) => {
+        announceTrack(
+          getFromQueue(channel.guild.id).track,
+          getFromQueue(channel.guild.id).author,
+          info.video,
+          caller,
+        );
         playMusic(channel, info.video, res.track, caller);
       });
     } else {
@@ -247,17 +280,23 @@ function playMusic(channel, video, blob, caller) {
             )
             .get().value,
         ) * 1000;
-      return startTimeout(channel.guild.id, connection, caller.channel, timeout);
+      return startTimeout(
+        channel.guild.id,
+        connection,
+        caller.channel,
+        timeout,
+      );
     }
   });
 }
 
-function addResource(id, resource, pos) {
+function addResource(id, resource, videoId, pos) {
   resources.push({
     id: id,
     track: resource,
-    pos: pos
-  })
+    videoId: videoId,
+    pos: pos,
+  });
 }
 
 function getResource(id, pos) {
@@ -367,5 +406,5 @@ module.exports = {
   downloadTrack,
   addResource,
   getResource,
-  removeResource
+  removeResource,
 };

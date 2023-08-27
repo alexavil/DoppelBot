@@ -11,8 +11,14 @@ module.exports = {
   description: "Search a track",
   async execute(message, args) {
     const id = message.guild.id;
-    if (settings.prepare(`SELECT * FROM guild_${id} WHERE option = ?`).get("music_mode").value === "radio")
-      return message.reply("You can't use this command while tuned to 85.2 FM!");
+    if (
+      settings
+        .prepare(`SELECT * FROM guild_${id} WHERE option = ?`)
+        .get("music_mode").value === "radio"
+    )
+      return message.reply(
+        "You can't use this command while tuned to 85.2 FM!",
+      );
     if (!args[0]) {
       if (debug.debug === true)
         console.log("[DEBUG] Invalid input, aborting...");
@@ -76,7 +82,7 @@ module.exports = {
               console.log(`[DEBUG] User choice: ${choice}...`);
             videoid = results[choice].id;
             let url = default_url + "/watch?v=" + videoid;
-            await common.getVideo(url, message, false);
+            await common.getVideo(url, message, false, true);
           } else {
             choice++;
           }

@@ -271,7 +271,7 @@ client.on("ready", () => {
       .run("commands", "state");
     settings
       .prepare(`UPDATE guild_${guild.id} SET value = ? WHERE option = ?`)
-      .run("queue", "music_mode");  
+      .run("queue", "music_mode");
   });
   if (activities !== undefined) {
     if (debug === true)

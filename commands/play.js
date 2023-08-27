@@ -17,8 +17,14 @@ module.exports = {
         console.log("[DEBUG] No voice channel found, aborting...");
       return message.reply("You need to join a voice channel first!");
     }
-    if (settings.prepare(`SELECT * FROM guild_${id} WHERE option = ?`).get("music_mode").value === "radio")
-      return message.reply("You can't use this command while tuned to 85.2 FM!");
+    if (
+      settings
+        .prepare(`SELECT * FROM guild_${id} WHERE option = ?`)
+        .get("music_mode").value === "radio"
+    )
+      return message.reply(
+        "You can't use this command while tuned to 85.2 FM!",
+      );
     if (!args[0]) {
       if (debug.debug === true)
         console.log("[DEBUG] Invalid input, aborting...");
@@ -62,7 +68,7 @@ module.exports = {
     common.endTimeout(id);
     if (debug.debug === true) console.log(`[DEBUG] Validating ${url}...`);
     if (url.includes("/watch?v=")) {
-      await common.getVideo(url, message, false);
+      await common.getVideo(url, message, false, true);
     }
     if (url.includes("/playlist?list=")) {
       await common.getPlaylist(url, message);

@@ -68,7 +68,7 @@ async function getVideo(url, caller, isSilent, isAnnounced) {
           console.log("[DEBUG] This is the first track, starting playback...");
         if (isAnnounced === true)
           announceTrack(url, caller.author.id, video, caller);
-        return playMusic(caller.member.voice.channel, video, resource, caller);
+        return playMusic(caller.member.voice.channel, video, resource, caller, isAnnounced);
       }
     } else {
       let instances = await InvidJS.fetchInstances({
@@ -103,7 +103,7 @@ async function getVideo(url, caller, isSilent, isAnnounced) {
             );
           if (isAnnounced === true)
             announceTrack(url, caller.author.id, video, caller);
-          playMusic(caller.member.voice.channel, video, resource, caller);
+          playMusic(caller.member.voice.channel, video, resource, caller, isAnnounced);
         }
       } else return undefined;
     }
@@ -214,7 +214,7 @@ function announceTrack(url, author, video, caller) {
   caller.channel.send({ embeds: [playingembed] });
 }
 
-function playMusic(channel, video, blob, caller) {
+function playMusic(channel, video, blob, caller, isAnnounced) {
   let connection = undefined;
   if (getVoiceConnection(channel.guild.id) === undefined) {
     connection = joinVoiceChannel({
@@ -257,13 +257,14 @@ function playMusic(channel, video, blob, caller) {
     if (getQueueLength(channel.guild.id) > 0) {
       return getVideoInfo(getFromQueue(channel.guild.id).track).then((info) => {
         let res = getResource(channel.guild.id, info.video.id);
+        if (isAnnounced === true)
         announceTrack(
           getFromQueue(channel.guild.id).track,
           getFromQueue(channel.guild.id).author,
           info.video,
           caller,
         );
-        playMusic(channel, info.video, res.track, caller);
+        playMusic(channel, info.video, res.track, caller, isAnnounced);
       });
     } else {
       if (debug.debug === true) {
@@ -295,10 +296,10 @@ function addResource(id, resource, videoId) {
   });
 }
 
-function getResource(id, pos) {
+function getResource(id, videoId) {
   let found = undefined;
   resources.forEach((track) => {
-    if (track.id === id && track.pos === pos) {
+    if (track.id === id && track.videoId === videoId) {
       found = track;
     }
   });

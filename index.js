@@ -44,6 +44,8 @@ const settings = new sqlite3("./data/settings.db");
 const queue = new sqlite3("./data/queue.db");
 const tags = new sqlite3("./data/tags.db");
 
+let eventcode = -1;
+
 client.commands = new Discord.Collection();
 const commandFiles = fs
   .readdirSync("./commands")
@@ -105,6 +107,29 @@ function initSentry() {
     tracesSampleRate: 1.0,
     environment: debug ? "testing" : "production",
   });
+}
+
+function getEvent() {
+  eventcode = -1;
+  let date = new Date();
+  if (date.getMonth() === 3 && date.getDate() === 1) {
+    eventcode = 0;
+  }
+  if (date.getMonth() === 5 && date.getDate() === 11) {
+    eventcode = 1;
+  }
+  if (date.getMonth() === 5 && date.getDate() === 23) {
+    eventcode = 2;
+  }
+  if (date.getMonth() === 6 && date.getDate() === 22) {
+    eventcode = 3;
+  }
+  if (date.getMonth() === 7 && date.getDate() === 9) {
+    eventcode = 4;
+  }
+  if (date.getMonth() === 9 && date.getDate() === 2) {
+    eventcode = 5;
+  }
 }
 
 function CheckForPerms() {
@@ -259,6 +284,7 @@ function gamecycle() {
 
 client.on("ready", () => {
   initSentry();
+  getEvent();
   validateSettings();
   let permcheck = new cron.CronJob("00 00 */8 * * *", CheckForPerms);
   permcheck.start();
@@ -280,6 +306,8 @@ client.on("ready", () => {
     job.start();
     gamecycle();
   }
+  let eventcheck = new cron.CronJob("00 * * * * *", getEvent);
+  eventcheck.start();
   if (debug === true) console.log("[DEBUG] Init jobs completed...");
   console.log("I am ready!");
 });
@@ -407,3 +435,4 @@ process.on("uncaughtException", (error) => {
 client.login(token);
 
 exports.debug = debug;
+exports.eventcode = eventcode;

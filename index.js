@@ -116,6 +116,9 @@ function getEvent() {
   let date = new Date();
   if (date.getMonth() === 3 && date.getDate() === 1) {
     eventcode = 0;
+    client.user.setAvatar(
+      "./event/doppelbot_bday/avatar.png"
+    );
   }
   if (date.getMonth() === 5 && date.getDate() === 11) {
     eventcode = 1;

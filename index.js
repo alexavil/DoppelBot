@@ -119,6 +119,10 @@ function getEvent() {
   }
   if (date.getMonth() === 5 && date.getDate() === 11) {
     eventcode = 1;
+    client.user.setUsername("KogasaBot");
+    client.user.setAvatar(
+      "./event/kogasa_bday/avatar.png"
+    );
   }
   if (date.getMonth() === 5 && date.getDate() === 23) {
     eventcode = 2;
@@ -131,6 +135,12 @@ function getEvent() {
   }
   if (date.getMonth() === 9 && date.getDate() === 2) {
     eventcode = 5;
+  }
+  if (eventcode === -1) {
+    client.user.setUsername("DoppelBot");
+    client.user.setAvatar(
+      "./event/default_avatar.png"
+    );
   }
 }
 

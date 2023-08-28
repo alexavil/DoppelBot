@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-const fs = require("fs");
+const fs = require("fs-extra");
 const event = require("../index");
 module.exports = {
   name: "doppel",
@@ -14,7 +14,7 @@ module.exports = {
       }
 
       let randomIndex = Math.floor(Math.random() * doppel_imgs.length);
-      let randomImage = "./event/doppelbot_bday/images/" + doppel_imgs[randomIndex];
+      let randomImage = imageFolder + doppel_imgs[randomIndex];
 
       const doppelembed = new Discord.EmbedBuilder().setTitle(
         "Here's your Doppel picture!"

@@ -13,6 +13,7 @@ const {
   ButtonStyle,
   ChannelType,
 } = require("discord.js");
+const music = require("./music");
 
 const client = new Discord.Client({
   intents: [
@@ -99,6 +100,7 @@ if (debug === true) {
 }
 
 const Sentry = require("@sentry/node");
+const { getVoiceConnection } = require("@discordjs/voice");
 
 function initSentry() {
   if (debug === true) console.log("[DEBUG] Initializing Sentry...");
@@ -200,7 +202,9 @@ function CheckForPerms() {
 
 function clearQueue(id) {
   if (debug === true)
-    console.log(`[DEBUG] Bot has restarted, clearing queue for guild ${id}...`);
+    console.log(
+      `[DEBUG] Bot has restarted, clearing queue and cache for guild ${id}...`,
+    );
   queue.prepare(`DELETE FROM guild_${id}`).run();
 }
 
@@ -282,6 +286,17 @@ function gamecycle() {
   client.user.setActivity(games[gamestring]);
 }
 
+function clearMusicCache() {
+  if (debug === true) console.log("[DEBUG] Clearing music cache...");
+  client.guilds.cache.forEach((guild) => {
+    if (!getVoiceConnection(guild.id)) {
+      if (debug === true)
+        console.log(`[DEBUG] Clearing cache for guild ${guild.id}...`);
+      music.clearCache(guild.id);
+    }
+  });
+}
+
 client.on("ready", () => {
   initSentry();
   getEvent();
@@ -306,8 +321,10 @@ client.on("ready", () => {
     job.start();
     gamecycle();
   }
-  let eventcheck = new cron.CronJob("00 * * * * *", getEvent);
+  let eventcheck = new cron.CronJob("00 00 * * * *", getEvent);
   eventcheck.start();
+  let cacheclear = new cron.CronJob("00 00 00 * * *", clearMusicCache);
+  cacheclear.start();
   if (debug === true) console.log("[DEBUG] Init jobs completed...");
   console.log("I am ready!");
 });

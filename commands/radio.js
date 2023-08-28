@@ -30,7 +30,7 @@ module.exports = {
       message.reply(
         "85.2 FM is on a special event today! Tuning in to a broadcast prepared for this exciting day!",
       );
-      let music_id = ""; 
+      let music_id = "";
       switch (debug.eventcode) {
         case 0: {
           music_id = "2EP3fDx644w";

@@ -48,7 +48,9 @@ async function getVideo(url, caller, isSilent, isAnnounced) {
         console.log(
           "[DEBUG] Resource already exists in another guild, adding the data to new resource...",
         );
-      let resource = resources.find((resource) => resource.videoId === id).track;
+      let resource = resources.find(
+        (resource) => resource.videoId === id,
+      ).track;
       let instances = await InvidJS.fetchInstances({
         url: url.split("/w")[0],
       });
@@ -58,17 +60,19 @@ async function getVideo(url, caller, isSilent, isAnnounced) {
       });
       addToQueue(caller.guild.id, url, caller.author.id, "false");
       if (isSilent === false) caller.channel.send(`Added ${url} to the queue!`);
-      addResource(
-        caller.guild.id,
-        resource,
-        id,
-      );
+      addResource(caller.guild.id, resource, id);
       if (getQueueLength(caller.guild.id) === 1) {
         if (debug.debug === true)
           console.log("[DEBUG] This is the first track, starting playback...");
         if (isAnnounced === true)
           announceTrack(url, caller.author.id, video, caller);
-        return playMusic(caller.member.voice.channel, video, resource, caller, isAnnounced);
+        return playMusic(
+          caller.member.voice.channel,
+          video,
+          resource,
+          caller,
+          isAnnounced,
+        );
       }
     } else {
       let instances = await InvidJS.fetchInstances({
@@ -91,11 +95,7 @@ async function getVideo(url, caller, isSilent, isAnnounced) {
           caller.channel.send(`Added ${url} to the queue!`);
         if (debug.debug === true) console.log("[DEBUG] Downloading stream...");
         let resource = await downloadTrack(instance, video, format);
-        addResource(
-          caller.guild.id,
-          resource,
-          id,
-        );
+        addResource(caller.guild.id, resource, id);
         if (getQueueLength(caller.guild.id) === 1) {
           if (debug.debug === true)
             console.log(
@@ -103,7 +103,13 @@ async function getVideo(url, caller, isSilent, isAnnounced) {
             );
           if (isAnnounced === true)
             announceTrack(url, caller.author.id, video, caller);
-          playMusic(caller.member.voice.channel, video, resource, caller, isAnnounced);
+          playMusic(
+            caller.member.voice.channel,
+            video,
+            resource,
+            caller,
+            isAnnounced,
+          );
         }
       } else return undefined;
     }
@@ -257,12 +263,12 @@ function playMusic(channel, video, blob, caller, isAnnounced) {
       return getVideoInfo(getFromQueue(channel.guild.id).track).then((info) => {
         let res = getResource(channel.guild.id, info.video.id);
         if (isAnnounced === true)
-        announceTrack(
-          getFromQueue(channel.guild.id).track,
-          getFromQueue(channel.guild.id).author,
-          info.video,
-          caller,
-        );
+          announceTrack(
+            getFromQueue(channel.guild.id).track,
+            getFromQueue(channel.guild.id).author,
+            info.video,
+            caller,
+          );
         playMusic(channel, info.video, res.track, caller, isAnnounced);
       });
     } else {
@@ -411,5 +417,5 @@ module.exports = {
   addResource,
   getResource,
   removeResource,
-  clearCache
+  clearCache,
 };

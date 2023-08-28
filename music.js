@@ -251,7 +251,6 @@ function playMusic(channel, video, blob, caller, isAnnounced) {
     stopCounter(channel.guild.id);
     removePlayer(channel.guild.id);
     if (getFromQueue(channel.guild.id).isLooped === "false") {
-      removeResource(channel.guild.id, getFromQueue(channel.guild.id).rowid);
       removeFromQueue(channel.guild.id);
     }
     if (getQueueLength(channel.guild.id) > 0) {
@@ -306,9 +305,9 @@ function getResource(id, videoId) {
   return found;
 }
 
-function removeResource(id, pos) {
+function removeResource(id, videoId) {
   resources.forEach((track) => {
-    if (track.id === id && track.pos === pos) {
+    if (track.id === id && track.videoId === videoId) {
       resources.splice(resources.indexOf(track), 1);
     }
   });

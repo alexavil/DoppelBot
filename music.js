@@ -313,6 +313,14 @@ function removeResource(id, videoId) {
   });
 }
 
+function clearCache(id) {
+  resources.forEach((track) => {
+    if (track.id === id) {
+      resources.splice(resources.indexOf(track), 1);
+    }
+  });
+}
+
 function startCounter(id) {
   let counter = setInterval(() => {
     let player = getPlayer(id);
@@ -403,4 +411,5 @@ module.exports = {
   addResource,
   getResource,
   removeResource,
+  clearCache
 };

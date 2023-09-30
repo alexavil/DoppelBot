@@ -264,6 +264,22 @@ function validateSettings() {
   });
 }
 
+function getInstances() {
+  instances.prepare(`CREATE TABLE IF NOT EXISTS instances (url TEXT UNIQUE, api TEXT, health INTEGER)`).run();
+  instances.prepare(`DELETE FROM instances`).run();
+  let statement = instances.prepare(
+    `INSERT OR IGNORE INTO instances VALUES (?, ?, ?)`,
+  );
+  InvidJS.fetchInstances({
+    type: InvidJS.InstanceTypes.https,
+    api_allowed: true
+  }).then(result => {
+    result.forEach(instance => {
+      statement.run(instance.url, instance.api_allowed.toString(), instance.health)
+    })
+  })
+}
+
 function deleteConfig(id) {
   if (debug === true) console.log(`[DEBUG] Deleting config for guild ${id}...`);
   settings.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
@@ -294,6 +310,7 @@ client.on("ready", () => {
   initSentry();
   getEvent();
   validateSettings();
+  getInstances();
   let permcheck = new cron.CronJob("00 00 */8 * * *", CheckForPerms);
   permcheck.start();
   if (debug === true) console.log("[DEBUG] Running jobs for every guild...");
@@ -316,6 +333,8 @@ client.on("ready", () => {
   }
   let eventcheck = new cron.CronJob("00 00 * * * *", getEvent);
   eventcheck.start();
+  let instancecache = new cron.CronJob("00 00 * * * *", getInstances);
+  instancecache.start();
   let cacheclear = new cron.CronJob("00 00 00 * * *", clearMusicCache);
   cacheclear.start();
   if (debug === true) console.log("[DEBUG] Init jobs completed...");

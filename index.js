@@ -44,6 +44,7 @@ if (!fs.existsSync("./data/")) fs.mkdirSync("./data/");
 const settings = new sqlite3("./data/settings.db");
 const queue = new sqlite3("./data/queue.db");
 const tags = new sqlite3("./data/tags.db");
+const instances = new sqlite3("./data/instances_cache.db");
 
 let eventcode = -1;
 
@@ -236,7 +237,6 @@ function createConfig(id) {
     statement.run("prefix", "d!");
     statement.run("notifications", "false");
     statement.run("disconnect_timeout", "30");
-    statement.run("default_instance", "");
     statement.run("min_health", "75");
     statement.run("state", "commands");
     statement.run("music_mode", "queue");
@@ -250,26 +250,6 @@ function createConfig(id) {
   tags
     .prepare(`CREATE TABLE IF NOT EXISTS guild_${id} (tag TEXT, response TEXT)`)
     .run();
-  let instance = settings
-    .prepare(`SELECT * FROM guild_${id} WHERE option = 'default_instance'`)
-    .get().value;
-  if (instance === "") {
-    if (debug === true)
-      console.log(`[DEBUG] No instance defined for ${id}, choosing one...`);
-    getDefaultInstance(id);
-  }
-}
-
-function getDefaultInstance(id) {
-  InvidJS.fetchInstances({
-    health: 99,
-    api_allowed: true,
-    limit: 1,
-  }).then((result) => {
-    settings
-      .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
-      .run(result[0].url, "default_instance");
-  });
 }
 
 function validateSettings() {

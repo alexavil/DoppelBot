@@ -6,6 +6,7 @@ const sqlite3 = require("better-sqlite3");
 
 const masterqueue = new sqlite3("./data/queue.db");
 const settings = new sqlite3("./data/settings.db");
+const instances = new sqlite3("./data/instances_cache.db");
 module.exports = {
   name: "radio",
   aliases: ["r"],
@@ -21,14 +22,12 @@ module.exports = {
       .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
       .run("radio", "music_mode");
     common.endTimeout(id);
-    let default_url = settings
-      .prepare(`SELECT * FROM guild_${id} WHERE option = 'default_instance'`)
-      .get().value;
+    let default_url = instances.prepare('SELECT * FROM instances LIMIT 1').get().url;
     let instance = await InvidJS.fetchInstances({ url: default_url });
     console.log(debug.eventcode);
     if (debug.eventcode > -1) {
       message.reply(
-        "85.2 FM is on a special event today! Tuning in to a broadcast prepared for this exciting day!",
+        "Today is a special day on 85.2 FM!",
       );
       let music_id = "";
       switch (debug.eventcode) {
@@ -74,7 +73,7 @@ module.exports = {
       },
     );
     let playlists = await InvidJS.fetchChannelPlaylists(instance[0], channel);
-    for (let i = 0; i < 128; i++) {
+    while (settings.prepare(`SELECT * FROM guild_${id} WHERE option = ?`).get("music_mode").value === "radio") {
       let randPlaylist = Math.floor(Math.random() * playlists.length);
       let playlist = await InvidJS.fetchPlaylist(
         instance[0],

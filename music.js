@@ -154,9 +154,9 @@ async function getPlaylist(url, caller) {
       `Successfully added ${playlist.videoCount} items to the queue!`,
     );
     for (let i = 0; i < playlist.videos.length; i++) {
-      const video = playlist.videos[i];
-      let videoUrl = instance.url + "/watch?v=" + video.id;
-      await getVideo(videoUrl, caller, true, true);
+        const video = playlist.videos[i];
+        let videoUrl = instance.url + "/watch?v=" + video.id;
+        await getVideo(videoUrl, caller, true, true);
     }
   } catch (error) {
     if (debug.debug === true) console.log("[DEBUG] Error: " + error);

@@ -119,6 +119,11 @@ function initSentry() {
     environment: debug ? "testing" : "production",
     release: require("./package.json").version
   });
+  startMonitor();
+}
+
+function startMonitor() {
+  if (monitor !== undefined) monitor.finish();
   monitor = Sentry.startTransaction({
     op: "transaction",
     name: "DoppelBot Performance",
@@ -348,6 +353,8 @@ client.on("ready", () => {
   eventcheck.start();
   let instancecache = new cron.CronJob("00 00 * * * *", getInstances);
   instancecache.start();
+  let monitorstart = new cron.CronJob("00 00 * * * *", startMonitor);
+  monitorstart.start();
   let cacheclear = new cron.CronJob("00 00 00 * * *", clearMusicCache);
   cacheclear.start();
   if (debug === true) console.log("[DEBUG] Init jobs completed...");

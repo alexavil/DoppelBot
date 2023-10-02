@@ -101,14 +101,27 @@ if (debug === true) {
 }
 
 const Sentry = require("@sentry/node");
+const { ProfilingIntegration } = require("@sentry/profiling-node");
 const { getVoiceConnection } = require("@discordjs/voice");
+
+let monitor = undefined;
 
 function initSentry() {
   if (debug === true) console.log("[DEBUG] Initializing Sentry...");
   Sentry.init({
-    dsn: "https://546220d2015b4064a1c2363c6c6089f2@o4504711913340928.ingest.sentry.io/4504712612872192",
+    dsn: "https://d7c06763ec24990c168e4ad0db91e360@o4504711913340928.ingest.sentry.io/4505981661151232",
     tracesSampleRate: 1.0,
+    profilesSampleRate: 1.0,
+    integrations: [
+      new Sentry.Integrations.Http({ tracing: true }),
+      new ProfilingIntegration(),
+    ],
     environment: debug ? "testing" : "production",
+    release: require("./package.json").version
+  });
+  monitor = Sentry.startTransaction({
+    op: "transaction",
+    name: "DoppelBot Performance",
   });
 }
 
@@ -460,6 +473,12 @@ process.on("uncaughtException", (error) => {
   if (debug === true) console.log("[DEBUG] Error: " + error.message);
   Sentry.captureException(error);
 });
+
+process.on("SIGINT", () => {
+  monitor.finish();
+  console.log("Exiting...");
+  process.exit();
+})
 
 client.login(token);
 

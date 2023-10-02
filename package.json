@@ -4,7 +4,8 @@
   "description": "A Doppel a day keeps your sadness away.",
   "main": "index.js",
   "scripts": {
-    "prettier": "npx prettier ./index.js ./music.js ./commands/* --write"
+    "prettier": "npx prettier ./index.js ./music.js ./commands/* --write",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org hfc-ui --project doppelbot ./index.js ./music.js ./commands && sentry-cli sourcemaps upload --org hfc-ui --project doppelbot ./index.js ./music.js ./commands"
   },
   "author": "alexavil",
   "license": "MIT",

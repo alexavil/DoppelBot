@@ -12,6 +12,9 @@ module.exports = {
   aliases: ["r"],
   description: "85.2 FM - relaxing gaming music",
   async execute(message, args) {
+    let event = settings
+      .prepare(`SELECT * FROM global WHERE option = 'event_code'`)
+      .get().value;
     const id = message.guild.id;
     if (!message.member.voice.channel) {
       if (debug.debug === true)
@@ -24,13 +27,12 @@ module.exports = {
     common.endTimeout(id);
     let default_url = instances.prepare('SELECT * FROM instances LIMIT 1').get().url;
     let instance = await InvidJS.fetchInstances({ url: default_url });
-    console.log(debug.eventcode);
-    if (debug.eventcode > -1) {
+    if (event > -1) {
       message.reply(
         "Today is a special day on 85.2 FM!",
       );
       let music_id = "";
-      switch (debug.eventcode) {
+      switch (event) {
         case 0: {
           music_id = "2EP3fDx644w";
           break;
@@ -53,6 +55,10 @@ module.exports = {
         }
         case 5: {
           music_id = "ZEhBTtjmBSs";
+          break;
+        }
+        case 6: {
+          music_id = "AfjqL0vaBYU";
           break;
         }
       }

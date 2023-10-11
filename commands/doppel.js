@@ -1,11 +1,15 @@
 const Discord = require("discord.js");
 const fs = require("fs-extra");
-const event = require("../index");
+const sqlite3 = require("better-sqlite3");
+const settings = new sqlite3("./data/settings.db");
 module.exports = {
   name: "doppel",
   description: "Get a random picture of Doppel",
   execute(message) {
-    if (event.eventcode !== 0) return;
+    let event = settings
+      .prepare(`SELECT * FROM global WHERE option = 'event_code'`)
+      .get().value;
+    if (event !== 0) return;
     const imageFolder = "./event/doppelbot_bday/images/";
 
     fs.readdir(imageFolder, (err, doppel_imgs) => {

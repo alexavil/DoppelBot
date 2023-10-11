@@ -1,5 +1,6 @@
 const fs = require("fs-extra");
-const event = require("../index");
+const sqlite3 = require("better-sqlite3");
+const settings = new sqlite3("./data/settings.db");
 const {
   joinVoiceChannel,
   createAudioPlayer,
@@ -12,7 +13,10 @@ module.exports = {
   name: "spell",
   description: "Doppel will cast a spell at you, be careful!",
   execute(message) {
-    if (event.eventcode !== 6) return;
+    let event = settings
+      .prepare(`SELECT * FROM global WHERE option = 'event_code'`)
+      .get().value;
+    if (event !== 6) return;
     if (!message.member.voice.channel) {
       if (event.debug === true)
         console.log("[DEBUG] No voice channel found, aborting...");
@@ -47,8 +51,12 @@ module.exports = {
       player.play(resource);
 
       player.on(AudioPlayerStatus.Idle, () => {
-        connection.destroy();
+        setTimeout(() => {
+          connection.destroy();
+        }, 1000)
       });
     });
+
+    message.delete().catch();
   },
 };

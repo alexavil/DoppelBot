@@ -2,5 +2,6 @@
 node_modules/
 data/
 start.sh
+.env
 # Sentry Auth Token
 .sentryclirc

@@ -416,6 +416,24 @@ client.on("messageCreate", (message) => {
   if (!message.guild) return false;
   let id = message.guild.id;
 
+  if (eventcode === 6) {
+    let random = Math.floor(Math.random() * 50);
+    switch (random) {
+      case 13:
+        if (message.author.bot) return;
+        let responses = fs.readJSONSync("./event/halloween/responses.json");
+        const event_responses = responses.event_responses;
+        message.reply(
+          event_responses[
+            Math.floor(Math.random() * event_responses.length)
+          ]
+        );
+        break;
+      default:
+        break;  
+    }
+  }
+
   let responses = tags.prepare(`SELECT * FROM guild_${id}`).all();
 
   if (debug === true) console.log("[DEBUG] Message received...");

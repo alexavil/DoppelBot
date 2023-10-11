@@ -47,7 +47,7 @@ const queue = new sqlite3("./data/queue.db");
 const tags = new sqlite3("./data/tags.db");
 const instances = new sqlite3("./data/instances_cache.db");
 
-let eventcode = -1;
+let eventcode = undefined;
 
 client.commands = new Discord.Collection();
 const commandFiles = fs
@@ -141,6 +141,7 @@ function gamecycle() {
 
 function getEvent() {
   eventcode = -1;
+  console.log("[DEBUG] Validating event...")
   let date = new Date();
   if (date.getMonth() === 3 && date.getDate() === 1) {
     eventcode = 0;
@@ -167,7 +168,8 @@ function getEvent() {
   if (date.getMonth() === 9 && date.getDate() === 2) {
     eventcode = 5;
   }
-  if (date.getMonth() === 9 && date.getDate() > 25 && date.getDate() <= 31) {
+  if (date.getMonth() === 9 && date.getDate() > 9 && date.getDate() <= 31) {
+    console.log("[DEBUG] Halloween time!")
     eventcode = 6;
     client.user.setActivity("Happy Halloween, foolish mortals!");
   }
@@ -184,6 +186,9 @@ function getEvent() {
       gamecycle();
     }
   }
+  settings
+    .prepare(`UPDATE global SET value = ? WHERE option = ?`)
+    .run(eventcode, "event_code");
 }
 
 function CheckForPerms() {
@@ -292,6 +297,14 @@ function createConfig(id) {
 
 function validateSettings() {
   if (debug === true) console.log("[DEBUG] Validating settings...");
+  settings
+  .prepare(
+    `CREATE TABLE IF NOT EXISTS global (option TEXT UNIQUE, value INTEGER)`,
+  )
+  .run();  
+settings.prepare(
+    `INSERT OR IGNORE INTO global VALUES (?, ?)`,
+  ).run("event_code", "-1");
   let tables = settings
     .prepare(`SELECT name FROM sqlite_schema WHERE type='table'`)
     .all();
@@ -338,8 +351,8 @@ function clearMusicCache() {
 
 client.on("ready", () => {
   initSentry();
-  getEvent();
   validateSettings();
+  getEvent();
   getInstances();
   let permcheck = new cron.CronJob("00 00 */8 * * *", CheckForPerms);
   permcheck.start();
@@ -495,4 +508,3 @@ process.on("SIGINT", () => {
 client.login(token);
 
 exports.debug = debug;
-exports.eventcode = eventcode;

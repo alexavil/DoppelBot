@@ -12,13 +12,13 @@ module.exports = {
   name: "spell",
   description: "Doppel will cast a spell at you, be careful!",
   execute(message) {
-    if (event.eventcode !== 3) return;
+    if (event.eventcode !== 6) return;
     if (!message.member.voice.channel) {
       if (event.debug === true)
         console.log("[DEBUG] No voice channel found, aborting...");
       return message.reply("You need to join a voice channel first!");
     }
-    const spellFolder = "./event/doppel_bday/sound_memories/";
+    const spellFolder = "./event/halloween/spells/";
 
     fs.readdir(spellFolder, (err, spells) => {
       if (err) {

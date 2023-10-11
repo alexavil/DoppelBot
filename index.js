@@ -130,6 +130,14 @@ function startMonitor() {
   });
 }
 
+function gamecycle() {
+  let games = activities.games;
+  let gamestring = Math.floor(Math.random() * games.length);
+  if (debug === true)
+    console.log(`[DEBUG] Setting bot activity to ${games[gamestring]}...`);
+  client.user.setActivity(games[gamestring]);
+}
+
 function getEvent() {
   eventcode = -1;
   let date = new Date();
@@ -158,11 +166,22 @@ function getEvent() {
   if (date.getMonth() === 9 && date.getDate() === 2) {
     eventcode = 5;
   }
+  if (date.getMonth() === 9 && date.getDate() > 25 && date.getDate() <= 31) {
+    eventcode = 6;
+    client.user.setActivity("Happy Halloween, foolish mortals!");
+  }
   if (eventcode === -1) {
     client.user.setUsername("DoppelBot");
     client.user.setAvatar(
       "./event/default_avatar.png"
     );
+    if (activities !== undefined) {
+      if (debug === true)
+        console.log("[DEBUG] Activities file present, starting gamecycle job...");
+      let job = new cron.CronJob("00 00 * * * *", gamecycle);
+      job.start();
+      gamecycle();
+    }
   }
 }
 
@@ -305,14 +324,6 @@ function deleteConfig(id) {
   tags.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
 }
 
-function gamecycle() {
-  let games = activities.games;
-  let gamestring = Math.floor(Math.random() * games.length);
-  if (debug === true)
-    console.log(`[DEBUG] Setting bot activity to ${games[gamestring]}...`);
-  client.user.setActivity(games[gamestring]);
-}
-
 function clearMusicCache() {
   if (debug === true) console.log("[DEBUG] Clearing music cache...");
   client.guilds.cache.forEach((guild) => {
@@ -342,13 +353,6 @@ client.on("ready", () => {
       .prepare(`UPDATE guild_${guild.id} SET value = ? WHERE option = ?`)
       .run("queue", "music_mode");
   });
-  if (activities !== undefined) {
-    if (debug === true)
-      console.log("[DEBUG] Activities file present, starting gamecycle job...");
-    let job = new cron.CronJob("00 00 * * * *", gamecycle);
-    job.start();
-    gamecycle();
-  }
   let eventcheck = new cron.CronJob("00 00 * * * *", getEvent);
   eventcheck.start();
   let instancecache = new cron.CronJob("00 00 * * * *", getInstances);

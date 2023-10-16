@@ -3,15 +3,12 @@ const InvidJS = require("@invidjs/invid-js");
 const debug = require("../index");
 const sqlite3 = require("better-sqlite3");
 
-const settings = new sqlite3("./data/settings.db");
+const instances = new sqlite3("./data/instances_cache.db");
 module.exports = {
   name: "suggest",
   description: "Suggest search results",
   async execute(message, args) {
-    const id = message.guild.id;
-    let default_url = settings
-      .prepare(`SELECT * FROM guild_${id} WHERE option = 'default_instance'`)
-      .get().value;
+    let default_url = instances.prepare('SELECT * FROM instances ORDER BY RANDOM() LIMIT 1').get().url;
     if (!args[0]) {
       if (debug.debug === true)
         console.log("[DEBUG] Invalid input, aborting...");

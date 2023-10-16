@@ -1,11 +1,9 @@
-const InvidJS = require("@invidjs/invid-js");
-const Discord = require("discord.js");
 const debug = require("../index");
 const common = require("../music");
 const sqlite3 = require("better-sqlite3");
 
-const masterqueue = new sqlite3("./data/queue.db");
 const settings = new sqlite3("./data/settings.db");
+const instances = new sqlite3("./data/instances_cache.db");
 module.exports = {
   name: "play",
   aliases: ["p"],
@@ -30,12 +28,7 @@ module.exports = {
         console.log("[DEBUG] Invalid input, aborting...");
       return message.reply("Provide a valid link!");
     }
-    let default_url = settings
-      .prepare(`SELECT * FROM guild_${id} WHERE option = 'default_instance'`)
-      .get().value;
-    let min_health = settings
-      .prepare(`SELECT * FROM guild_${id} WHERE option = 'min_health'`)
-      .get().value;
+    let default_url = instances.prepare('SELECT * FROM instances ORDER BY RANDOM() LIMIT 1').get().url;
     let notifications = settings
       .prepare(`SELECT * FROM guild_${id} WHERE option = 'notifications'`)
       .get().value;

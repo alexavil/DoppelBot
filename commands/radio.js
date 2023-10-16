@@ -1,5 +1,4 @@
 const InvidJS = require("@invidjs/invid-js");
-const Discord = require("discord.js");
 const debug = require("../index");
 const common = require("../music");
 const sqlite3 = require("better-sqlite3");
@@ -11,7 +10,7 @@ module.exports = {
   name: "radio",
   aliases: ["r"],
   description: "85.2 FM - relaxing gaming music",
-  async execute(message, args) {
+  async execute(message) {
     let event = settings
       .prepare(`SELECT * FROM global WHERE option = 'event_code'`)
       .get().value;
@@ -25,7 +24,7 @@ module.exports = {
       .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
       .run("radio", "music_mode");
     common.endTimeout(id);
-    let default_url = instances.prepare('SELECT * FROM instances LIMIT 1').get().url;
+    let default_url = instances.prepare('SELECT * FROM instances ORDER BY RANDOM() LIMIT 1').get().url;
     let instance = await InvidJS.fetchInstances({ url: default_url });
     if (event > -1) {
       message.reply(

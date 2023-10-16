@@ -4,8 +4,8 @@ const sqlite3 = require("better-sqlite3");
 const common = require("../music");
 const Discord = require("discord.js");
 
-const masterqueue = new sqlite3("./data/queue.db");
 const settings = new sqlite3("./data/settings.db");
+const instances = new sqlite3("./data/instances_cache.db");
 module.exports = {
   name: "search",
   description: "Search a track",
@@ -24,12 +24,7 @@ module.exports = {
         console.log("[DEBUG] Invalid input, aborting...");
       return message.reply("Provide a valid search query!");
     }
-    let default_url = settings
-      .prepare(`SELECT * FROM guild_${id} WHERE option = 'default_instance'`)
-      .get().value;
-    let min_health = settings
-      .prepare(`SELECT * FROM guild_${id} WHERE option = 'min_health'`)
-      .get().value;
+    let default_url = instances.prepare('SELECT * FROM instances ORDER BY RANDOM() LIMIT 1').get().url;
     let query = args.slice(0).join(" ");
     if (debug.debug === true) {
       console.log(`[DEBUG] User query: ${query}...`);

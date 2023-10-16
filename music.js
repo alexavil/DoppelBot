@@ -260,6 +260,9 @@ function playMusic(channel, video, blob, caller, isAnnounced) {
       removeFromQueue(channel.guild.id);
     }
     if (getQueueLength(channel.guild.id) > 0) {
+      if (debug.debug === true) {
+        console.log("[DEBUG] Starting the next track...");
+      }
       return getVideoInfo(getFromQueue(channel.guild.id).track).then((info) => {
         let res = getResource(channel.guild.id, info.video.id);
         if (isAnnounced === true)

@@ -35,7 +35,8 @@ module.exports = {
     let embed = new Discord.EmbedBuilder()
       .setColor("#0099ff")
       .setTitle(title)
-      .setDescription(result);
+      .setDescription(result)
+      .setFooter({ text: "Powered by InvidJS" });
     return message.channel.send({ embeds: [embed] });
   },
 };

@@ -28,6 +28,7 @@ module.exports = {
         console.log("[DEBUG] Invalid input, aborting...");
       return message.reply("Provide a valid link!");
     }
+    message.react(`⌛`);
     let default_url = instances.prepare('SELECT * FROM instances ORDER BY RANDOM() LIMIT 1').get().url;
     let notifications = settings
       .prepare(`SELECT * FROM guild_${id} WHERE option = 'notifications'`)
@@ -66,5 +67,6 @@ module.exports = {
     if (url.includes("/playlist?list=")) {
       await common.getPlaylist(url, message);
     }
+    message.reactions.removeAll();
   },
 };

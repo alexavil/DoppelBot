@@ -11,6 +11,7 @@ module.exports = {
   aliases: ["r"],
   description: "85.2 FM - relaxing gaming music",
   async execute(message) {
+    message.react(`⌛`);
     let event = settings
       .prepare(`SELECT * FROM global WHERE option = 'event_code'`)
       .get().value;

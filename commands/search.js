@@ -24,6 +24,7 @@ module.exports = {
         console.log("[DEBUG] Invalid input, aborting...");
       return message.reply("Provide a valid search query!");
     }
+    message.react(`⌛`);
     let default_url = instances.prepare('SELECT * FROM instances ORDER BY RANDOM() LIMIT 1').get().url;
     let query = args.slice(0).join(" ");
     if (debug.debug === true) {
@@ -84,5 +85,6 @@ module.exports = {
         }),
       )
       .catch();
+      message.reactions.removeAll();
   },
 };

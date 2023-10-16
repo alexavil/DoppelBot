@@ -79,12 +79,12 @@ module.exports = {
             videoid = results[choice].id;
             let url = default_url + "/watch?v=" + videoid;
             await common.getVideo(url, message, false, true);
+            message.reactions.removeAll();
           } else {
             choice++;
           }
         }),
       )
       .catch();
-      message.reactions.removeAll();
   },
 };

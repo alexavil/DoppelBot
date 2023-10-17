@@ -59,7 +59,29 @@ async function getSuggestions(url, query, retries) {
   return value;
 }
 
-async function getVideo(url, caller, isSilent, isAnnounced) {
+async function searchContent(url, query, retries) {
+  let instance = await InvidJS.fetchInstances({ url: url });
+  let results = InvidJS.searchContent(instance[0], query, {
+    limit: 5,
+    type: InvidJS.ContentTypes.Video,
+  });
+  let timeout = new Promise((res) => setTimeout(() => res("timeout"), 10000));
+  const value = await Promise.race([results, timeout]);
+  if (value === "timeout") {
+    if (debug.debug === true)
+    console.log(
+      "[DEBUG] Could not reach instance, retrying...",
+    );
+    retries++;
+    if (retries === 4) {
+      return "error";
+    }
+    await searchContent(url, query, retries);
+  }
+  return value;
+}
+
+async function getVideo(url, caller, isSilent, isAnnounced, retries) {
   try {
     let id = url.split("=")[1];
     if (resources.some((resource) => resource.videoId === id)) {
@@ -74,63 +96,91 @@ async function getVideo(url, caller, isSilent, isAnnounced) {
         url: url.split("/w")[0],
       });
       let instance = instances[0];
-      let video = await InvidJS.fetchVideo(instance, url.split("=")[1], {
+      let video = InvidJS.fetchVideo(instance, url.split("=")[1], {
         type: InvidJS.FetchTypes.Full,
       });
-      addToQueue(caller.guild.id, url, caller.author.id, "false");
-      if (isSilent === false) caller.channel.send(`Added ${url} to the queue!`);
-      addResource(caller.guild.id, resource, id);
-      if (getQueueLength(caller.guild.id) === 1) {
+      let timeout = new Promise((res) => setTimeout(() => res("timeout"), 10000));
+      const value = await Promise.race([video, timeout]);
+      if (value === "timeout") {
         if (debug.debug === true)
-          console.log("[DEBUG] This is the first track, starting playback...");
-        if (isAnnounced === true)
-          announceTrack(url, caller.author.id, video, caller);
-        return playMusic(
-          caller.member.voice.channel,
-          video,
-          resource,
-          caller,
-          isAnnounced,
+        console.log(
+          "[DEBUG] Could not reach instance, retrying...",
         );
+        retries++;
+        if (retries === 4) {
+          return caller.reply("Connection failed after 4 retries.");
+        }
+        await getVideo(url, caller, isSilent, isAnnounced, retries);
+      } else {
+        addToQueue(caller.guild.id, url, caller.author.id, "false");
+        if (isSilent === false) caller.channel.send(`Added ${url} to the queue!`);
+        addResource(caller.guild.id, resource, id);
+        if (getQueueLength(caller.guild.id) === 1) {
+          if (debug.debug === true)
+            console.log("[DEBUG] This is the first track, starting playback...");
+          if (isAnnounced === true)
+            announceTrack(url, caller.author.id, value, caller);
+          return playMusic(
+            caller.member.voice.channel,
+            value,
+            resource,
+            caller,
+            isAnnounced,
+          );
+        }
       }
     } else {
       let instances = await InvidJS.fetchInstances({
         url: url.split("/w")[0],
       });
       let instance = instances[0];
-      let video = await InvidJS.fetchVideo(instance, url.split("=")[1], {
+      let video = InvidJS.fetchVideo(instance, url.split("=")[1], {
         type: InvidJS.FetchTypes.Full,
       });
-      let format = video.formats.find(
-        (format) => format.audio_quality === InvidJS.AudioQuality.Medium,
-      );
-      let isValid = undefined;
-      isValid = await InvidJS.validateSource(instance, video, format);
-      if (isValid === true) {
+      let timeout = new Promise((res) => setTimeout(() => res("timeout"), 10000));
+      const value = await Promise.race([video, timeout]);
+      if (value === "timeout") {
         if (debug.debug === true)
-          console.log("[DEBUG] Input valid, adding to queue...");
-        addToQueue(caller.guild.id, url, caller.author.id, "false");
-        if (isSilent === false)
-          caller.channel.send(`Added ${url} to the queue!`);
-        if (debug.debug === true) console.log("[DEBUG] Downloading stream...");
-        let resource = await downloadTrack(instance, video, format);
-        addResource(caller.guild.id, resource, id);
-        if (getQueueLength(caller.guild.id) === 1) {
-          if (debug.debug === true)
-            console.log(
-              "[DEBUG] This is the first track, starting playback...",
-            );
-          if (isAnnounced === true)
-            announceTrack(url, caller.author.id, video, caller);
-          playMusic(
-            caller.member.voice.channel,
-            video,
-            resource,
-            caller,
-            isAnnounced,
-          );
+        console.log(
+          "[DEBUG] Could not reach instance, retrying...",
+        );
+        retries++;
+        if (retries === 4) {
+          return caller.reply("Connection failed after 4 retries.");
         }
-      } else return undefined;
+        await getVideo(url, caller, isSilent, isAnnounced, retries);
+      } else {
+        let format = value.formats.find(
+          (format) => format.audio_quality === InvidJS.AudioQuality.Medium,
+        );
+        let isValid = undefined;
+        isValid = await InvidJS.validateSource(instance, value, format);
+        if (isValid === true) {
+          if (debug.debug === true)
+            console.log("[DEBUG] Input valid, adding to queue...");
+          addToQueue(caller.guild.id, url, caller.author.id, "false");
+          if (isSilent === false)
+            caller.channel.send(`Added ${url} to the queue!`);
+          if (debug.debug === true) console.log("[DEBUG] Downloading stream...");
+          let resource = await downloadTrack(instance, value, format);
+          addResource(caller.guild.id, resource, id);
+          if (getQueueLength(caller.guild.id) === 1) {
+            if (debug.debug === true)
+              console.log(
+                "[DEBUG] This is the first track, starting playback...",
+              );
+            if (isAnnounced === true)
+              announceTrack(url, caller.author.id, value, caller);
+            playMusic(
+              caller.member.voice.channel,
+              value,
+              resource,
+              caller,
+              isAnnounced,
+            );
+          }
+        } else return undefined;
+      }
     }
   } catch (error) {
     if (debug.debug === true) console.log("[DEBUG] Error: " + error);
@@ -162,20 +212,34 @@ async function getVideo(url, caller, isSilent, isAnnounced) {
   }
 }
 
-async function getPlaylist(url, caller) {
+async function getPlaylist(url, caller, retries) {
   try {
     let instances = await InvidJS.fetchInstances({
       url: url.split("/p")[0],
     });
     let instance = instances[0];
-    let playlist = await InvidJS.fetchPlaylist(instance, url.split("=")[1]);
-    caller.channel.send(
-      `Successfully added ${playlist.videoCount} items to the queue!`,
-    );
-    for (let i = 0; i < playlist.videos.length; i++) {
-        const video = playlist.videos[i];
-        let videoUrl = instance.url + "/watch?v=" + video.id;
-        await getVideo(videoUrl, caller, true, true);
+    let playlist = InvidJS.fetchPlaylist(instance, url.split("=")[1]);
+    let timeout = new Promise((res) => setTimeout(() => res("timeout"), 10000));
+    const value = await Promise.race([playlist, timeout]);
+    if (value === "timeout") {
+      if (debug.debug === true)
+      console.log(
+        "[DEBUG] Could not reach instance, retrying...",
+      );
+      retries++;
+      if (retries === 4) {
+        return caller.reply("Connection failed after 4 retries.");
+      }
+      await getPlaylist(url, caller, retries);
+    } else {
+      caller.channel.send(
+        `Successfully added ${value.videoCount} items to the queue!`,
+      );
+      for (let i = 0; i < value.videos.length; i++) {
+          const video = value.videos[i];
+          let videoUrl = instance.url + "/watch?v=" + video.id;
+          await getVideo(videoUrl, caller, true, true, 0);
+      }
     }
   } catch (error) {
     if (debug.debug === true) console.log("[DEBUG] Error: " + error);
@@ -423,6 +487,7 @@ function removePlayer(id) {
 module.exports = {
   disallowedLinks,
   getSuggestions,
+  searchContent,
   getVideo,
   getPlaylist,
   playMusic,

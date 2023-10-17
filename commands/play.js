@@ -62,7 +62,7 @@ module.exports = {
     common.endTimeout(id);
     if (debug.debug === true) console.log(`[DEBUG] Validating ${url}...`);
     if (url.includes("/watch?v=")) {
-      await common.getVideo(url, message, false, true);
+      await common.getVideo(url, message, false, true, 0);
     }
     if (url.includes("/playlist?list=")) {
       await common.getPlaylist(url, message);

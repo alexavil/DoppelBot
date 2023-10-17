@@ -63,7 +63,7 @@ module.exports = {
         }
       }
       let url = default_url + `/watch?v=${music_id}`;
-      await common.getVideo(url, message, true, false);
+      await common.getVideo(url, message, true, false, 0);
       return masterqueue
         .prepare(`UPDATE guild_${id} SET isLooped = 'true' LIMIT 1`)
         .run();
@@ -87,7 +87,7 @@ module.exports = {
       );
       let video = Math.floor(Math.random() * playlist.videoCount);
       let url = default_url + "/watch?v=" + playlist.videos[video].id;
-      await common.getVideo(url, message, true, false);
+      await common.getVideo(url, message, true, false, 0);
     }
   },
 };

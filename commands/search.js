@@ -1,4 +1,3 @@
-const InvidJS = require("@invidjs/invid-js");
 const debug = require("../index");
 const sqlite3 = require("better-sqlite3");
 const common = require("../music");
@@ -31,11 +30,15 @@ module.exports = {
       console.log(`[DEBUG] User query: ${query}...`);
       console.log("[DEBUG] Searching...");
     }
-    let instance = await InvidJS.fetchInstances({ url: default_url });
-    let results = await InvidJS.searchContent(instance[0], query, {
-      limit: 5,
-      type: InvidJS.ContentTypes.Video,
-    });
+    let value = await common.searchContent(default_url, query, 0);
+    if (value === "timeout") {
+      message.reactions.removeAll();
+      if (debug.debug === true)
+      console.log(
+        "[DEBUG] Too many retries, aborting...",
+      );
+      return message.reply("Connection failed after 4 retries.")
+    }
     if (!results.length) {
       if (debug.debug === true) console.log("[DEBUG] No content was found...");
       return message.reply("No content was found based on your search query!");
@@ -78,7 +81,7 @@ module.exports = {
               console.log(`[DEBUG] User choice: ${choice}...`);
             videoid = results[choice].id;
             let url = default_url + "/watch?v=" + videoid;
-            await common.getVideo(url, message, false, true);
+            await common.getVideo(url, message, false, true, 0);
             message.reactions.removeAll();
           } else {
             choice++;

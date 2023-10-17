@@ -3,6 +3,8 @@ const InvidJS = require("@invidjs/invid-js");
 const debug = require("../index");
 const sqlite3 = require("better-sqlite3");
 
+const common = require("../music");
+
 const instances = new sqlite3("./data/instances_cache.db");
 module.exports = {
   name: "suggest",
@@ -20,26 +22,45 @@ module.exports = {
       console.log(`[DEBUG] User query: ${query}...`);
       console.log("[DEBUG] Fetching suggestions...");
     }
-    let instance = await InvidJS.fetchInstances({ url: default_url });
-    let results = await InvidJS.fetchSearchSuggestions(instance[0], query);
-    if (!results.length) {
-      if (debug.debug === true) console.log("[DEBUG] No content was found...");
+    try {
+      let value = await common.getSuggestions(default_url, query, 0);
+      if (value === "timeout") {
+        message.reactions.removeAll();
+        if (debug.debug === true)
+        console.log(
+          "[DEBUG] Too many retries, aborting...",
+        );
+        return message.reply("Connection failed after 4 retries.")
+      }
+      if (!value.length) {
+        if (debug.debug === true) console.log("[DEBUG] No content was found...");
+        message.reactions.removeAll();
+        return message.reply(
+          "No suggestions were found based on your search query!",
+        );
+      }
+      let title = "Suggestions for `" + query + "`:";
+      let result = "";
+      value.forEach((suggestion) => {
+        result += "\n`" + suggestion + "`";
+      });
       message.reactions.removeAll();
-      return message.reply(
-        "No suggestions were found based on your search query!",
-      );
+      let embed = new Discord.EmbedBuilder()
+        .setColor("#0099ff")
+        .setTitle(title)
+        .setDescription(result)
+        .setFooter({ text: "Powered by InvidJS" });
+      return message.channel.send({ embeds: [embed] });
+    } catch (error) {
+      switch (error.code) {
+        case InvidJS.ErrorCodes.APIError: {
+          message.reactions.removeAll();
+          message.reply(
+            "The content could not be fetched due to an API error. Please try again later.",
+          );
+          return undefined;
+        }
+      }
     }
-    let title = "Suggestions for `" + query + "`:";
-    let result = "";
-    results.forEach((suggestion) => {
-      result += "\n`" + suggestion + "`";
-    });
-    message.reactions.removeAll();
-    let embed = new Discord.EmbedBuilder()
-      .setColor("#0099ff")
-      .setTitle(title)
-      .setDescription(result)
-      .setFooter({ text: "Powered by InvidJS" });
-    return message.channel.send({ embeds: [embed] });
   },
 };

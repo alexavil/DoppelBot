@@ -40,6 +40,25 @@ function getQueueLength(id) {
   return masterqueue.prepare(`SELECT * FROM guild_${id}`).all().length;
 }
 
+async function getSuggestions(url, query, retries) {
+  let instance = await InvidJS.fetchInstances({ url: url });
+  let results = InvidJS.fetchSearchSuggestions(instance[0], query);
+  let timeout = new Promise((res) => setTimeout(() => res("timeout"), 10000));
+  const value = await Promise.race([results, timeout]);
+  if (value === "timeout") {
+    if (debug.debug === true)
+    console.log(
+      "[DEBUG] Could not reach instance, retrying...",
+    );
+    retries++;
+    if (retries === 4) {
+      return "error";
+    }
+    await getSuggestions(url, query, retries);
+  }
+  return value;
+}
+
 async function getVideo(url, caller, isSilent, isAnnounced) {
   try {
     let id = url.split("=")[1];
@@ -403,6 +422,7 @@ function removePlayer(id) {
 
 module.exports = {
   disallowedLinks,
+  getSuggestions,
   getVideo,
   getPlaylist,
   playMusic,

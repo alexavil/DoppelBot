@@ -12,6 +12,7 @@ const {
 const sqlite3 = require("better-sqlite3");
 const masterqueue = new sqlite3("./data/queue.db");
 const settings = new sqlite3("./data/settings.db");
+const cache = new sqlite3("./data/instances_cache.db");
 
 const disallowedLinks = ["https://www.youtube.com/", "https://youtu.be/"];
 
@@ -54,6 +55,11 @@ async function getSuggestions(url, query, retries) {
     if (retries === 4) {
       return "error";
     }
+    url = cache.prepare('SELECT * FROM instances ORDER BY RANDOM() LIMIT 1').get().url;
+    if (debug.debug === true)
+    console.log(
+      `[DEBUG] New instance: ${url}`,
+    );
     await getSuggestions(url, query, retries);
   }
   return value;
@@ -76,6 +82,11 @@ async function searchContent(url, query, retries) {
     if (retries === 4) {
       return "error";
     }
+    url = cache.prepare('SELECT * FROM instances ORDER BY RANDOM() LIMIT 1').get().url;
+    if (debug.debug === true)
+    console.log(
+      `[DEBUG] New instance: ${url}`,
+    );
     await searchContent(url, query, retries);
   }
   return value;
@@ -110,6 +121,12 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
         if (retries === 4) {
           return caller.reply("Connection failed after 4 retries.");
         }
+        let new_url = cache.prepare('SELECT * FROM instances ORDER BY RANDOM() LIMIT 1').get().url;
+        if (debug.debug === true)
+        console.log(
+          `[DEBUG] New instance: ${new_url}`,
+        );
+        url = url.replace(url.split("/w")[0], new_url);
         await getVideo(url, caller, isSilent, isAnnounced, retries);
       } else {
         addToQueue(caller.guild.id, url, caller.author.id, "false");
@@ -148,6 +165,12 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
         if (retries === 4) {
           return caller.reply("Connection failed after 4 retries.");
         }
+        let new_url = cache.prepare('SELECT * FROM instances ORDER BY RANDOM() LIMIT 1').get().url;
+        if (debug.debug === true)
+        console.log(
+          `[DEBUG] New instance: ${new_url}`,
+        );
+        url = url.replace(url.split("/w")[0], new_url);
         await getVideo(url, caller, isSilent, isAnnounced, retries);
       } else {
         let format = value.formats.find(
@@ -230,6 +253,12 @@ async function getPlaylist(url, caller, retries) {
       if (retries === 4) {
         return caller.reply("Connection failed after 4 retries.");
       }
+      let new_url = cache.prepare('SELECT * FROM instances ORDER BY RANDOM() LIMIT 1').get().url;
+      if (debug.debug === true)
+      console.log(
+        `[DEBUG] New instance: ${new_url}`,
+      );
+      url = url.replace(url.split("/p")[0], new_url);
       await getPlaylist(url, caller, retries);
     } else {
       caller.channel.send(

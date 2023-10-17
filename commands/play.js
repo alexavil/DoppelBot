@@ -36,11 +36,7 @@ module.exports = {
     url = args[0];
     if (common.disallowedLinks.some((link) => url.startsWith(link))) {
       if (debug.debug === true)
-        console.log("[DEBUG] YouTube link detected, redirecting...");
-      if (notifications === "true")
-        message.channel.send(
-          "Due to migration to InvidJS, the content will be played using the default Invidious instance for this server.",
-        );
+        console.log("[DEBUG] YouTube link detected, redirecting to random instance...");
       if (url.includes("/watch?v=")) {
         url = default_url + "/watch?v=" + url.split("=")[1];
       }
@@ -53,9 +49,9 @@ module.exports = {
     }
     if (url.match(/[a-zA-Z0-9_-]{11}/) && url.length === 11) {
       if (debug.debug === true)
-        console.log("[DEBUG] ID detected, redirecting to default instance...");
+        console.log("[DEBUG] ID detected, redirecting to random instance...");
       message.channel.send(
-        "Your track will be played using the default Invidious instance for this server.",
+        "Your track will be played using a random Invidious instance.",
       );
       url = default_url + "/watch?v=" + url;
     }

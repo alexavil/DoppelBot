@@ -4,7 +4,8 @@ const fs = require("fs-extra");
 const Discord = require("discord.js");
 const cron = require("cron");
 const token = process.env.TOKEN;
-const debug_env = process.env.DOPPELBOT_DEBUG;
+const debug_env = process.env.DEBUG;
+const owner = process.env.OWNER;
 const debug = debug_env === "true";
 const sqlite3 = require("better-sqlite3");
 const InvidJS = require("@invidjs/invid-js");
@@ -474,6 +475,10 @@ client.on("messageCreate", (message) => {
     );
 
   if (!command) return false;
+
+  if (command.owneronly) {
+    if (!owner.split(",").includes(message.author.id)) return false;
+  }
 
   if (command.userpermissions) {
     const perms = message.channel.permissionsFor(message.author);

@@ -1,20 +1,13 @@
 const Discord = require("discord.js");
-const InvidJS = require("@invidjs/invid-js");
 const sqlite3 = require("better-sqlite3");
 const debug = require("../index");
 const os = require("os");
 module.exports = {
   name: "stats",
   description: "Show stats",
+  owneronly: true,
   async execute(message, args, client) {
-    if (
-      debug.debug === false ||
-      !message.channel
-        .permissionsFor(message.author)
-        .has(Discord.PermissionFlagsBits.Administrator)
-    )
-      return false;
-    const settings = new sqlite3("./data/settings.db");
+    if (debug.debug === false) return false;
     let id = message.guild.id;
     let version = require("../package-lock.json").version;
     let invidjs_version = require("../package-lock.json").packages[
@@ -37,7 +30,7 @@ module.exports = {
             Node Version: \`${process.version}\`
             Discord.js Version: \`${Discord.version}\`
             Available RAM: \`${Math.round(
-              os.freemem() / 1024 / 1024,
+              os.freemem() / 1024 / 1024
             )} / ${Math.round(os.totalmem() / 1024 / 1024)} MB\`,
             CPU Usage: \`${os.loadavg()[0].toFixed(2)}%\``,
         },
@@ -45,7 +38,7 @@ module.exports = {
           name: "Bot Stats",
           value: `Total servers: \`${Array.from(client.guilds.cache).length}\`
           Total users: \`${Array.from(client.users.cache).length}\``,
-        },
+        }
       );
     message.channel.send({ embeds: [stats] });
   },

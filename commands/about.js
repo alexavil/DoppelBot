@@ -29,7 +29,7 @@ export default {
         },
         {
           name: "Tags",
-          value: `Certain servers may use key phrases and give out a response! You can view all the tags with \`${prefix}tags list\`.`,
+          value: `Certain servers may use key phrases and give out a response! You can view all the tags with \`${prefix}listtags\`.`,
         },
       );
     message.channel.send({ embeds: [help] });

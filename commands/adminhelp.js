@@ -26,10 +26,9 @@ export default {
         },
         {
           name: "Tags",
-          value: `All tags commands start with ${prefix}tags.
-          \`create\` - create a tag
-          \`delete\` - delete a tag
-            \`list\` - see all tags.`,
+          value: `\`createtag\` - create a tag
+          \`deletetag\` - delete a tag
+            \`listtags\` - see all tags.`,
         },
       );
     message.channel.send({ embeds: [help] });

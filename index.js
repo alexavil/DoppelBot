@@ -12,6 +12,9 @@ import Sentry from "@sentry/node";
 
 const token = process.env.TOKEN;
 const debug = process.env.DEBUG;
+const activities = process.env.ACTIVITIES.split(",");
+const name = process.env.NAME;
+const avatar = process.env.AVATAR;
 
 const client = new Discord.Client({
   intents: [
@@ -63,12 +66,6 @@ const RequiredPerms = [
   [PermissionsBitField.Flags.AddReactions, "Add Reactions"],
 ];
 
-let activities = undefined;
-
-if (fs.existsSync("./activities.json")) {
-  activities = fs.readJSONSync("./activities.json");
-}
-
 if (debug === "true") {
   console.log(`WARNING: DoppelBot is in debug mode! 
   Debug mode is intended to be used for testing purposes only. 
@@ -81,6 +78,11 @@ if (debug === "true") {
   );
   client.on("debug", console.log);
   client.on("warn", console.log);
+}
+
+function setProfile() {
+  if (client.user.username !== name) client.user.setUsername(name);
+  if (client.user.avatar !== avatar) client.user.setAvatar(avatar);
 }
 
 function initSentry() {
@@ -232,15 +234,15 @@ function deleteConfig(id) {
 }
 
 function gamecycle() {
-  let games = activities.games;
-  let gamestring = Math.floor(Math.random() * games.length);
+  let gamestring = Math.floor(Math.random() * activities.length);
   if (debug === "true")
-    console.log(`[DEBUG] Setting bot activity to ${games[gamestring]}...`);
-  client.user.setActivity(games[gamestring]);
+    console.log(`[DEBUG] Setting bot activity to ${activities[gamestring]}...`);
+  client.user.setActivity(activities[gamestring]);
 }
 
 client.on("ready", () => {
   initSentry();
+  setProfile();
   validateSettings();
   let permcheck = new cron.CronJob("00 00 */8 * * *", CheckForPerms);
   permcheck.start();

@@ -52,7 +52,11 @@ export default {
       return message.channel.send("A tag with that key word already exists!");
     }
     message.channel.send(
-      "Please provide the response or type `cancel` to cancel."
+      `Please provide the response(s) or type \`cancel\` to cancel.
+Each new response must be separated with dashes, e.g.:
+\`response1\`
+---
+\`response2\``
     );
     if (debug === "true")
       console.log("[DEBUG] Response required - awaiting user input...");

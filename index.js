@@ -275,19 +275,20 @@ client.on("messageCreate", (message) => {
   if (!message.guild) return false;
   let id = message.guild.id;
 
-  let responses = tags.prepare(`SELECT * FROM guild_${id}`).all();
+  let custom_tags = tags.prepare(`SELECT * FROM guild_${id}`).all();
 
   if (debug === "true") console.log("[DEBUG] Got a message!");
 
-  responses.forEach((response) => {
+  custom_tags.forEach((tag) => {
     if (
       !message.author.bot &&
-      message.content === response.tag &&
+      message.content === tag.tag &&
       settings.prepare(`SELECT * FROM guild_${id} WHERE option = 'state'`).get()
         .value === "commands"
     ) {
       if (debug === "true") console.log("[DEBUG] Tag found!");
-      message.channel.send(response.response);
+      let responses = tag.response.split("---\n")
+      message.channel.send(responses[Math.floor(Math.random() * responses.length)]);
     }
   });
 

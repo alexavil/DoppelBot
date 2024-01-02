@@ -9,12 +9,8 @@ export default {
   description: "Suggest search results",
   async execute(message, args) {
     const id = message.guild.id;
-    let default_url = settings
-      .prepare(`SELECT * FROM guild_${id} WHERE option = 'default_instance'`)
-      .get().value;
     if (!args[0]) {
-      if (debug === "true")
-        console.log("[DEBUG] Invalid input, aborting...");
+      if (debug === "true") console.log("[DEBUG] Invalid input, aborting...");
       return message.reply("Provide a valid query!");
     }
     let query = args.slice(0).join(" ");

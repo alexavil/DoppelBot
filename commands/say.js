@@ -4,9 +4,7 @@ export default {
   name: "say",
   description: "Make the bot say something!",
   execute(message, args) {
-    if (
-      owners.includes(message.author.id)
-    ) {
+    if (owners.includes(message.author.id)) {
       let chl = message.mentions.channels.first();
       let attachments = [];
       if (message.attachments) {

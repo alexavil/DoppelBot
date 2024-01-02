@@ -54,20 +54,10 @@ export default {
             statement.run("prefix", "d!");
             statement.run("notifications", "false");
             statement.run("disconnect_timeout", "30");
-            statement.run("default_instance", "");
             statement.run("min_health", "75");
             statement.run("state", "commands");
           });
           transaction();
-          InvidJS.fetchInstances({
-            health: 99,
-            api_allowed: true,
-            limit: 1,
-          }).then((result) => {
-            settings
-              .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
-              .run(result[0].url, "default_instance");
-          });
           tags
             .prepare(
               `CREATE TABLE IF NOT EXISTS guild_${id} (tag TEXT, response TEXT)`,

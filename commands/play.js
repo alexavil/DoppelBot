@@ -18,13 +18,9 @@ export default {
       return message.reply("You need to join a voice channel first!");
     }
     if (!args[0]) {
-      if (debug === "true")
-        console.log("[DEBUG] Invalid input, aborting...");
+      if (debug === "true") console.log("[DEBUG] Invalid input, aborting...");
       return message.reply("Provide a valid link!");
     }
-    let default_url = settings
-      .prepare(`SELECT * FROM guild_${id} WHERE option = 'default_instance'`)
-      .get().value;
     let min_health = settings
       .prepare(`SELECT * FROM guild_${id} WHERE option = 'min_health'`)
       .get().value;
@@ -158,8 +154,7 @@ export default {
           if (debug === "true")
             console.log(`[DEBUG] Validating ${first.track}...`);
           let vid = await common.getVideo(first.track, message.channel);
-          if (debug === "true")
-            console.log("[DEBUG] Downloading stream...");
+          if (debug === "true") console.log("[DEBUG] Downloading stream...");
           let stream = await InvidJS.fetchSource(
             vid.instance,
             vid.video,

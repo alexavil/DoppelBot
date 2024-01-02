@@ -16,8 +16,7 @@ export default {
       parseFloat(args[0]) < 0 ||
       parseFloat(args[0]) > 100
     ) {
-      if (debug === "true")
-        console.log("[DEBUG] Invalid input, aborting...");
+      if (debug === "true") console.log("[DEBUG] Invalid input, aborting...");
       return message.reply("Please provide a valid number from 0 to 100!");
     }
     let health = parseFloat(args[0]);

@@ -22,7 +22,6 @@ export default {
           \`${prefix}notifications\` - toggle service notifications
           \`${prefix}prefix\` - change the guild prefix
           \`${prefix}settimeout\` - set VC disconnect timeout (in seconds)
-          \`${prefix}setinstance\` - set default Invidious instance
           \`${prefix}sethealth\` - set minimum Invidious instance health`,
         },
         {

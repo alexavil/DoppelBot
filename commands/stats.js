@@ -9,18 +9,9 @@ export default {
   name: "stats",
   description: "Show stats",
   async execute(message, args, client) {
-    if (
-      !owners.includes(message.author.id)
-    )
-      return false;
+    if (!owners.includes(message.author.id)) return false;
     const settings = new sqlite3("./data/settings.db");
     let id = message.guild.id;
-    let default_instance = settings
-      .prepare(
-        `SELECT value FROM guild_${id} WHERE option = 'default_instance'`,
-      )
-      .get().value;
-    let instance = await InvidJS.fetchInstances({ url: default_instance });
     let commit = child.execSync("git rev-parse --short HEAD").toString().trim();
     const stats = new Discord.EmbedBuilder()
       .setColor("#0099ff")

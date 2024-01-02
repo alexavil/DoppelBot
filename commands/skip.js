@@ -35,8 +35,7 @@ export default {
         .prepare(`UPDATE guild_${id} SET isLooped = 'false' LIMIT 1`)
         .run();
     }
-    if (debug === "true")
-      console.log("[DEBUG] Skipping the current track...");
+    if (debug === "true") console.log("[DEBUG] Skipping the current track...");
     let player = common.getPlayer(id);
     player.player.stop();
     message.reply("Skipped!");

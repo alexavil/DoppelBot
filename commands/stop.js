@@ -25,8 +25,7 @@ export default {
     if (!connection) return message.channel.send("The bot is already stopped!");
     else {
       common.stopCounter(id);
-      if (debug === "true")
-        console.log("[DEBUG] Stopping the connection...");
+      if (debug === "true") console.log("[DEBUG] Stopping the connection...");
       connection.destroy();
       common.removePlayer(id);
       masterqueue.prepare(`DELETE FROM guild_${id}`).run();

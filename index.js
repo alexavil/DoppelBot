@@ -5,7 +5,11 @@ import cron from "cron";
 import sqlite3 from "better-sqlite3";
 import Discord from "discord.js";
 import child from "child_process";
-import { GatewayIntentBits, PermissionsBitField, ChannelType } from "discord.js";
+import {
+  GatewayIntentBits,
+  PermissionsBitField,
+  ChannelType,
+} from "discord.js";
 import * as InvidJS from "@invidjs/invid-js";
 
 import Sentry from "@sentry/node";
@@ -116,18 +120,14 @@ function CheckForPerms() {
     RequiredPerms.forEach((perm) => {
       if (!botmember.permissions.has(perm[0])) {
         if (debug === "true")
-          console.log(
-            `[DEBUG] Guild ${id} is missing ${perm[1]}.`,
-          );
+          console.log(`[DEBUG] Guild ${id} is missing ${perm[1]}.`);
         message += `${perm[1]}\n`;
         missing++;
       }
     });
     if (missing > 0) {
       if (debug === "true")
-        console.log(
-          `[DEBUG] Sending permissions alert for guild ${id}...`,
-        );
+        console.log(`[DEBUG] Sending permissions alert for guild ${id}...`);
       message += `\nPlease check your role and member settings!`;
       const outbtn = new Discord.ButtonBuilder()
         .setCustomId(`${guild.id}_opt-out`)
@@ -179,7 +179,6 @@ function createConfig(id) {
     statement.run("prefix", "d!");
     statement.run("notifications", "false");
     statement.run("disconnect_timeout", "30");
-    statement.run("default_instance", "");
     statement.run("min_health", "75");
     statement.run("state", "commands");
   });
@@ -192,26 +191,6 @@ function createConfig(id) {
   tags
     .prepare(`CREATE TABLE IF NOT EXISTS guild_${id} (tag TEXT, response TEXT)`)
     .run();
-  let instance = settings
-    .prepare(`SELECT * FROM guild_${id} WHERE option = 'default_instance'`)
-    .get().value;
-  if (instance === "") {
-    if (debug === "true")
-      console.log(`[DEBUG] Selecting the best Invidious instance for guild ${id}...`);
-    getDefaultInstance(id);
-  }
-}
-
-function getDefaultInstance(id) {
-  InvidJS.fetchInstances({
-    health: 99,
-    api_allowed: true,
-    limit: 1,
-  }).then((result) => {
-    settings
-      .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
-      .run(result[0].url, "default_instance");
-  });
 }
 
 function validateSettings() {
@@ -227,7 +206,8 @@ function validateSettings() {
 }
 
 function deleteConfig(id) {
-  if (debug === "true") console.log(`[DEBUG] Deleting config for guild ${id}...`);
+  if (debug === "true")
+    console.log(`[DEBUG] Deleting config for guild ${id}...`);
   settings.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
   queue.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
   tags.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
@@ -235,8 +215,7 @@ function deleteConfig(id) {
 
 function gamecycle() {
   let gamestring = Math.floor(Math.random() * activities.length);
-  if (debug === "true")
-    console.log(`[DEBUG] Editing bot activity...`);
+  if (debug === "true") console.log(`[DEBUG] Editing bot activity...`);
   client.user.setActivity(activities[gamestring]);
 }
 
@@ -265,17 +244,13 @@ client.on("ready", () => {
 
 client.on("guildCreate", (guild) => {
   if (debug === "true")
-    console.log(
-      `[DEBUG] A new guild (${guild.id}) has been added!`,
-    );
+    console.log(`[DEBUG] A new guild (${guild.id}) has been added!`);
   createConfig(guild.id);
 });
 
 client.on("guildDelete", (guild) => {
   if (debug === "true")
-    console.log(
-      `[DEBUG] A guild (${guild.id}) has been removed!`,
-    );
+    console.log(`[DEBUG] A guild (${guild.id}) has been removed!`);
   deleteConfig(guild.id);
 });
 

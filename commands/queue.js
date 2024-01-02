@@ -31,8 +31,7 @@ export default {
           }
         });
     } else {
-      if (debug === "true")
-        console.log(`[DEBUG] Queue for ${id} is empty...`);
+      if (debug === "true") console.log(`[DEBUG] Queue for ${id} is empty...`);
       embed.setDescription("The queue is empty!");
     }
     embed.setTitle("Queue");

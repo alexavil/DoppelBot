@@ -75,9 +75,6 @@ export default {
                 .run(settings_backup[2].value, "disconnect_timeout");
               settings
                 .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
-                .run(settings_backup[3].value, "default_instance");
-              settings
-                .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
                 .run(settings_backup[3].value, "min_health");
               tags.prepare(`DELETE FROM guild_${id}`).run();
               tags_backup.forEach((tag) => {
@@ -85,8 +82,7 @@ export default {
                   .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
                   .run(tag.tag, tag.response);
               });
-              if (debug === "true")
-                console.log("[DEBUG] Restore successful!");
+              if (debug === "true") console.log("[DEBUG] Restore successful!");
               settings
                 .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
                 .run("commands", "state");

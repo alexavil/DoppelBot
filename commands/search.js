@@ -12,13 +12,9 @@ export default {
   async execute(message, args) {
     const id = message.guild.id;
     if (!args[0]) {
-      if (debug === "true")
-        console.log("[DEBUG] Invalid input, aborting...");
+      if (debug === "true") console.log("[DEBUG] Invalid input, aborting...");
       return message.reply("Provide a valid search query!");
     }
-    let default_url = settings
-      .prepare(`SELECT * FROM guild_${id} WHERE option = 'default_instance'`)
-      .get().value;
     let min_health = settings
       .prepare(`SELECT * FROM guild_${id} WHERE option = 'min_health'`)
       .get().value;
@@ -74,8 +70,7 @@ export default {
               console.log(`[DEBUG] User choice: ${choice}...`);
             videoid = results[choice].id;
             let url = default_url + "/watch?v=" + videoid;
-            if (debug === "true")
-              console.log(`[DEBUG] Validating ${url}...`);
+            if (debug === "true") console.log(`[DEBUG] Validating ${url}...`);
             let fetched = await common.getVideo(url, message.channel);
             let queuelength = masterqueue
               .prepare(`SELECT * FROM guild_${id}`)
@@ -104,8 +99,7 @@ export default {
                   fetched.format,
                   { saveTo: InvidJS.SaveSourceTo.Memory, parts: 10 },
                 );
-                if (debug === "true")
-                  console.log("[DEBUG] Creating player...");
+                if (debug === "true") console.log("[DEBUG] Creating player...");
                 message.channel.send(
                   `Now playing: ${fetched.url}\nRequested by <@!${message.author.id}>`,
                 );

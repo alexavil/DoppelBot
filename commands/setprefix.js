@@ -10,13 +10,11 @@ export default {
     let id = message.guild.id;
     let settings = new sqlite3("./data/settings.db");
     if (!args.length) {
-      if (debug === "true")
-        console.log("[DEBUG] Invalid input, aborting...");
+      if (debug === "true") console.log("[DEBUG] Invalid input, aborting...");
       return message.reply("Invalid prefix!");
     }
     if (args[0].startsWith("<@") && args[0].endsWith(">")) {
-      if (debug === "true")
-        console.log("[DEBUG] Invalid input, aborting...");
+      if (debug === "true") console.log("[DEBUG] Invalid input, aborting...");
       return message.reply("Invalid prefix!");
     }
     if (debug === "true")

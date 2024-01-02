@@ -10,8 +10,7 @@ export default {
     let id = message.guild.id;
     let settings = new sqlite3("./data/settings.db");
     if (!args.length || !Number.isInteger(parseInt(args[0]))) {
-      if (debug === "true")
-        console.log("[DEBUG] Invalid input, aborting...");
+      if (debug === "true") console.log("[DEBUG] Invalid input, aborting...");
       return message.reply("Invalid value! Please type the time in seconds.");
     }
     if (debug === "true")

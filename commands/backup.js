@@ -12,8 +12,7 @@ export default {
   userpermissions: Discord.PermissionsBitField.Flags.Administrator,
   async execute(message) {
     const id = message.guild.id;
-    if (debug === "true")
-      console.log(`[DEBUG] Preparing backup for ${id}...`);
+    if (debug === "true") console.log(`[DEBUG] Preparing backup for ${id}...`);
     let backup = settings
       .prepare(`SELECT * FROM guild_${id} WHERE option != 'state'`)
       .all();

@@ -74,8 +74,7 @@ export default {
                 );
               }
               keyword = m.content;
-              if (debug === "true")
-                console.log("[DEBUG] Keyword: " + keyword);
+              if (debug === "true") console.log("[DEBUG] Keyword: " + keyword);
               let tag = tags
                 .prepare(`SELECT * FROM guild_${id} WHERE tag = ?`)
                 .get(keyword);

@@ -46,17 +46,6 @@ export default {
             " seconds`",
         },
         {
-          name: "**Default Invidious Instance**",
-          value:
-            "Default Invidious instance for the guild. This instance is used when only the video ID is provided, for searching content, as well as a fallback.\nCurrent value: `" +
-            settings
-              .prepare(
-                `SELECT * FROM guild_${id} WHERE option = 'default_instance'`,
-              )
-              .get().value +
-            "`",
-        },
-        {
           name: "**Lowest Instance Health**",
           value:
             "The bot will send a warning if trying to use an instance with health below this number.\nCurrent value: `" +

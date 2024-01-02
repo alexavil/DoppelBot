@@ -4,9 +4,7 @@ export default {
   name: "gleave",
   description: "Leave a guild by ID!",
   execute(message, args, client) {
-    if (
-      owners.includes(message.author.id)
-    ) {
+    if (owners.includes(message.author.id)) {
       let id = args[0];
       let guild = client.guilds.cache.get(id);
       if (guild) {

@@ -3,16 +3,14 @@ import * as InvidJS from "@invidjs/invid-js";
 import sqlite3 from "better-sqlite3";
 import child from "child_process";
 const debug = process.env.DEBUG;
+const owners = process.env.OWNERS;
 import os from "os";
 export default {
   name: "stats",
   description: "Show stats",
   async execute(message, args, client) {
     if (
-      debug.debug === false ||
-      !message.channel
-        .permissionsFor(message.author)
-        .has(Discord.PermissionFlagsBits.Administrator)
+      !owners.includes(message.author.id)
     )
       return false;
     const settings = new sqlite3("./data/settings.db");

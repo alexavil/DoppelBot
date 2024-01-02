@@ -2,7 +2,7 @@ import Discord from "discord.js";
 import * as InvidJS from "@invidjs/invid-js";
 import sqlite3 from "better-sqlite3";
 import child from "child_process";
-const debug = process.env.DEBUG;
+const name = process.env.NAME;
 const owners = process.env.OWNERS;
 import os from "os";
 export default {
@@ -24,7 +24,7 @@ export default {
     let commit = child.execSync("git rev-parse --short HEAD").toString().trim();
     const stats = new Discord.EmbedBuilder()
       .setColor("#0099ff")
-      .setTitle("DoppelBot Stats")
+      .setTitle(`${name} Stats`)
       .addFields(
         {
           name: "System Information",

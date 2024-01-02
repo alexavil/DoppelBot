@@ -67,9 +67,9 @@ const RequiredPerms = [
 ];
 
 if (debug === "true") {
-  console.log(`WARNING: DoppelBot is in debug mode! 
+  console.log(`WARNING: ${name} is in debug mode! 
   Debug mode is intended to be used for testing purposes only. 
-  In this mode, DoppelBot will log most actions and commands, including sensitive information. 
+  In this mode, ${name} will log most actions and commands, including sensitive information. 
   We highly recommend redirecting the output to a file. 
   This mode is not recommended for use in production. Please proceed with caution.`);
   console.log(

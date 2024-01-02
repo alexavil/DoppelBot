@@ -1,5 +1,6 @@
 import Discord from "discord.js";
 import sqlite3 from "better-sqlite3";
+const name = process.env.NAME;
 export default {
   name: "adminhelp",
   aliases: ["ahelp", "adm", "admhelp"],
@@ -13,7 +14,7 @@ export default {
       .get().value;
     const help = new Discord.EmbedBuilder()
       .setColor("#0099ff")
-      .setTitle("Hi, I'm DoppelBot! :heart:")
+      .setTitle(`${name} Admin Help`)
       .addFields(
         {
           name: "Service commands",

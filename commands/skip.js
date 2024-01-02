@@ -1,11 +1,11 @@
-const Discord = require("discord.js");
-const debug = require("../index");
-const { getVoiceConnection } = require("@discordjs/voice");
-const sqlite3 = require("better-sqlite3");
-const common = require("../music");
+import Discord from "discord.js";
+const debug = process.env.DEBUG;
+import { getVoiceConnection } from "@discordjs/voice";
+import sqlite3 from "better-sqlite3";
+const common = await import("../music.js");
 
 const masterqueue = new sqlite3("./data/queue.db");
-module.exports = {
+export default {
   name: "skip",
   description: "Skip the music",
   aliases: ["s"],
@@ -20,7 +20,7 @@ module.exports = {
         .has(Discord.PermissionsBitField.Flags.BanMembers) &&
       channel.members.size !== 2
     ) {
-      if (debug.debug === true)
+      if (debug === "true")
         console.log("[DEBUG] User is not admin or alone, skip not allowed...");
       return message.reply("You are not allowed to skip!");
     }
@@ -29,13 +29,13 @@ module.exports = {
         .prepare(`SELECT * FROM guild_${id} ORDER BY ROWID LIMIT 1`)
         .get().isLooped === "true"
     ) {
-      if (debug.debug === true)
+      if (debug === "true")
         console.log("[DEBUG] The current track is looped, unlooping...");
       masterqueue
         .prepare(`UPDATE guild_${id} SET isLooped = 'false' LIMIT 1`)
         .run();
     }
-    if (debug.debug === true)
+    if (debug === "true")
       console.log("[DEBUG] Skipping the current track...");
     let player = common.getPlayer(id);
     player.player.stop();

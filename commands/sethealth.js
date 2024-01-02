@@ -1,9 +1,9 @@
-const sqlite3 = require("better-sqlite3");
-const debug = require("../index");
-const Discord = require("discord.js");
+import sqlite3 from "better-sqlite3";
+const debug = process.env.DEBUG;
+import Discord from "discord.js";
 
 const settings = new sqlite3("./data/settings.db");
-module.exports = {
+export default {
   name: "sethealth",
   aliases: ["health"],
   description: "Set minimum Invidious instance health",
@@ -16,12 +16,12 @@ module.exports = {
       parseFloat(args[0]) < 0 ||
       parseFloat(args[0]) > 100
     ) {
-      if (debug.debug === true)
+      if (debug === "true")
         console.log("[DEBUG] Invalid input, aborting...");
       return message.reply("Please provide a valid number from 0 to 100!");
     }
     let health = parseFloat(args[0]);
-    if (debug.debug === true)
+    if (debug === "true")
       console.log(`[DEBUG] New instance health for ${id}: ${health}...`);
     settings
       .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)

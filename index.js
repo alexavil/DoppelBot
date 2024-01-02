@@ -1,18 +1,17 @@
-const fs = require("fs-extra");
-const Discord = require("discord.js");
-const cron = require("cron");
-const token = process.env.TOKEN || process.argv[2];
-const debug_env = process.env.DOPPELBOT_DEBUG;
-const debug_string = process.argv[3];
-const debug = debug_string === "debugmode" || debug_env === "true";
-const sqlite3 = require("better-sqlite3");
-const InvidJS = require("@invidjs/invid-js");
-const {
-  PermissionsBitField,
-  GatewayIntentBits,
-  ButtonStyle,
-  ChannelType,
-} = require("discord.js");
+import "dotenv/config";
+
+import fs from "fs-extra";
+import cron from "cron";
+import sqlite3 from "better-sqlite3";
+import Discord from "discord.js";
+import child from "child_process";
+import { GatewayIntentBits, PermissionsBitField, ChannelType } from "discord.js";
+import * as InvidJS from "@invidjs/invid-js";
+
+import Sentry from "@sentry/node";
+
+const token = process.env.TOKEN;
+const debug = process.env.DEBUG;
 
 const client = new Discord.Client({
   intents: [
@@ -50,7 +49,7 @@ const commandFiles = fs
   .filter((file) => file.endsWith(".js"));
 
 for (const file of commandFiles) {
-  const command = require(`./commands/${file}`);
+  const { default: command } = await import(`./commands/${file}`);
   client.commands.set(command.name, command);
 }
 
@@ -70,7 +69,7 @@ if (fs.existsSync("./activities.json")) {
   activities = fs.readJSONSync("./activities.json");
 }
 
-if (debug === true) {
+if (debug === "true") {
   console.log("WARNING: DoppelBot is in debug mode!!!");
   console.log("Debug mode is intended to be used for testing purposes only.");
   console.log(
@@ -81,25 +80,14 @@ if (debug === true) {
   console.log("[DEBUG] Retreived build hash successfully!");
   console.log(
     "[DEBUG] Build hash: " +
-      require("child_process")
-        .execSync("git rev-parse --short HEAD")
-        .toString()
-        .trim(),
-  );
-  console.log(
-    `[DEBUG] InvidJS Version: ${
-      require(".package-lock.json").packages["node_modules/@invidjs/invid-js"]
-        .version
-    }`,
+      child.execSync("git rev-parse --short HEAD").toString().trim(),
   );
   client.on("debug", console.log);
   client.on("warn", console.log);
 }
 
-const Sentry = require("@sentry/node");
-
 function initSentry() {
-  if (debug === true) console.log("[DEBUG] Initializing Sentry...");
+  if (debug === "true") console.log("[DEBUG] Initializing Sentry...");
   Sentry.init({
     dsn: "https://546220d2015b4064a1c2363c6c6089f2@o4504711913340928.ingest.sentry.io/4504712612872192",
     tracesSampleRate: 1.0,
@@ -108,17 +96,17 @@ function initSentry() {
 }
 
 function CheckForPerms() {
-  if (debug === true)
+  if (debug === "true")
     console.log("[DEBUG] Checking for permissions in every guild...");
   client.guilds.cache.forEach((guild) => {
     let id = guild.id;
-    if (debug === true)
+    if (debug === "true")
       console.log(`[DEBUG] Checking for permissions in guild ${id}...`);
     let notifs_value = settings
       .prepare(`SELECT * FROM guild_${id} WHERE option = 'notifications'`)
       .get().value;
     if (notifs_value === "false") {
-      if (debug === true)
+      if (debug === "true")
         console.log(
           `[DEBUG] Guild ${id} has notifications disabled. Skipping...`,
         );
@@ -130,7 +118,7 @@ function CheckForPerms() {
     let missing = 0;
     RequiredPerms.forEach((perm) => {
       if (!botmember.permissions.has(perm[0])) {
-        if (debug === true)
+        if (debug === "true")
           console.log(
             `[DEBUG] Guild ${id} is missing ${perm[1]}. Adding to message...`,
           );
@@ -139,7 +127,7 @@ function CheckForPerms() {
       }
     });
     if (missing > 0) {
-      if (debug === true)
+      if (debug === "true")
         console.log(
           `[DEBUG] Guild ${id} is missing permissions, sending alert...`,
         );
@@ -158,7 +146,7 @@ function CheckForPerms() {
         .send({ embeds: [embed], components: [row] })
         .catch((err) => {
           if (err.code === Discord.Constants.APIErrors.CANNOT_MESSAGE_USER) {
-            if (debug === true)
+            if (debug === "true")
               console.log(
                 `[DEBUG] Cannot message owner of guild ${id}. Skipping...`,
               );
@@ -166,7 +154,7 @@ function CheckForPerms() {
           }
         });
     } else {
-      if (debug === true)
+      if (debug === "true")
         console.log(`[DEBUG] Guild ${id} has all permissions.`);
       return true;
     }
@@ -174,13 +162,13 @@ function CheckForPerms() {
 }
 
 function clearQueue(id) {
-  if (debug === true)
+  if (debug === "true")
     console.log(`[DEBUG] Bot has restarted, clearing queue for guild ${id}...`);
   queue.prepare(`DELETE FROM guild_${id}`).run();
 }
 
 function createConfig(id) {
-  if (debug === true)
+  if (debug === "true")
     console.log(`[DEBUG] Creating/validating config for guild ${id}...`);
   settings
     .prepare(
@@ -211,7 +199,7 @@ function createConfig(id) {
     .prepare(`SELECT * FROM guild_${id} WHERE option = 'default_instance'`)
     .get().value;
   if (instance === "") {
-    if (debug === true)
+    if (debug === "true")
       console.log(`[DEBUG] No instance defined for ${id}, choosing one...`);
     getDefaultInstance(id);
   }
@@ -230,7 +218,7 @@ function getDefaultInstance(id) {
 }
 
 function validateSettings() {
-  if (debug === true) console.log("[DEBUG] Validating settings...");
+  if (debug === "true") console.log("[DEBUG] Validating settings...");
   let tables = settings
     .prepare(`SELECT name FROM sqlite_schema WHERE type='table'`)
     .all();
@@ -242,7 +230,7 @@ function validateSettings() {
 }
 
 function deleteConfig(id) {
-  if (debug === true) console.log(`[DEBUG] Deleting config for guild ${id}...`);
+  if (debug === "true") console.log(`[DEBUG] Deleting config for guild ${id}...`);
   settings.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
   queue.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
   tags.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
@@ -251,7 +239,7 @@ function deleteConfig(id) {
 function gamecycle() {
   let games = activities.games;
   let gamestring = Math.floor(Math.random() * games.length);
-  if (debug === true)
+  if (debug === "true")
     console.log(`[DEBUG] Setting bot activity to ${games[gamestring]}...`);
   client.user.setActivity(games[gamestring]);
 }
@@ -261,7 +249,7 @@ client.on("ready", () => {
   validateSettings();
   let permcheck = new cron.CronJob("00 00 */8 * * *", CheckForPerms);
   permcheck.start();
-  if (debug === true) console.log("[DEBUG] Running jobs for every guild...");
+  if (debug === "true") console.log("[DEBUG] Running jobs for every guild...");
   client.guilds.cache.forEach((guild) => {
     createConfig(guild.id);
     clearQueue(guild.id);
@@ -270,18 +258,18 @@ client.on("ready", () => {
       .run("commands", "state");
   });
   if (activities !== undefined) {
-    if (debug === true)
+    if (debug === "true")
       console.log("[DEBUG] Activities file present, starting gamecycle job...");
     let job = new cron.CronJob("00 00 * * * *", gamecycle);
     job.start();
     gamecycle();
   }
-  if (debug === true) console.log("[DEBUG] Init jobs completed...");
+  if (debug === "true") console.log("[DEBUG] Init jobs completed...");
   console.log("I am ready!");
 });
 
 client.on("guildCreate", (guild) => {
-  if (debug === true)
+  if (debug === "true")
     console.log(
       `[DEBUG] A new guild (${guild.id}) has been added, running jobs...`,
     );
@@ -289,7 +277,7 @@ client.on("guildCreate", (guild) => {
 });
 
 client.on("guildDelete", (guild) => {
-  if (debug === true)
+  if (debug === "true")
     console.log(
       `[DEBUG] A guild (${guild.id}) has been removed, running jobs...`,
     );
@@ -299,7 +287,7 @@ client.on("guildDelete", (guild) => {
 client.on("interactionCreate", (interaction) => {
   if (interaction.customId.endsWith("opt-out")) {
     let id = interaction.customId.split("_")[0];
-    if (debug === true)
+    if (debug === "true")
       console.log(
         `[DEBUG] A guild ${guild.id} has switched service notifications off...`,
       );
@@ -319,7 +307,7 @@ client.on("messageCreate", (message) => {
 
   let responses = tags.prepare(`SELECT * FROM guild_${id}`).all();
 
-  if (debug === true) console.log("[DEBUG] Message received...");
+  if (debug === "true") console.log("[DEBUG] Message received...");
 
   responses.forEach((response) => {
     if (
@@ -328,7 +316,7 @@ client.on("messageCreate", (message) => {
       settings.prepare(`SELECT * FROM guild_${id} WHERE option = 'state'`).get()
         .value === "commands"
     ) {
-      if (debug === true) console.log("[DEBUG] Tag found, responding...");
+      if (debug === "true") console.log("[DEBUG] Tag found, responding...");
       message.channel.send(response.response);
     }
   });
@@ -361,7 +349,7 @@ client.on("messageCreate", (message) => {
   if (command.userpermissions) {
     const perms = message.channel.permissionsFor(message.author);
     if (!perms || !perms.has(command.userpermissions)) {
-      if (debug === true)
+      if (debug === "true")
         console.log(
           "[DEBUG] Attempted to execute command, but user has no permissions!",
         );
@@ -374,12 +362,12 @@ client.on("messageCreate", (message) => {
       settings.prepare(`SELECT * FROM guild_${id} WHERE option = 'state'`).get()
         .value === "commands"
     ) {
-      if (debug === true)
+      if (debug === "true")
         console.log(`[DEBUG] Trying to execute ${commandName} in ${id}...`);
       command.execute(message, args, client);
     }
   } catch (error) {
-    if (debug === true) console.log("[DEBUG] Error: " + error.message);
+    if (debug === "true") console.log("[DEBUG] Error: " + error.message);
     if (error.code === 50013) {
       return message.reply(
         "I don't have permissions to do that action! Check the Roles page!",
@@ -391,15 +379,13 @@ client.on("messageCreate", (message) => {
 });
 
 process.on("unhandledRejection", (error) => {
-  if (debug === true) console.log("[DEBUG] Error: " + error.message);
+  if (debug === "true") console.log("[DEBUG] Error: " + error.message);
   Sentry.captureException(error);
 });
 
 process.on("uncaughtException", (error) => {
-  if (debug === true) console.log("[DEBUG] Error: " + error.message);
+  if (debug === "true") console.log("[DEBUG] Error: " + error.message);
   Sentry.captureException(error);
 });
 
 client.login(token);
-
-exports.debug = debug;

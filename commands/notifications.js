@@ -1,6 +1,6 @@
-const sqlite3 = require("better-sqlite3");
-const debug = require("../index");
-module.exports = {
+import sqlite3 from "better-sqlite3";
+const debug = process.env.DEBUG;
+export default {
   name: "notifications",
   aliases: ["notifs"],
   description: "Set notifications for your server",
@@ -14,7 +14,7 @@ module.exports = {
         .get().value;
       switch (value) {
         case "false":
-          if (debug.debug === true)
+          if (debug === "true")
             console.log(
               "[DEBUG] Notifications are disabled for " +
                 id +
@@ -25,7 +25,7 @@ module.exports = {
             .run("true", "notifications");
           return message.channel.send(`Service notifications are now enabled!`);
         case "true":
-          if (debug.debug === true)
+          if (debug === "true")
             console.log(
               "[DEBUG] Notifications are enabled for " +
                 id +

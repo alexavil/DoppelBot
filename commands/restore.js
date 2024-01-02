@@ -1,11 +1,11 @@
-const sqlite3 = require("better-sqlite3");
-const debug = require("../index");
-const Discord = require("discord.js");
+import sqlite3 from "better-sqlite3";
+const debug = process.env.DEBUG;
+import Discord from "discord.js";
 
 const settings = new sqlite3("./data/settings.db");
 const tags = new sqlite3("./data/tags.db");
 
-module.exports = {
+export default {
   name: "restore",
   description: "Restore your server settings",
   userpermissions: Discord.PermissionsBitField.Flags.Administrator,
@@ -19,7 +19,7 @@ module.exports = {
     message.channel.send(
       "Please provide the JSON file you received as a backup or type `cancel` to cancel.\n**This will erase all server settings if you proceed!**",
     );
-    if (debug.debug === true)
+    if (debug === "true")
       console.log("[DEBUG] File required - awaiting user input...");
     let file_collector = message.channel.createMessageCollector({
       filter,
@@ -28,7 +28,7 @@ module.exports = {
     file_collector.on("collect", (m) => {
       switch (m.content) {
         case "cancel": {
-          if (debug.debug === true)
+          if (debug === "true")
             console.log("[DEBUG] User cancelled, aborting...");
           settings
             .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
@@ -41,7 +41,7 @@ module.exports = {
             Array.from(m.attachments).length > 1 ||
             Array.from(m.attachments)[0][1].name !== `${id}.json`
           ) {
-            if (debug.debug === true)
+            if (debug === "true")
               console.log("[DEBUG] Invalid input, aborting...");
             settings
               .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
@@ -51,14 +51,14 @@ module.exports = {
             );
           }
           fetch(m.attachments.first().url).then((res) => {
-            if (debug.debug === true)
+            if (debug === "true")
               console.log(
                 "[DEBUG] User provided a valid JSON file, retrieving...",
               );
             res.json().then((json) => {
               let settings_backup = JSON.parse(json.split("\n")[0]);
               let tags_backup = JSON.parse(json.split("\n")[1]);
-              if (debug.debug === true) {
+              if (debug === "true") {
                 console.log("[DEBUG] Fetch successful!");
                 console.log("[DEBUG] Settings JSON: " + settings_backup);
                 console.log("[DEBUG] Tags JSON: " + tags_backup);
@@ -85,7 +85,7 @@ module.exports = {
                   .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
                   .run(tag.tag, tag.response);
               });
-              if (debug.debug === true)
+              if (debug === "true")
                 console.log("[DEBUG] Restore successful!");
               settings
                 .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)

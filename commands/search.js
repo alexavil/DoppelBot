@@ -1,18 +1,18 @@
-const InvidJS = require("@invidjs/invid-js");
-const debug = require("../index");
-const sqlite3 = require("better-sqlite3");
-const common = require("../music");
-const Discord = require("discord.js");
+import * as InvidJS from "@invidjs/invid-js";
+const debug = process.env.DEBUG;
+import sqlite3 from "better-sqlite3";
+const common = await import("../music.js");
+import Discord from "discord.js";
 
 const masterqueue = new sqlite3("./data/queue.db");
 const settings = new sqlite3("./data/settings.db");
-module.exports = {
+export default {
   name: "search",
   description: "Search a track",
   async execute(message, args) {
     const id = message.guild.id;
     if (!args[0]) {
-      if (debug.debug === true)
+      if (debug === "true")
         console.log("[DEBUG] Invalid input, aborting...");
       return message.reply("Provide a valid search query!");
     }
@@ -23,7 +23,7 @@ module.exports = {
       .prepare(`SELECT * FROM guild_${id} WHERE option = 'min_health'`)
       .get().value;
     let query = args.slice(0).join(" ");
-    if (debug.debug === true) {
+    if (debug === "true") {
       console.log(`[DEBUG] User query: ${query}...`);
       console.log("[DEBUG] Searching...");
     }
@@ -33,7 +33,7 @@ module.exports = {
       type: InvidJS.ContentTypes.Video,
     });
     if (!results.length) {
-      if (debug.debug === true) console.log("[DEBUG] No content was found...");
+      if (debug === "true") console.log("[DEBUG] No content was found...");
       return message.reply("No content was found based on your search query!");
     }
     let searchembed = new Discord.EmbedBuilder();
@@ -62,7 +62,7 @@ module.exports = {
       reaction.emoji.name === `4️⃣` ||
       (reaction.emoji.name === `5️⃣` && user.id === message.author.id);
     let choice = 0;
-    if (debug.debug === true)
+    if (debug === "true")
       console.log("[DEBUG] Choice required - awaiting user input...");
     embedmessage
       .awaitReactions({ filter, maxUsers: 2 })
@@ -70,11 +70,11 @@ module.exports = {
         collected.forEach(async (emoji) => {
           if (emoji.count > 1) {
             common.endTimeout(id);
-            if (debug.debug === true)
+            if (debug === "true")
               console.log(`[DEBUG] User choice: ${choice}...`);
             videoid = results[choice].id;
             let url = default_url + "/watch?v=" + videoid;
-            if (debug.debug === true)
+            if (debug === "true")
               console.log(`[DEBUG] Validating ${url}...`);
             let fetched = await common.getVideo(url, message.channel);
             let queuelength = masterqueue
@@ -82,7 +82,7 @@ module.exports = {
               .all().length;
             if (fetched !== undefined) {
               if (fetched.instance.health < min_health) {
-                if (debug.debug === true)
+                if (debug === "true")
                   console.log(
                     "[DEBUG] Instance not healthy enough, sending a warning...",
                   );
@@ -90,13 +90,13 @@ module.exports = {
                   "ALERT: Instance health too low. Please consider using a different instance.",
                 );
               }
-              if (debug.debug === true)
+              if (debug === "true")
                 console.log(`[DEBUG] Adding ${url} to the queue...`);
               masterqueue
                 .prepare(`INSERT INTO guild_${id} VALUES (?, ?, ?)`)
                 .run(url, message.author.id, "false");
               if (queuelength === 0) {
-                if (debug.debug === true)
+                if (debug === "true")
                   console.log("[DEBUG] Downloading stream...");
                 let stream = await InvidJS.fetchSource(
                   fetched.instance,
@@ -104,7 +104,7 @@ module.exports = {
                   fetched.format,
                   { saveTo: InvidJS.SaveSourceTo.Memory, parts: 10 },
                 );
-                if (debug.debug === true)
+                if (debug === "true")
                   console.log("[DEBUG] Creating player...");
                 message.channel.send(
                   `Now playing: ${fetched.url}\nRequested by <@!${message.author.id}>`,

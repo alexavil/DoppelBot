@@ -1,9 +1,9 @@
-const Discord = require("discord.js");
-const debug = require("../index");
-const sqlite3 = require("better-sqlite3");
+import Discord from "discord.js";
+const debug = process.env.DEBUG;
+import sqlite3 from "better-sqlite3";
 
 const masterqueue = new sqlite3("./data/queue.db");
-module.exports = {
+export default {
   name: "queue",
   description: "Get the server queue",
   aliases: ["q"],
@@ -15,7 +15,7 @@ module.exports = {
       .prepare(`SELECT * FROM guild_${id}`)
       .all().length;
     if (queuelength !== 0) {
-      if (debug.debug === true)
+      if (debug === "true")
         console.log(`[DEBUG] Queue for ${id} is not empty, fetching tracks...`);
       masterqueue
         .prepare(`SELECT * FROM guild_${id}`)
@@ -31,7 +31,7 @@ module.exports = {
           }
         });
     } else {
-      if (debug.debug === true)
+      if (debug === "true")
         console.log(`[DEBUG] Queue for ${id} is empty...`);
       embed.setDescription("The queue is empty!");
     }

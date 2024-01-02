@@ -1,5 +1,5 @@
-const debug = require("../index");
-module.exports = {
+const debug = process.env.DEBUG;
+export default {
   name: "gleave",
   description: "Leave a guild by ID!",
   execute(message, args, client) {
@@ -10,7 +10,7 @@ module.exports = {
       let id = args[0];
       let guild = client.guilds.cache.get(id);
       if (guild) {
-        if (debug.debug === true) console.log(`[DEBUG] Leaving guild ${id}...`);
+        if (debug === "true") console.log(`[DEBUG] Leaving guild ${id}...`);
         guild.leave();
       }
       message.delete().catch();

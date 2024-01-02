@@ -1,6 +1,6 @@
-const Discord = require("discord.js");
-const sqlite3 = require("better-sqlite3");
-module.exports = {
+import Discord from "discord.js";
+import sqlite3 from "better-sqlite3";
+export default {
   name: "about",
   aliases: ["help"],
   description: "About the bot",

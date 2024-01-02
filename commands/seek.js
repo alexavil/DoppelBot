@@ -1,7 +1,7 @@
-const debug = require("../index");
-const common = require("../music");
-const { getVoiceConnection } = require("@discordjs/voice");
-module.exports = {
+const debug = process.env.DEBUG;
+const common = await import("../music.js");
+import { getVoiceConnection } from "@discordjs/voice";
+export default {
   name: "seek",
   description: "Seek the current position of the song",
   async execute(message) {

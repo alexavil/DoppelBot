@@ -1,15 +1,15 @@
-const InvidJS = require("@invidjs/invid-js");
-const Discord = require("discord.js");
-const debug = require("./index");
-const {
+import * as InvidJS from "@invidjs/invid-js";
+import Discord from "discord.js";
+const debug = process.env.DEBUG;
+import {
   joinVoiceChannel,
   createAudioPlayer,
   createAudioResource,
   NoSubscriberBehavior,
   getVoiceConnection,
   AudioPlayerStatus,
-} = require("@discordjs/voice");
-const sqlite3 = require("better-sqlite3");
+} from "@discordjs/voice";
+import sqlite3 from "better-sqlite3";
 const masterqueue = new sqlite3("./data/queue.db");
 const settings = new sqlite3("./data/settings.db");
 
@@ -43,7 +43,7 @@ async function getVideo(url, textchannel) {
       return result;
     } else return undefined;
   } catch (error) {
-    if (debug.debug === true) console.log("[DEBUG] Error: " + error);
+    if (debug === "true") console.log("[DEBUG] Error: " + error);
     switch (error.code) {
       case InvidJS.ErrorCodes.APIBlocked: {
         textchannel.send(
@@ -86,7 +86,7 @@ async function getPlaylist(url, textchannel) {
     };
     return result;
   } catch (error) {
-    if (debug.debug === true) console.log("[DEBUG] Error: " + error);
+    if (debug === "true") console.log("[DEBUG] Error: " + error);
     switch (error.code) {
       case InvidJS.ErrorCodes.APIBlocked: {
         textchannel.send(
@@ -153,7 +153,7 @@ function playMusic(channel, textchannel, stream, fetched) {
         )
         .get().isLooped === "true"
     ) {
-      if (debug.debug === true) {
+      if (debug === "true") {
         console.log("[DEBUG] Restarting a looped track...");
       }
       let stream = await InvidJS.fetchSource(
@@ -164,7 +164,7 @@ function playMusic(channel, textchannel, stream, fetched) {
       );
       return playMusic(channel, textchannel, stream, fetched);
     } else {
-      if (debug.debug === true) {
+      if (debug === "true") {
         console.log("[DEBUG] The current track is over, removing...");
       }
       masterqueue
@@ -176,7 +176,7 @@ function playMusic(channel, textchannel, stream, fetched) {
         )
         .get();
       if (track === undefined) {
-        if (debug.debug === true) {
+        if (debug === "true") {
           console.log("[DEBUG] No more tracks to play, starting timeout...");
         }
         let timeout =
@@ -189,7 +189,7 @@ function playMusic(channel, textchannel, stream, fetched) {
           ) * 1000;
         startTimeout(channel.guild.id, connection, textchannel, timeout);
       } else {
-        if (debug.debug === true) {
+        if (debug === "true") {
           console.log("[DEBUG] Loading the next track...");
         }
         let new_track = await getVideo(track.track, textchannel);
@@ -242,7 +242,7 @@ function stopCounter(id) {
 
 function startTimeout(id, connection, textchannel, timer) {
   let timeout = setTimeout(() => {
-    if (debug.debug === true) {
+    if (debug === "true") {
       console.log("[DEBUG] Stopping music...");
     }
     connection.destroy();
@@ -258,7 +258,7 @@ function startTimeout(id, connection, textchannel, timer) {
 function endTimeout(id) {
   timeouts.forEach((timeout) => {
     if (timeout.id === id) {
-      if (debug.debug === true) {
+      if (debug === "true") {
         console.log("[DEBUG] Clearing timeout...");
       }
       clearTimeout(timeout.timer);
@@ -285,7 +285,7 @@ function removePlayer(id) {
   });
 }
 
-module.exports = {
+export default {
   disallowedLinks,
   getVideo,
   getPlaylist,

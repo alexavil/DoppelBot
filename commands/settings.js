@@ -1,8 +1,8 @@
-const Discord = require("discord.js");
-const sqlite3 = require("better-sqlite3");
+import Discord from "discord.js";
+import sqlite3 from "better-sqlite3";
 const settings = new sqlite3("./data/settings.db");
-const debug = require("../index");
-module.exports = {
+const debug = process.env.DEBUG;
+export default {
   name: "settings",
   description: "Show server settings",
   userpermissions: Discord.PermissionsBitField.Flags.BanMembers,

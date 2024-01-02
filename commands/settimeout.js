@@ -1,7 +1,7 @@
-const sqlite3 = require("better-sqlite3");
-const debug = require("../index");
-const Discord = require("discord.js");
-module.exports = {
+import sqlite3 from "better-sqlite3";
+const debug = process.env.DEBUG;
+import Discord from "discord.js";
+export default {
   name: "settimeout",
   aliases: ["timeout"],
   description: "Set disconnect timeout",
@@ -10,11 +10,11 @@ module.exports = {
     let id = message.guild.id;
     let settings = new sqlite3("./data/settings.db");
     if (!args.length || !Number.isInteger(parseInt(args[0]))) {
-      if (debug.debug === true)
+      if (debug === "true")
         console.log("[DEBUG] Invalid input, aborting...");
       return message.reply("Invalid value! Please type the time in seconds.");
     }
-    if (debug.debug === true)
+    if (debug === "true")
       console.log(`[DEBUG] New disconnect timeout for ${id}: ${args[0]}...`);
     settings
       .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)

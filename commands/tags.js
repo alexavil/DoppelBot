@@ -1,11 +1,11 @@
-const sqlite3 = require("better-sqlite3");
-const Discord = require("discord.js");
-const debug = require("../index");
+import sqlite3 from "better-sqlite3";
+import Discord from "discord.js";
+const debug = process.env.DEBUG;
 
 const settings = new sqlite3("./data/settings.db");
 const tags = new sqlite3("./data/tags.db");
 
-module.exports = {
+export default {
   name: "tags",
   description: "Tags control",
   aliases: ["t"],
@@ -18,7 +18,7 @@ module.exports = {
     switch (args[0]) {
       case "create":
       case "c": {
-        if (debug.debug === true)
+        if (debug === "true")
           console.log(`[DEBUG] Starting tag creation for ${id}...`);
         if (
           !message.channel
@@ -38,7 +38,7 @@ module.exports = {
         message.channel.send(
           "Please provide a key word or phrase or type `cancel` to cancel.",
         );
-        if (debug.debug === true)
+        if (debug === "true")
           console.log("[DEBUG] Keyword required - awaiting user input...");
         let keyword_collector = message.channel.createMessageCollector({
           filter,
@@ -47,7 +47,7 @@ module.exports = {
         keyword_collector.on("collect", (m) => {
           switch (m.content) {
             case "cancel":
-              if (debug.debug === true)
+              if (debug === "true")
                 console.log("[DEBUG] User cancelled, aborting...");
               settings
                 .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
@@ -64,7 +64,7 @@ module.exports = {
                 ) ||
                 (m.content.startsWith("<@") && m.content.endsWith(">"))
               ) {
-                if (debug.debug === true)
+                if (debug === "true")
                   console.log("[DEBUG] Invalid input, aborting...");
                 settings
                   .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
@@ -74,13 +74,13 @@ module.exports = {
                 );
               }
               keyword = m.content;
-              if (debug.debug === true)
+              if (debug === "true")
                 console.log("[DEBUG] Keyword: " + keyword);
               let tag = tags
                 .prepare(`SELECT * FROM guild_${id} WHERE tag = ?`)
                 .get(keyword);
               if (tag !== undefined) {
-                if (debug.debug === true)
+                if (debug === "true")
                   console.log("[DEBUG] Tag already exists, aborting...");
                 settings
                   .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
@@ -92,7 +92,7 @@ module.exports = {
               message.channel.send(
                 "Please provide the response or type `cancel` to cancel.",
               );
-              if (debug.debug === true)
+              if (debug === "true")
                 console.log(
                   "[DEBUG] Response required - awaiting user input...",
                 );
@@ -103,7 +103,7 @@ module.exports = {
               response_collector.on("collect", (m) => {
                 switch (m.content) {
                   case "cancel":
-                    if (debug.debug === true)
+                    if (debug === "true")
                       console.log("[DEBUG] User cancelled, aborting...");
                     settings
                       .prepare(
@@ -113,7 +113,7 @@ module.exports = {
                     return message.channel.send("Cancelled!");
                   default:
                     response = m.content;
-                    if (debug.debug === true) {
+                    if (debug === "true") {
                       console.log("[DEBUG] Response: " + response);
                       console.log("[DEBUG] Creating tag...");
                     }
@@ -137,7 +137,7 @@ module.exports = {
 
       case "delete":
       case "d": {
-        if (debug.debug === true)
+        if (debug === "true")
           console.log(`[DEBUG] Starting tag deletion for ${id}...`);
         if (
           !message.channel
@@ -153,7 +153,7 @@ module.exports = {
             .prepare(`SELECT * FROM guild_${id} WHERE tag = '${args[1]}'`)
             .get() === undefined
         ) {
-          if (debug.debug === true)
+          if (debug === "true")
             console.log("[DEBUG] Invalid input, aborting...");
           return message.channel.send("Please type a valid tag to delete!");
         }
@@ -163,14 +163,14 @@ module.exports = {
 
       case "list":
       case "l": {
-        if (debug.debug === true)
+        if (debug === "true")
           console.log(`[DEBUG] Fetching tag list for ${id}...`);
         let responses = tags.prepare(`SELECT * FROM guild_${id}`).all();
         let tagsembed = new Discord.EmbedBuilder().setTitle(
           `Tags for ${message.guild.name}`,
         );
         if (responses.length === 0) {
-          if (debug.debug === true) console.log("[DEBUG] No tags found...");
+          if (debug === "true") console.log("[DEBUG] No tags found...");
           tagsembed.setDescription("This server has no active tags yet!");
           return message.channel.send({ embeds: [tagsembed] });
         }

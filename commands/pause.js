@@ -1,7 +1,7 @@
-const debug = require("../index");
-const common = require("../music");
-const { getVoiceConnection } = require("@discordjs/voice");
-module.exports = {
+const debug = process.env.DEBUG;
+const common = await import("../music.js");
+import { getVoiceConnection } from "@discordjs/voice";
+export default {
   name: "pause",
   description: "Pause the music",
   async execute(message) {
@@ -11,14 +11,14 @@ module.exports = {
     if (!connection) return message.channel.send("Nothing to pause!");
     switch (player.isPaused) {
       case true: {
-        if (debug.debug === true)
+        if (debug === "true")
           console.log("[DEBUG] Player is paused, unpausing...");
         player.player.unpause();
         player.isPaused = false;
         return message.channel.send("Unpaused!");
       }
       case false: {
-        if (debug.debug === true)
+        if (debug === "true")
           console.log("[DEBUG] Player is not paused, pausing...");
         player.player.pause();
         player.isPaused = true;

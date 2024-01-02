@@ -1,9 +1,10 @@
-const Discord = require("discord.js");
-const InvidJS = require("@invidjs/invid-js");
-const sqlite3 = require("better-sqlite3");
-const debug = require("../index");
-const os = require("os");
-module.exports = {
+import Discord from "discord.js";
+import * as InvidJS from "@invidjs/invid-js";
+import sqlite3 from "better-sqlite3";
+import child from "child_process";
+const debug = process.env.DEBUG;
+import os from "os";
+export default {
   name: "stats",
   description: "Show stats",
   async execute(message, args, client) {
@@ -22,23 +23,15 @@ module.exports = {
       )
       .get().value;
     let instance = await InvidJS.fetchInstances({ url: default_instance });
-    let version = require("../package-lock.json").version;
-    let invidjs_version = require("../package-lock.json").packages[
-      "node_modules/@invidjs/invid-js"
-    ].version;
-    let commit = require("child_process")
-      .execSync("git rev-parse --short HEAD")
-      .toString()
-      .trim();
+    let commit = child.execSync("git rev-parse --short HEAD").toString().trim();
     const stats = new Discord.EmbedBuilder()
       .setColor("#0099ff")
       .setTitle("DoppelBot Instance Stats")
       .addFields(
         {
           name: "System Information",
-          value: `DoppelBot Version: \`${version}\`
+          value: `
             Commit: \`${commit}\`
-            InvidJS Version: \`${invidjs_version}\`
             OS: \`${os.type()} ${os.release} ${os.arch}\`
             Node Version: \`${process.version}\`
             Discord.js Version: \`${Discord.version}\`

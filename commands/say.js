@@ -1,5 +1,5 @@
-const debug = require("../index");
-module.exports = {
+const debug = process.env.DEBUG;
+export default {
   name: "say",
   description: "Make the bot say something!",
   execute(message, args) {
@@ -16,14 +16,14 @@ module.exports = {
         });
       }
       if (chl) {
-        if (debug.debug === true)
+        if (debug === "true")
           console.log(`[DEBUG] Sending dev-generated message to ${chl.id}...`);
         let msg = args.slice(1).join(" ");
         chl.send(msg, {
           files: attachments,
         });
       } else {
-        if (debug.debug === true)
+        if (debug === "true")
           console.log(
             `[DEBUG] Sending dev-generated message to ${message.channel.id}...`,
           );

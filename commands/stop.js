@@ -1,11 +1,11 @@
-const Discord = require("discord.js");
-const debug = require("../index");
-const { getVoiceConnection } = require("@discordjs/voice");
-const sqlite3 = require("better-sqlite3");
-const common = require("../music");
+import Discord from "discord.js";
+const debug = process.env.DEBUG;
+import { getVoiceConnection } from "@discordjs/voice";
+import sqlite3 from "better-sqlite3";
+const common = await import("../music.js");
 
 const masterqueue = new sqlite3("./data/queue.db");
-module.exports = {
+export default {
   name: "stop",
   description: "Stop the music",
   async execute(message) {
@@ -17,7 +17,7 @@ module.exports = {
         .has(Discord.PermissionsBitField.Flags.BanMembers) &&
       channel.members.size !== 2
     ) {
-      if (debug.debug === true)
+      if (debug === "true")
         console.log("[DEBUG] User is not admin or alone, stop not allowed...");
       return message.reply("You are not allowed to stop!");
     }
@@ -25,7 +25,7 @@ module.exports = {
     if (!connection) return message.channel.send("The bot is already stopped!");
     else {
       common.stopCounter(id);
-      if (debug.debug === true)
+      if (debug === "true")
         console.log("[DEBUG] Stopping the connection...");
       connection.destroy();
       common.removePlayer(id);

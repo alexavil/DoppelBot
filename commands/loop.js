@@ -1,9 +1,9 @@
-const debug = require("../index");
-const sqlite3 = require("better-sqlite3");
-const { getVoiceConnection } = require("@discordjs/voice");
+const debug = process.env.DEBUG;
+import sqlite3 from "better-sqlite3";
+import { getVoiceConnection } from "@discordjs/voice";
 
 const masterqueue = new sqlite3("./data/queue.db");
-module.exports = {
+export default {
   name: "loop",
   description: "Loop the music",
   aliases: ["l"],
@@ -19,7 +19,7 @@ module.exports = {
         .get().isLooped
     ) {
       case "true": {
-        if (debug.debug === true)
+        if (debug === "true")
           console.log("[DEBUG] Unlooping the current track...");
         masterqueue
           .prepare(`UPDATE guild_${id} SET isLooped = 'false' LIMIT 1`)
@@ -27,7 +27,7 @@ module.exports = {
         return message.reply("The current track will not be looped!");
       }
       case "false": {
-        if (debug.debug === true)
+        if (debug === "true")
           console.log("[DEBUG] Looping the current track...");
         masterqueue
           .prepare(`UPDATE guild_${id} SET isLooped = 'true' LIMIT 1`)

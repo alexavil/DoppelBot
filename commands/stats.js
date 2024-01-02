@@ -24,7 +24,7 @@ export default {
     let commit = child.execSync("git rev-parse --short HEAD").toString().trim();
     const stats = new Discord.EmbedBuilder()
       .setColor("#0099ff")
-      .setTitle("DoppelBot Instance Stats")
+      .setTitle("DoppelBot Stats")
       .addFields(
         {
           name: "System Information",
@@ -36,6 +36,7 @@ export default {
             Available RAM: \`${Math.round(
               os.freemem() / 1024 / 1024,
             )} / ${Math.round(os.totalmem() / 1024 / 1024)} MB\`,
+            CPU: \`${os.cpus()[0].model}\`
             CPU Usage: \`${os.loadavg()[0].toFixed(2)}%\``,
         },
         {
@@ -44,23 +45,6 @@ export default {
           Total users: \`${Array.from(client.users.cache).length}\``,
         },
       );
-    let invstats;
-    try {
-      invstats = await InvidJS.fetchStats(instance[0]);
-      stats.addFields({
-        name: "Default Instance Stats",
-        value: `URL: \`${default_instance}\`
-            Invidious Version: \`${invstats.software.version}\`
-            Latest reported health: \`${instance[0].health}\``,
-      });
-    } catch (error) {
-      if (error.code === InvidJS.ErrorCodes.MissingArgument) {
-        stats.addFields({
-          name: "Default Instance Stats",
-          value: `Failed to fetch default instance - it might be unavailable!`,
-        });
-      }
-    }
     message.channel.send({ embeds: [stats] });
   },
 };

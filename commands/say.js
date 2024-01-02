@@ -1,11 +1,11 @@
 const debug = process.env.DEBUG;
+const owners = process.env.OWNERS;
 export default {
   name: "say",
   description: "Make the bot say something!",
   execute(message, args) {
     if (
-      message.author.id === "332148103803174913" ||
-      message.author.id === "788097137124442122"
+      owners.includes(message.author.id)
     ) {
       let chl = message.mentions.channels.first();
       let attachments = [];

@@ -236,7 +236,7 @@ function deleteConfig(id) {
 function gamecycle() {
   let gamestring = Math.floor(Math.random() * activities.length);
   if (debug === "true")
-    console.log(`[DEBUG] Setting bot activity to ${activities[gamestring]}...`);
+    console.log(`[DEBUG] Editing bot activity...`);
   client.user.setActivity(activities[gamestring]);
 }
 
@@ -255,8 +255,6 @@ client.on("ready", () => {
       .run("commands", "state");
   });
   if (activities !== undefined) {
-    if (debug === "true")
-      console.log("[DEBUG] Activities file present, starting gamecycle job...");
     let job = new cron.CronJob("00 00 * * * *", gamecycle);
     job.start();
     gamecycle();

@@ -1,17 +1,14 @@
 import sqlite3 from "better-sqlite3";
 import fs from "fs-extra";
 const debug = process.env.DEBUG;
-import Discord from "discord.js";
 
 const settings = new sqlite3("./data/settings.db");
 const tags = new sqlite3("./data/tags.db");
 
 export default {
   name: "backup",
-  description: "Backup your server settings",
-  userpermissions: Discord.PermissionsBitField.Flags.Administrator,
-  async execute(message) {
-    const id = message.guild.id;
+  async execute(interaction) {
+    const id = interaction.guild.id;
     if (debug === "true") console.log(`[DEBUG] Preparing backup for ${id}...`);
     let backup = settings
       .prepare(`SELECT * FROM guild_${id} WHERE option != 'state'`)
@@ -24,9 +21,10 @@ export default {
       console.log("[DEBUG] Tags JSON: " + tags_json);
     }
     await fs.writeJSON(`${id}.json`, json + "\n" + tags_json);
-    await message.channel.send({
-      content: "Your backup is ready!",
+    await interaction.reply({
+      content: "Your backup is ready! Copy it to a safe place.",
       files: [`${id}.json`],
+      ephemeral: true,
     });
     fs.unlink(`${id}.json`);
   },

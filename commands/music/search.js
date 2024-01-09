@@ -1,7 +1,7 @@
 import * as InvidJS from "@invidjs/invid-js";
 const debug = process.env.DEBUG;
 import sqlite3 from "better-sqlite3";
-const common = await import("../music.js");
+const common = await import("../../music.js");
 import Discord from "discord.js";
 
 const masterqueue = new sqlite3("./data/queue.db");

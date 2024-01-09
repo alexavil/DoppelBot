@@ -1,28 +1,26 @@
 import Discord from "discord.js";
 import * as InvidJS from "@invidjs/invid-js";
 const debug = process.env.DEBUG;
-import sqlite3 from "better-sqlite3";
-
-const settings = new sqlite3("./data/settings.db");
 export default {
-  name: "suggest",
-  description: "Suggest search results",
-  async execute(message, args) {
-    const id = message.guild.id;
-    if (!args[0]) {
-      if (debug === "true") console.log("[DEBUG] Invalid input, aborting...");
-      return message.reply("Provide a valid query!");
-    }
-    let query = args.slice(0).join(" ");
+  data: new Discord.SlashCommandBuilder()
+    .setName("suggest")
+    .setDescription("Suggest search results")
+    .addStringOption(option =>
+			option
+				.setName('query')
+				.setDescription('Search query')
+        .setRequired(true)),
+  async execute(interaction) {
+    let query = interaction.options.getString('query');
     if (debug === "true") {
       console.log(`[DEBUG] User query: ${query}...`);
       console.log("[DEBUG] Fetching suggestions...");
     }
-    let instance = await InvidJS.fetchInstances({ url: default_url });
-    let results = await InvidJS.fetchSearchSuggestions(instance[0], query);
+    let instances = await InvidJS.fetchInstances({api_allowed: true});
+    let results = await InvidJS.fetchSearchSuggestions(instances[Math.floor(Math.random() * instances.length)], query);
     if (!results.length) {
       if (debug === "true") console.log("[DEBUG] No content was found...");
-      return message.reply(
+      return interaction.reply(
         "No suggestions were found based on your search query!",
       );
     }
@@ -34,7 +32,8 @@ export default {
     let embed = new Discord.EmbedBuilder()
       .setColor("#0099ff")
       .setTitle(title)
-      .setDescription(result);
-    return message.channel.send({ embeds: [embed] });
+      .setDescription(result)
+      .setFooter("Powered by InvidJS - https://invidjs.js.org/");
+    return interaction.reply({ embeds: [embed] });
   },
 };

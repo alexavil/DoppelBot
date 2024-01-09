@@ -2,7 +2,7 @@ import Discord from "discord.js";
 const debug = process.env.DEBUG;
 import { getVoiceConnection } from "@discordjs/voice";
 import sqlite3 from "better-sqlite3";
-const common = await import("../music.js");
+const common = await import("../../music.js");
 
 const masterqueue = new sqlite3("./data/queue.db");
 export default {

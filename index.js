@@ -1,7 +1,14 @@
 import "dotenv/config";
 
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 import fs from "fs-extra";
 import cron from "cron";
+import path from "path";
 import sqlite3 from "better-sqlite3";
 import Discord from "discord.js";
 import child from "child_process";
@@ -10,7 +17,6 @@ import {
   PermissionsBitField,
   ChannelType,
 } from "discord.js";
-import * as InvidJS from "@invidjs/invid-js";
 
 import Sentry from "@sentry/node";
 
@@ -51,13 +57,70 @@ const queue = new sqlite3("./data/queue.db");
 const tags = new sqlite3("./data/tags.db");
 
 client.commands = new Discord.Collection();
-const commandFiles = fs
-  .readdirSync("./commands")
-  .filter((file) => file.endsWith(".js"));
+const foldersPath = path.join(__dirname, "commands");
+const commandFolders = fs.readdirSync(foldersPath);
 
-for (const file of commandFiles) {
-  const { default: command } = await import(`./commands/${file}`);
-  client.commands.set(command.name, command);
+for (const folder of commandFolders) {
+  const commandsPath = path.join(foldersPath, folder);
+  const commandFiles = fs
+    .readdirSync(commandsPath)
+    .filter((file) => file.endsWith(".js"));
+  for (const file of commandFiles) {
+    const filePath = path.join(commandsPath, file);
+    const { default: command } = await import(filePath);
+    if ("data" in command && "execute" in command) {
+      client.commands.set(command.data.name, command);
+    } else {
+      console.log(
+        `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
+      );
+    }
+  }
+}
+
+client.modals = new Discord.Collection();
+const modalPath = path.join(__dirname, "modals");
+const modalFiles = fs.readdirSync(modalPath).filter((file) => file.endsWith(".js"));
+
+for (const file of modalFiles) {
+    const { default: modal } = await import(modalPath + "/" + file);
+    if ("name" in modal && "execute" in modal) {
+      client.modals.set(modal.name, modal);
+    } else {
+      console.log(
+        `[WARNING] The modal at ${file} is missing a required "name" or "execute" property.`
+      );
+    }
+}
+
+client.buttons = new Discord.Collection();
+const buttonPath = path.join(__dirname, "buttons");
+const buttonFiles = fs.readdirSync(buttonPath).filter((file) => file.endsWith(".js"));
+
+for (const file of buttonFiles) {
+    const { default: button } = await import(buttonPath + "/" + file);
+    if ("name" in button && "execute" in button) {
+      client.buttons.set(button.name, button);
+    } else {
+      console.log(
+        `[WARNING] The button at ${file} is missing a required "name" or "execute" property.`
+      );
+    }
+}
+
+client.menus = new Discord.Collection();
+const menuPath = path.join(__dirname, "menus");
+const menuFiles = fs.readdirSync(menuPath).filter((file) => file.endsWith(".js"));
+
+for (const file of menuFiles) {
+    const { default: menu } = await import(menuPath + "/" + file);
+    if ("name" in menu && "execute" in menu) {
+      client.menus.set(menu.name, menu);
+    } else {
+      console.log(
+        `[WARNING] The menu at ${file} is missing a required "name" or "execute" property.`
+      );
+    }
 }
 
 const RequiredPerms = [
@@ -78,7 +141,7 @@ if (debug === "true") {
   This mode is not recommended for use in production. Please proceed with caution.`);
   console.log(
     "[DEBUG] Build hash: " +
-      child.execSync("git rev-parse --short HEAD").toString().trim(),
+      child.execSync("git rev-parse --short HEAD").toString().trim()
   );
   client.on("debug", console.log);
   client.on("warn", console.log);
@@ -109,7 +172,7 @@ function CheckForPerms() {
     if (notifs_value === "false") {
       if (debug === "true")
         console.log(
-          `[DEBUG] Guild ${id} has notifications disabled. Message will not be sent.`,
+          `[DEBUG] Guild ${id} has notifications disabled. Message will not be sent.`
         );
       return false;
     }
@@ -129,11 +192,11 @@ function CheckForPerms() {
       if (debug === "true")
         console.log(`[DEBUG] Sending permissions alert for guild ${id}...`);
       message += `\nPlease check your role and member settings!`;
-      const outbtn = new Discord.ButtonBuilder()
-        .setCustomId(`${guild.id}_opt-out`)
-        .setLabel(`Opt-out of service notifications in ${guild.name}`)
-        .setStyle(ButtonStyle.Danger);
-      const row = new Discord.ActionRowBuilder().addComponents(outbtn);
+      const notifbtn = new Discord.ButtonBuilder()
+        .setCustomId(`notifications`)
+        .setLabel(`Toggle service notifications in ${guild.name}`)
+        .setStyle(Discord.ButtonStyle.Primary);
+      const row = new Discord.ActionRowBuilder().addComponents(notifbtn);
       const embed = new Discord.EmbedBuilder()
         .setColor("RED")
         .setTitle("Alert!")
@@ -145,7 +208,7 @@ function CheckForPerms() {
           if (err.code === Discord.Constants.APIErrors.CANNOT_MESSAGE_USER) {
             if (debug === "true")
               console.log(
-                `[DEBUG] Cannot message owner of guild ${id}. Message will not be sent.`,
+                `[DEBUG] Cannot message owner of guild ${id}. Message will not be sent.`
               );
             return false;
           }
@@ -169,14 +232,13 @@ function createConfig(id) {
     console.log(`[DEBUG] Creating/validating config for guild ${id}.`);
   settings
     .prepare(
-      `CREATE TABLE IF NOT EXISTS guild_${id} (option TEXT UNIQUE, value TEXT)`,
+      `CREATE TABLE IF NOT EXISTS guild_${id} (option TEXT UNIQUE, value TEXT)`
     )
     .run();
   let statement = settings.prepare(
-    `INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`,
+    `INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`
   );
   let transaction = settings.transaction(() => {
-    statement.run("prefix", "d!");
     statement.run("notifications", "false");
     statement.run("disconnect_timeout", "30");
     statement.run("min_health", "75");
@@ -185,7 +247,7 @@ function createConfig(id) {
   transaction();
   queue
     .prepare(
-      `CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT, author TEXT, isLooped TEXT)`,
+      `CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT, author TEXT, isLooped TEXT)`
     )
     .run();
   tags
@@ -254,20 +316,58 @@ client.on("guildDelete", (guild) => {
   deleteConfig(guild.id);
 });
 
-client.on("interactionCreate", (interaction) => {
-  if (interaction.customId.endsWith("opt-out")) {
-    let id = interaction.customId.split("_")[0];
-    if (debug === "true")
-      console.log(
-        `[DEBUG] A guild (${guild.id}) has switched service notifications off.`,
-      );
-    settings
-      .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
-      .run("false", "notifications");
-    interaction.update({ components: [] });
-    return interaction.channel.send(
-      "Notifications are now disabled! You can re-enable them at any time using `d!notifications`.",
-    );
+client.on("interactionCreate", async (interaction) => {
+  if (interaction.isModalSubmit()) {
+    const modal = interaction.client.modals.get(interaction.customId);
+
+    try {
+      return modal.execute(interaction);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  if (interaction.isButton()) {
+    const button = interaction.client.buttons.get(interaction.customId);
+
+    try {
+      return button.execute(interaction);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  if (interaction.isAnySelectMenu()) {
+    const menu = interaction.client.menus.get(interaction.customId);
+
+    try {
+      return menu.execute(interaction);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  const command = interaction.client.commands.get(interaction.commandName);
+
+  if (!command) {
+    console.error(`No command matching ${interaction.commandName} was found.`);
+    return;
+  }
+
+  try {
+    await command.execute(interaction);
+  } catch (error) {
+    console.error(error);
+    if (interaction.replied || interaction.deferred) {
+      await interaction.followUp({
+        content: "There was an error while executing this command!",
+        ephemeral: true,
+      });
+    } else {
+      await interaction.reply({
+        content: "There was an error while executing this command!",
+        ephemeral: true,
+      });
+    }
   }
 });
 
@@ -287,66 +387,16 @@ client.on("messageCreate", (message) => {
         .value === "commands"
     ) {
       if (debug === "true") console.log("[DEBUG] Tag found!");
-      let responses = tag.response.split("---\n")
-      message.channel.send(responses[Math.floor(Math.random() * responses.length)]);
+      let responses = tag.response.split("---\n");
+      message.channel.send(
+        responses[Math.floor(Math.random() * responses.length)]
+      );
     }
   });
-
-  const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-  let prefix = settings
-    .prepare(`SELECT * FROM guild_${id} WHERE option = 'prefix'`)
-    .get().value;
 
   if (message.author.bot && message.author.discriminator != "0000")
     return false;
   if (message.channel.type === ChannelType.DM) return false;
-  const prefixRegex = new RegExp(
-    `^(<@!?${client.user.id}>|${escapeRegex(prefix)})\\s*`,
-  );
-  if (!prefixRegex.test(message.content)) return false;
-
-  const [, matchedPrefix] = message.content.match(prefixRegex);
-  const args = message.content.slice(matchedPrefix.length).trim().split(/ +/);
-  const commandName = args.shift().toLowerCase();
-  const command =
-    client.commands.get(commandName) ||
-    client.commands.find(
-      (cmd) => cmd.aliases && cmd.aliases.includes(commandName),
-    );
-
-  if (!command) return false;
-
-  if (command.userpermissions) {
-    const perms = message.channel.permissionsFor(message.author);
-    if (!perms || !perms.has(command.userpermissions)) {
-      if (debug === "true")
-        console.log(
-          "[DEBUG] Attempted to execute command, but user has no permissions!",
-        );
-      return message.reply("You do not have permission to use this command!");
-    }
-  }
-
-  try {
-    if (
-      settings.prepare(`SELECT * FROM guild_${id} WHERE option = 'state'`).get()
-        .value === "commands"
-    ) {
-      if (debug === "true")
-        console.log(`[DEBUG] Trying to execute ${commandName} in ${id}...`);
-      command.execute(message, args, client);
-    }
-  } catch (error) {
-    if (debug === "true") console.log("[DEBUG] Error: " + error.message);
-    if (error.code === 50013) {
-      return message.reply(
-        "I don't have permissions to do that action! Check the Roles page!",
-      );
-    }
-    Sentry.captureException(error);
-    message.reply("There was an error trying to execute that command!");
-  }
 });
 
 process.on("unhandledRejection", (error) => {

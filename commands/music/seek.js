@@ -1,5 +1,5 @@
 const debug = process.env.DEBUG;
-const common = await import("../music.js");
+const common = await import("../../music.js");
 import { getVoiceConnection } from "@discordjs/voice";
 export default {
   name: "seek",

@@ -1,17 +1,10 @@
 import Discord from "discord.js";
-import * as InvidJS from "@invidjs/invid-js";
-import sqlite3 from "better-sqlite3";
 import child from "child_process";
 const name = process.env.NAME;
-const owners = process.env.OWNERS;
 import os from "os";
 export default {
   name: "stats",
-  description: "Show stats",
-  async execute(message, args, client) {
-    if (!owners.includes(message.author.id)) return false;
-    const settings = new sqlite3("./data/settings.db");
-    let id = message.guild.id;
+  async execute(interaction) {
     let commit = child.execSync("git rev-parse --short HEAD").toString().trim();
     const stats = new Discord.EmbedBuilder()
       .setColor("#0099ff")
@@ -32,10 +25,10 @@ export default {
         },
         {
           name: "Bot Stats",
-          value: `Total servers: \`${Array.from(client.guilds.cache).length}\`
-          Total users: \`${Array.from(client.users.cache).length}\``,
+          value: `Total servers: \`${Array.from(interaction.client.guilds.cache).length}\`
+          Total users: \`${Array.from(interaction.client.users.cache).length}\``,
         },
       );
-    message.channel.send({ embeds: [stats] });
+    interaction.reply({ embeds: [stats], ephemeral: true });
   },
 };

@@ -4,11 +4,11 @@ import sqlite3 from "better-sqlite3";
 
 const masterqueue = new sqlite3("./data/queue.db");
 export default {
-  name: "queue",
-  description: "Get the server queue",
-  aliases: ["q"],
-  async execute(message) {
-    const id = message.guild.id;
+  data: new Discord.SlashCommandBuilder()
+    .setName("queue")
+    .setDescription("View current queue"),
+  async execute(interaction) {
+    const id = interaction.guild.id;
     let counter = 0;
     let embed = new Discord.EmbedBuilder();
     let queuelength = masterqueue
@@ -36,6 +36,6 @@ export default {
     }
     embed.setTitle("Queue");
     embed.setColor("#0099ff");
-    return message.channel.send({ embeds: [embed] });
+    return interaction.reply({ embeds: [embed] });
   },
 };

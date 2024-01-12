@@ -11,6 +11,7 @@ export default {
 				.setDescription('Search query')
         .setRequired(true)),
   async execute(interaction) {
+    await interaction.deferReply();
     let query = interaction.options.getString('query');
     if (debug === "true") {
       console.log(`[DEBUG] User query: ${query}...`);
@@ -20,7 +21,7 @@ export default {
     let results = await InvidJS.fetchSearchSuggestions(instances[Math.floor(Math.random() * instances.length)], query);
     if (!results.length) {
       if (debug === "true") console.log("[DEBUG] No content was found...");
-      return interaction.reply(
+      return interaction.editReply(
         "No suggestions were found based on your search query!",
       );
     }
@@ -33,7 +34,7 @@ export default {
       .setColor("#0099ff")
       .setTitle(title)
       .setDescription(result)
-      .setFooter("Powered by InvidJS - https://invidjs.js.org/");
-    return interaction.reply({ embeds: [embed] });
+      .setFooter({text: "Powered by InvidJS - https://invidjs.js.org/"});
+    return interaction.editReply({ embeds: [embed] });
   },
 };

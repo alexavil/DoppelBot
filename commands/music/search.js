@@ -1,39 +1,39 @@
-import * as InvidJS from "@invidjs/invid-js";
 const debug = process.env.DEBUG;
 import sqlite3 from "better-sqlite3";
-const common = await import("../../music.js");
+const { default: common } = await import("../../music.js");
 import Discord from "discord.js";
 
-const masterqueue = new sqlite3("./data/queue.db");
-const settings = new sqlite3("./data/settings.db");
+const instances = new sqlite3("./data/instances_cache.db");
 export default {
-  name: "search",
-  description: "Search a track",
-  async execute(message, args) {
-    const id = message.guild.id;
-    if (!args[0]) {
-      if (debug === "true") console.log("[DEBUG] Invalid input, aborting...");
-      return message.reply("Provide a valid search query!");
-    }
-    let min_health = settings
-      .prepare(`SELECT * FROM guild_${id} WHERE option = 'min_health'`)
-      .get().value;
-    let query = args.slice(0).join(" ");
-    if (debug === "true") {
+  data: new Discord.SlashCommandBuilder()
+    .setName("search")
+    .setDescription("Search a track")
+    .addStringOption((option) =>
+      option.setName("query").setDescription("Search query").setRequired(true)
+    ),
+  async execute(interaction) {
+    const id = interaction.guild.id;
+    interaction.deferReply();
+    let default_url = instances.prepare('SELECT * FROM instances ORDER BY RANDOM() LIMIT 1').get().url;
+    let query = interaction.options.getString("query");
+    if (debug.debug === true) {
       console.log(`[DEBUG] User query: ${query}...`);
       console.log("[DEBUG] Searching...");
     }
-    let instance = await InvidJS.fetchInstances({ url: default_url });
-    let results = await InvidJS.searchContent(instance[0], query, {
-      limit: 5,
-      type: InvidJS.ContentTypes.Video,
-    });
-    if (!results.length) {
-      if (debug === "true") console.log("[DEBUG] No content was found...");
-      return message.reply("No content was found based on your search query!");
+    let value = await common.searchContent(default_url, query, 0);
+    if (value === "timeout") {
+      if (debug.debug === true)
+      console.log(
+        "[DEBUG] Too many retries, aborting...",
+      );
+      return interaction.updateReply("Connection failed after 4 retries.")
+    }
+    if (!value.length) {
+      if (debug.debug === true) console.log("[DEBUG] No content was found...");
+      return interaction.updateReply("No content was found based on your search query!");
     }
     let searchembed = new Discord.EmbedBuilder();
-    results.forEach((track) => {
+    value.forEach((track) => {
       searchembed.addFields({
         name: track.title,
         value: default_url + "/watch?v=" + track.id,
@@ -43,7 +43,7 @@ export default {
     searchembed.setTitle("Please select a track:");
     searchembed.setColor("#0099ff");
     searchembed.setFooter({ text: "Powered by InvidJS" });
-    let embedmessage = await message.channel.send({
+    let embedmessage = await interaction.channel.send({
       embeds: [searchembed],
     });
     embedmessage.react(`1️⃣`);
@@ -56,9 +56,9 @@ export default {
       reaction.emoji.name === `2️⃣` ||
       reaction.emoji.name === `3️⃣` ||
       reaction.emoji.name === `4️⃣` ||
-      (reaction.emoji.name === `5️⃣` && user.id === message.author.id);
+      (reaction.emoji.name === `5️⃣` && user.id === interaction.user.id);
     let choice = 0;
-    if (debug === "true")
+    if (debug.debug === true)
       console.log("[DEBUG] Choice required - awaiting user input...");
     embedmessage
       .awaitReactions({ filter, maxUsers: 2 })
@@ -66,53 +66,11 @@ export default {
         collected.forEach(async (emoji) => {
           if (emoji.count > 1) {
             common.endTimeout(id);
-            if (debug === "true")
+            if (debug.debug === true)
               console.log(`[DEBUG] User choice: ${choice}...`);
-            videoid = results[choice].id;
+            let videoid = value[choice].id;
             let url = default_url + "/watch?v=" + videoid;
-            if (debug === "true") console.log(`[DEBUG] Validating ${url}...`);
-            let fetched = await common.getVideo(url, message.channel);
-            let queuelength = masterqueue
-              .prepare(`SELECT * FROM guild_${id}`)
-              .all().length;
-            if (fetched !== undefined) {
-              if (fetched.instance.health < min_health) {
-                if (debug === "true")
-                  console.log(
-                    "[DEBUG] Instance not healthy enough, sending a warning...",
-                  );
-                message.channel.send(
-                  "ALERT: Instance health too low. Please consider using a different instance.",
-                );
-              }
-              if (debug === "true")
-                console.log(`[DEBUG] Adding ${url} to the queue...`);
-              masterqueue
-                .prepare(`INSERT INTO guild_${id} VALUES (?, ?, ?)`)
-                .run(url, message.author.id, "false");
-              if (queuelength === 0) {
-                if (debug === "true")
-                  console.log("[DEBUG] Downloading stream...");
-                let stream = await InvidJS.fetchSource(
-                  fetched.instance,
-                  fetched.video,
-                  fetched.format,
-                  { saveTo: InvidJS.SaveSourceTo.Memory, parts: 10 },
-                );
-                if (debug === "true") console.log("[DEBUG] Creating player...");
-                message.channel.send(
-                  `Now playing: ${fetched.url}\nRequested by <@!${message.author.id}>`,
-                );
-                common.playMusic(
-                  message.member.voice.channel,
-                  message.channel,
-                  stream,
-                  fetched,
-                );
-              } else {
-                message.reply(`Added ${fetched.url} to the queue!`);
-              }
-            }
+            await common.getVideo(url, interaction, false, true, 0);
           } else {
             choice++;
           }

@@ -17,8 +17,13 @@ import {
   PermissionsBitField,
   ChannelType,
 } from "discord.js";
+import * as InvidJS from "@invidjs/invid-js";
 
 import Sentry from "@sentry/node";
+import { ProfilingIntegration } from "@sentry/profiling-node";
+import { getVoiceConnection } from "@discordjs/voice";
+
+let monitor = undefined;
 
 const token = process.env.TOKEN;
 const debug = process.env.DEBUG;
@@ -55,6 +60,7 @@ if (!fs.existsSync("./data/")) fs.mkdirSync("./data/");
 const settings = new sqlite3("./data/settings.db");
 const queue = new sqlite3("./data/queue.db");
 const tags = new sqlite3("./data/tags.db");
+const instances = new sqlite3("./data/instances_cache.db");
 
 client.commands = new Discord.Collection();
 const foldersPath = path.join(__dirname, "commands");
@@ -153,12 +159,43 @@ function setProfile() {
 }
 
 function initSentry() {
-  if (debug === "true") console.log("[DEBUG] Initializing Sentry...");
+  if (debug === true) console.log("[DEBUG] Initializing Sentry...");
   Sentry.init({
-    dsn: "https://546220d2015b4064a1c2363c6c6089f2@o4504711913340928.ingest.sentry.io/4504712612872192",
+    dsn: "https://d7c06763ec24990c168e4ad0db91e360@o4504711913340928.ingest.sentry.io/4505981661151232",
     tracesSampleRate: 1.0,
+    profilesSampleRate: 1.0,
+    integrations: [
+      new Sentry.Integrations.Http({ tracing: true }),
+      new ProfilingIntegration(),
+    ],
     environment: debug ? "testing" : "production",
+    release: "3.0"
   });
+  startMonitor();
+}
+
+function startMonitor() {
+  if (monitor !== undefined) monitor.finish();
+  monitor = Sentry.startTransaction({
+    op: "transaction",
+    name: "DoppelBot Performance",
+  });
+}
+
+function getInstances() {
+  instances.prepare(`CREATE TABLE IF NOT EXISTS instances (url TEXT UNIQUE, api TEXT, health INTEGER)`).run();
+  instances.prepare(`DELETE FROM instances`).run();
+  let statement = instances.prepare(
+    `INSERT OR IGNORE INTO instances VALUES (?, ?, ?)`,
+  );
+  InvidJS.fetchInstances({
+    type: InvidJS.InstanceTypes.https,
+    api_allowed: true
+  }).then(result => {
+    result.forEach(instance => {
+      statement.run(instance.url, instance.api_allowed.toString(), instance.health)
+    })
+  })
 }
 
 function CheckForPerms() {
@@ -281,10 +318,22 @@ function gamecycle() {
   client.user.setActivity(activities[gamestring]);
 }
 
+function clearMusicCache() {
+  if (debug === true) console.log("[DEBUG] Clearing music cache...");
+  client.guilds.cache.forEach((guild) => {
+    if (!getVoiceConnection(guild.id)) {
+      if (debug === true)
+        console.log(`[DEBUG] Clearing cache for guild ${guild.id}...`);
+      music.clearCache(guild.id);
+    }
+  });
+}
+
 client.on("ready", () => {
   initSentry();
   setProfile();
   validateSettings();
+  getInstances();
   let permcheck = new cron.CronJob("00 00 */8 * * *", CheckForPerms);
   permcheck.start();
   if (debug === "true") console.log("[DEBUG] Running jobs for every guild...");
@@ -300,6 +349,8 @@ client.on("ready", () => {
     job.start();
     gamecycle();
   }
+  let cacheclear = new cron.CronJob("00 00 00 * * *", clearMusicCache);
+  cacheclear.start();
   if (debug === "true") console.log("[DEBUG] Jobs completed...");
   console.log("I am ready!");
 });
@@ -400,13 +451,19 @@ client.on("messageCreate", (message) => {
 });
 
 process.on("unhandledRejection", (error) => {
-  if (debug === "true") console.log("[DEBUG] Error: " + error.message);
+  if (debug === true) console.log("[DEBUG] Error: " + error.message);
   Sentry.captureException(error);
 });
 
 process.on("uncaughtException", (error) => {
-  if (debug === "true") console.log("[DEBUG] Error: " + error.message);
+  if (debug === true) console.log("[DEBUG] Error: " + error.message);
   Sentry.captureException(error);
 });
+
+process.on("SIGINT", () => {
+  monitor.finish();
+  console.log("Exiting...");
+  process.exit();
+})
 
 client.login(token);

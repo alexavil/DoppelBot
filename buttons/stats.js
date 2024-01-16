@@ -35,6 +35,6 @@ Total Users: ${Array.from(interaction.client.users.cache).length}
 WebSocket Ping: ${interaction.client.ws.ping}ms.\`\`\``,
         }
       );
-    interaction.reply({ embeds: [stats], ephemeral: true });
+    interaction.editReply({ embeds: [stats], ephemeral: true });
   },
 };

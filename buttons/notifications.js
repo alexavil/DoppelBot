@@ -18,7 +18,7 @@ export default {
         settings
           .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
           .run("true", "notifications");
-        return interaction.reply({content: `Service notifications are now enabled!`, ephemeral: true});
+        return interaction.editReply({ content: `Service notifications are now enabled!`, ephemeral: true });
       case "true":
         if (debug === "true")
           console.log(
@@ -27,7 +27,7 @@ export default {
         settings
           .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
           .run("false", "notifications");
-        return interaction.reply({content: `Service notifications are now disabled!`, ephemeral: true});
+        return interaction.editReply({ content: `Service notifications are now disabled!`, ephemeral: true });
     }
   },
 };

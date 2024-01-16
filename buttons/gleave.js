@@ -19,6 +19,6 @@ export default {
     const row = new Discord.ActionRowBuilder().addComponents(
         menu
     );
-    await interaction.reply({content: `Select guild(s) to leave.`, components: [row], ephemeral: true});
+    await interaction.editReply({content: `Select guild(s) to leave.`, components: [row], ephemeral: true});
   },
 };

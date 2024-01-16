@@ -19,7 +19,7 @@ export default {
     const row = new Discord.ActionRowBuilder().addComponents(cancel);
     const filter = (m) => m.author.id == interaction.user.id;
 
-    interaction.reply({
+    interaction.editReply({
       content:
         "Please provide the JSON file you received as a backup.\n**This will erase all server settings if you proceed!**",
       components: [row],
@@ -48,6 +48,7 @@ export default {
             return interaction.editReply({
               content: "You must provide a valid backup file!",
               components: [],
+              ephemeral: true
             });
           }
           fetch(m.attachments.first().url).then((res) => {
@@ -87,6 +88,7 @@ export default {
               return interaction.editReply({
                 content: "Restore completed successfully!",
                 components: [],
+                ephemeral: true
               });
             });
           });

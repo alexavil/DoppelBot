@@ -18,7 +18,7 @@ export default {
     if (responses.length === 0) {
       if (debug === "true") console.log("[DEBUG] No tags found...");
       tagsembed.setDescription("This server has no active tags yet!");
-      return interaction.reply({ embeds: [tagsembed] });
+      return interaction.editReply({ embeds: [tagsembed] });
     }
     responses.forEach((response) => {
       tagsembed.addFields({
@@ -26,6 +26,6 @@ export default {
         value: `Response: ${response.response}`,
       });
     });
-    return interaction.reply({ embeds: [tagsembed] });
+    return interaction.editReply({ embeds: [tagsembed] });
   },
 };

@@ -91,7 +91,7 @@ export default {
             "`",
         }
       );
-    await interaction.reply({
+    await interaction.editReply({
       embeds: [settingsembed],
       components: [row1, row2, row3, row4],
     });

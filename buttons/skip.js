@@ -11,7 +11,7 @@ export default {
     const id = interaction.guild.id;
     const connection = getVoiceConnection(id);
     const channel = interaction.member.voice.channel;
-    if (!connection) return interaction.reply("Nothing to skip!");
+    if (!connection) return interaction.editReply("Nothing to skip!");
     if (
       !interaction.channel
         .permissionsFor(interaction.user)
@@ -20,7 +20,7 @@ export default {
     ) {
       if (debug === "true")
         console.log("[DEBUG] User is not admin or alone, skip not allowed...");
-      return message.reply("You are not allowed to skip!");
+      return interaction.editReply({ content: "You are not allowed to skip!", ephemeral: true });
     }
     if (
       masterqueue
@@ -36,6 +36,6 @@ export default {
     if (debug === "true") console.log("[DEBUG] Skipping the current track...");
     let player = common.getPlayer(id);
     player.player.stop();
-    interaction.reply("Skipped!");
+    interaction.editReply({ content: "Skipped!", ephemeral: true });
   },
 };

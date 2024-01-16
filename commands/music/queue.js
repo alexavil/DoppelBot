@@ -36,6 +36,6 @@ export default {
     }
     embed.setTitle("Queue");
     embed.setColor("#0099ff");
-    return interaction.reply({ embeds: [embed] });
+    return interaction.editReply({ embeds: [embed] });
   },
 };

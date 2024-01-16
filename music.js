@@ -1,5 +1,5 @@
 import * as InvidJS from "@invidjs/invid-js";
-import Discord from "discord.js";
+import Discord, { ButtonStyle } from "discord.js";
 const debug = process.env.DEBUG;
 import {
   joinVoiceChannel,
@@ -48,18 +48,15 @@ async function getSuggestions(url, query, retries) {
   const value = await Promise.race([results, timeout]);
   if (value === "timeout") {
     if (debug.debug === true)
-    console.log(
-      "[DEBUG] Could not reach instance, retrying...",
-    );
+      console.log("[DEBUG] Could not reach instance, retrying...");
     retries++;
     if (retries === 4) {
       return "error";
     }
-    url = cache.prepare('SELECT * FROM instances ORDER BY RANDOM() LIMIT 1').get().url;
-    if (debug.debug === true)
-    console.log(
-      `[DEBUG] New instance: ${url}`,
-    );
+    url = cache
+      .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
+      .get().url;
+    if (debug.debug === true) console.log(`[DEBUG] New instance: ${url}`);
     await getSuggestions(url, query, retries);
   }
   return value;
@@ -75,18 +72,15 @@ async function searchContent(url, query, retries) {
   const value = await Promise.race([results, timeout]);
   if (value === "timeout") {
     if (debug === "true")
-    console.log(
-      "[DEBUG] Could not reach instance, retrying...",
-    );
+      console.log("[DEBUG] Could not reach instance, retrying...");
     retries++;
     if (retries === 4) {
       return "error";
     }
-    url = cache.prepare('SELECT * FROM instances ORDER BY RANDOM() LIMIT 1').get().url;
-    if (debug === "true")
-    console.log(
-      `[DEBUG] New instance: ${url}`,
-    );
+    url = cache
+      .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
+      .get().url;
+    if (debug === "true") console.log(`[DEBUG] New instance: ${url}`);
     await searchContent(url, query, retries);
   }
   return value;
@@ -98,10 +92,10 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
     if (resources.some((resource) => resource.videoId === id)) {
       if (debug === "true")
         console.log(
-          "[DEBUG] Resource already exists in another guild, adding the data to new resource...",
+          "[DEBUG] Resource already exists in another guild, adding the data to new resource..."
         );
       let resource = resources.find(
-        (resource) => resource.videoId === id,
+        (resource) => resource.videoId === id
       ).track;
       let instances = await InvidJS.fetchInstances({
         url: url.split("/w")[0],
@@ -110,31 +104,33 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
       let video = InvidJS.fetchVideo(instance, url.split("=")[1], {
         type: InvidJS.FetchTypes.Full,
       });
-      let timeout = new Promise((res) => setTimeout(() => res("timeout"), 10000));
+      let timeout = new Promise((res) =>
+        setTimeout(() => res("timeout"), 10000)
+      );
       const value = await Promise.race([video, timeout]);
       if (value === "timeout") {
         if (debug === "true")
-        console.log(
-          "[DEBUG] Could not reach instance, retrying...",
-        );
+          console.log("[DEBUG] Could not reach instance, retrying...");
         retries++;
         if (retries === 4) {
           return caller.reply("Connection failed after 4 retries.");
         }
-        let new_url = cache.prepare('SELECT * FROM instances ORDER BY RANDOM() LIMIT 1').get().url;
-        if (debug === "true")
-        console.log(
-          `[DEBUG] New instance: ${new_url}`,
-        );
+        let new_url = cache
+          .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
+          .get().url;
+        if (debug === "true") console.log(`[DEBUG] New instance: ${new_url}`);
         url = url.replace(url.split("/w")[0], new_url);
         await getVideo(url, caller, isSilent, isAnnounced, retries);
       } else {
         addToQueue(caller.guild.id, url, caller.user.id, "false");
-        if (isSilent === false) caller.channel.send(`Added ${url} to the queue!`);
+        if (isSilent === false)
+          caller.channel.send({content: `Added ${url} to the queue!`, ephemeral: true});
         addResource(caller.guild.id, resource, id);
         if (getQueueLength(caller.guild.id) === 1) {
           if (debug === "true")
-            console.log("[DEBUG] This is the first track, starting playback...");
+            console.log(
+              "[DEBUG] This is the first track, starting playback..."
+            );
           if (isAnnounced === true)
             announceTrack(url, caller.user.id, value, caller);
           return playMusic(
@@ -142,7 +138,7 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
             value,
             resource,
             caller,
-            isAnnounced,
+            isAnnounced
           );
         }
       }
@@ -154,50 +150,49 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
       let video = InvidJS.fetchVideo(instance, url.split("=")[1], {
         type: InvidJS.FetchTypes.Full,
       });
-      let timeout = new Promise((res) => setTimeout(() => res("timeout"), 10000));
+      let timeout = new Promise((res) =>
+        setTimeout(() => res("timeout"), 10000)
+      );
       const value = await Promise.race([video, timeout]);
       if (value === "timeout") {
         if (debug === "true")
-        console.log(
-          "[DEBUG] Could not reach instance, retrying...",
-        );
+          console.log("[DEBUG] Could not reach instance, retrying...");
         retries++;
         if (retries === 4) {
           return caller.reply("Connection failed after 4 retries.");
         }
-        let new_url = cache.prepare('SELECT * FROM instances ORDER BY RANDOM() LIMIT 1').get().url;
-        if (debug === "true")
-        console.log(
-          `[DEBUG] New instance: ${new_url}`,
-        );
+        let new_url = cache
+          .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
+          .get().url;
+        if (debug === "true") console.log(`[DEBUG] New instance: ${new_url}`);
         url = url.replace(url.split("/w")[0], new_url);
         await getVideo(url, caller, isSilent, isAnnounced, retries);
       } else {
         let format = value.formats.find(
-          (format) => format.audio_quality === InvidJS.AudioQuality.Medium,
+          (format) => format.audio_quality === InvidJS.AudioQuality.Medium
         );
+        if (debug === "true")
+          console.log("[DEBUG] Input valid, adding to queue...");
+        addToQueue(caller.guild.id, url, caller.user.id, "false");
+        if (isSilent === false)
+          caller.channel.send(`Added ${url} to the queue!`);
+        if (debug === "true") console.log("[DEBUG] Downloading stream...");
+        let resource = await downloadTrack(instance, value, format);
+        addResource(caller.guild.id, resource, id);
+        if (getQueueLength(caller.guild.id) === 1) {
           if (debug === "true")
-            console.log("[DEBUG] Input valid, adding to queue...");
-          addToQueue(caller.guild.id, url, caller.user.id, "false");
-          if (isSilent === false)
-            caller.channel.send(`Added ${url} to the queue!`);
-          if (debug === "true") console.log("[DEBUG] Downloading stream...");
-          let resource = await downloadTrack(instance, value, format);
-          addResource(caller.guild.id, resource, id);
-          if (getQueueLength(caller.guild.id) === 1) {
-            if (debug === "true")
-              console.log(
-                "[DEBUG] This is the first track, starting playback...",
-              );
-            if (isAnnounced === true)
-              announceTrack(url, caller.user.id, value, caller);
-            playMusic(
-              caller.member.voice.channel,
-              value,
-              resource,
-              caller,
-              isAnnounced,
+            console.log(
+              "[DEBUG] This is the first track, starting playback..."
             );
+          if (isAnnounced === true)
+            announceTrack(url, caller.user.id, value, caller);
+          playMusic(
+            caller.member.voice.channel,
+            value,
+            resource,
+            caller,
+            isAnnounced
+          );
         } else return undefined;
       }
     }
@@ -206,13 +201,13 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
     switch (error.code) {
       case InvidJS.ErrorCodes.APIBlocked: {
         caller.reply(
-          "The video could not be fetched due to API restrictions. The instance may not support API calls or may be down.",
+          "The video could not be fetched due to API restrictions. The instance may not support API calls or may be down."
         );
         return undefined;
       }
       case InvidJS.ErrorCodes.APIError: {
         caller.reply(
-          "The video could not be fetched due to an API error. Please try again later.",
+          "The video could not be fetched due to an API error. Please try again later."
         );
         return undefined;
       }
@@ -222,7 +217,7 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
       }
       case InvidJS.ErrorCodes.BlockedVideo: {
         caller.reply(
-          "This video is blocked - perhaps it's from an auto-generated channel? Please try another video.",
+          "This video is blocked - perhaps it's from an auto-generated channel? Please try another video."
         );
         return undefined;
       }
@@ -242,28 +237,25 @@ async function getPlaylist(url, caller, retries) {
     const value = await Promise.race([playlist, timeout]);
     if (value === "timeout") {
       if (debug === "true")
-      console.log(
-        "[DEBUG] Could not reach instance, retrying...",
-      );
+        console.log("[DEBUG] Could not reach instance, retrying...");
       retries++;
       if (retries === 4) {
         return caller.reply("Connection failed after 4 retries.");
       }
-      let new_url = cache.prepare('SELECT * FROM instances ORDER BY RANDOM() LIMIT 1').get().url;
-      if (debug === "true")
-      console.log(
-        `[DEBUG] New instance: ${new_url}`,
-      );
+      let new_url = cache
+        .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
+        .get().url;
+      if (debug === "true") console.log(`[DEBUG] New instance: ${new_url}`);
       url = url.replace(url.split("/p")[0], new_url);
       await getPlaylist(url, caller, retries);
     } else {
       caller.channel.send(
-        `Successfully added ${value.videoCount} items to the queue!`,
+        `Successfully added ${value.videoCount} items to the queue!`
       );
       for (let i = 0; i < value.videos.length; i++) {
-          const video = value.videos[i];
-          let videoUrl = instance.url + "/watch?v=" + video.id;
-          await getVideo(videoUrl, caller, true, true, 0);
+        const video = value.videos[i];
+        let videoUrl = instance.url + "/watch?v=" + video.id;
+        await getVideo(videoUrl, caller, true, true, 0);
       }
     }
   } catch (error) {
@@ -271,13 +263,13 @@ async function getPlaylist(url, caller, retries) {
     switch (error.code) {
       case InvidJS.ErrorCodes.APIBlocked: {
         caller.reply(
-          "The playlist could not be fetched due to API restrictions. The instance may not support API calls or may be down.",
+          "The playlist could not be fetched due to API restrictions. The instance may not support API calls or may be down."
         );
         return undefined;
       }
       case InvidJS.ErrorCodes.APIError: {
         caller.reply(
-          "The playlist could not be fetched due to an API error. Please try again later.",
+          "The playlist could not be fetched due to an API error. Please try again later."
         );
         return undefined;
       }
@@ -299,7 +291,7 @@ async function getVideoInfo(url) {
     type: InvidJS.FetchTypes.Full,
   });
   let format = video.formats.find(
-    (format) => format.audio_quality === InvidJS.AudioQuality.Medium,
+    (format) => format.audio_quality === InvidJS.AudioQuality.Medium
   );
   return {
     video,
@@ -315,14 +307,41 @@ async function downloadTrack(instance, video, format) {
 
 function announceTrack(url, author, video, caller) {
   let thumb = video.thumbnails.find(
-    (thumbnail) => thumbnail.quality === InvidJS.ImageQuality.HD,
+    (thumbnail) => thumbnail.quality === InvidJS.ImageQuality.HD
   ).url;
   let playingembed = new Discord.EmbedBuilder()
     .setTitle("Now Playing")
     .setDescription(video.title + "\n" + url + `\n\nRequested by <@!${author}>`)
     .setImage(thumb)
-    .setFooter({ text: "Powered by InvidJS" });
-  caller.channel.send({ embeds: [playingembed] });
+    .setFooter({ text: "Powered by InvidJS - https://invidjs.js.org/" });
+  const loop = new Discord.ButtonBuilder()
+    .setCustomId(`loop`)
+    .setEmoji("🔄")
+    .setStyle(ButtonStyle.Primary);
+  const pause = new Discord.ButtonBuilder()
+    .setCustomId(`pause`)
+    .setEmoji("⏸")
+    .setStyle(ButtonStyle.Primary);
+  const skip = new Discord.ButtonBuilder()
+    .setCustomId(`skip`)
+    .setEmoji("⏩")
+    .setStyle(ButtonStyle.Primary);
+  const stop = new Discord.ButtonBuilder()
+    .setCustomId(`stop`)
+    .setEmoji("⏹")
+    .setStyle(ButtonStyle.Danger);
+  const seek = new Discord.ButtonBuilder()
+    .setCustomId(`seek`)
+    .setEmoji("🔎")
+    .setStyle(ButtonStyle.Primary);
+  const row = new Discord.ActionRowBuilder().addComponents(
+    loop,
+    pause,
+    stop,
+    skip,
+    seek
+  );
+  caller.channel.send({ embeds: [playingembed], components: [row] });
 }
 
 function playMusic(channel, video, blob, caller, isAnnounced) {
@@ -375,7 +394,7 @@ function playMusic(channel, video, blob, caller, isAnnounced) {
             getFromQueue(channel.guild.id).track,
             getFromQueue(channel.guild.id).author,
             info.video,
-            caller,
+            caller
           );
         playMusic(channel, info.video, res.track, caller, isAnnounced);
       });
@@ -387,15 +406,15 @@ function playMusic(channel, video, blob, caller, isAnnounced) {
         parseInt(
           settings
             .prepare(
-              `SELECT * FROM guild_${channel.guild.id} WHERE option = 'disconnect_timeout'`,
+              `SELECT * FROM guild_${channel.guild.id} WHERE option = 'disconnect_timeout'`
             )
-            .get().value,
+            .get().value
         ) * 1000;
       return startTimeout(
         channel.guild.id,
         connection,
         caller.channel,
-        timeout,
+        timeout
       );
     }
   });

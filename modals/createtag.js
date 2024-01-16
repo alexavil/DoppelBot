@@ -17,11 +17,11 @@ export default {
           settings
             .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
             .run("commands", "state");
-          return interaction.reply("A tag with that key word already exists!");
+          return interaction.editReply("A tag with that key word already exists!");
         }
         tags
           .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
           .run(keyword, response);
-        return interaction.reply({ content: "Tag added successfully!" });
+        return interaction.editReply({ content: "Tag added successfully!" });
 	},
 };

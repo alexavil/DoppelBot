@@ -42,7 +42,7 @@ export default {
     });
     searchembed.setTitle("Please select a track:");
     searchembed.setColor("#0099ff");
-    searchembed.setFooter({ text: "Powered by InvidJS" });
+    searchembed.setFooter({ text: "Powered by InvidJS - https://invidjs.js.org/" });
     let embedmessage = await interaction.channel.send({
       embeds: [searchembed],
     });

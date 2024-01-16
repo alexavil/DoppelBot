@@ -23,6 +23,6 @@ export default {
     const row = new Discord.ActionRowBuilder().addComponents(
         menu
     );
-    await interaction.reply({content: `Select tag(s) to delete.`, components: [row], ephemeral: true});
+    await interaction.editReply({content: `Select tag(s) to delete.`, components: [row], ephemeral: true});
   },
 };

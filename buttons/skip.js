@@ -2,21 +2,19 @@ import Discord from "discord.js";
 const debug = process.env.DEBUG;
 import { getVoiceConnection } from "@discordjs/voice";
 import sqlite3 from "better-sqlite3";
-const common = await import("../../music.js");
+const { default: common } = await import("../music.js");
 
 const masterqueue = new sqlite3("./data/queue.db");
 export default {
   name: "skip",
-  description: "Skip the music",
-  aliases: ["s"],
-  async execute(message) {
-    const id = message.guild.id;
+  async execute(interaction) {
+    const id = interaction.guild.id;
     const connection = getVoiceConnection(id);
-    const channel = message.member.voice.channel;
-    if (!connection) return message.reply("Nothing to skip!");
+    const channel = interaction.member.voice.channel;
+    if (!connection) return interaction.reply("Nothing to skip!");
     if (
-      !message.channel
-        .permissionsFor(message.author)
+      !interaction.channel
+        .permissionsFor(interaction.user)
         .has(Discord.PermissionsBitField.Flags.BanMembers) &&
       channel.members.size !== 2
     ) {
@@ -38,6 +36,6 @@ export default {
     if (debug === "true") console.log("[DEBUG] Skipping the current track...");
     let player = common.getPlayer(id);
     player.player.stop();
-    message.reply("Skipped!");
+    interaction.reply("Skipped!");
   },
 };

@@ -5,14 +5,12 @@ import { getVoiceConnection } from "@discordjs/voice";
 const masterqueue = new sqlite3("./data/queue.db");
 export default {
   name: "loop",
-  description: "Loop the music",
-  aliases: ["l"],
-  async execute(message) {
-    const id = message.guild.id;
-    const channel = message.member.voice.channel;
+  async execute(interaction) {
+    const id = interaction.guild.id;
+    const channel = interaction.member.voice.channel;
     const connection = getVoiceConnection(id);
-    if (!channel) return message.reply("You must be in a voice channel!");
-    if (!connection) return message.reply("Nothing to loop!");
+    if (!channel) return interaction.reply("You must be in a voice channel!");
+    if (!connection) return interaction.reply("Nothing to loop!");
     switch (
       masterqueue
         .prepare(`SELECT * FROM guild_${id} ORDER BY ROWID LIMIT 1`)
@@ -24,7 +22,7 @@ export default {
         masterqueue
           .prepare(`UPDATE guild_${id} SET isLooped = 'false' LIMIT 1`)
           .run();
-        return message.reply("The current track will not be looped!");
+        return interaction.reply("The current track will not be looped!");
       }
       case "false": {
         if (debug === "true")
@@ -32,7 +30,7 @@ export default {
         masterqueue
           .prepare(`UPDATE guild_${id} SET isLooped = 'true' LIMIT 1`)
           .run();
-        return message.reply("The current track will be looped!");
+        return interaction.reply("The current track will be looped!");
       }
     }
   },

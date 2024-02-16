@@ -11,7 +11,7 @@ export default {
 				.setDescription('Search query')
         .setRequired(true)),
   async execute(interaction) {
-    await interaction.deferReply();
+  
     let query = interaction.options.getString('query');
     if (debug === "true") {
       console.log(`[DEBUG] User query: ${query}...`);

@@ -14,7 +14,7 @@ export default {
 				.setDescription('Invidious or YT link')
         .setRequired(true)),
   async execute(interaction) {
-    await interaction.deferReply();
+  
     const id = interaction.guild.id;
     if (!interaction.member.voice.channel) {
       if (debug.debug === true)

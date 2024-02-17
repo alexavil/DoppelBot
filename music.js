@@ -47,7 +47,7 @@ async function getSuggestions(url, query, retries) {
   let timeout = new Promise((res) => setTimeout(() => res("timeout"), 10000));
   const value = await Promise.race([results, timeout]);
   if (value === "timeout") {
-    if (debug.debug === true)
+    if (debug === "true")
       console.log("[DEBUG] Could not reach instance, retrying...");
     retries++;
     if (retries === 4) {
@@ -56,7 +56,7 @@ async function getSuggestions(url, query, retries) {
     url = cache
       .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
       .get().url;
-    if (debug.debug === true) console.log(`[DEBUG] New instance: ${url}`);
+    if (debug === "true") console.log(`[DEBUG] New instance: ${url}`);
     await getSuggestions(url, query, retries);
   }
   return value;

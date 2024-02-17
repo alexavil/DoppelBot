@@ -13,23 +13,22 @@ export default {
     ),
   async execute(interaction) {
     const id = interaction.guild.id;
-    interaction.deferReply();
     let default_url = instances
       .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
       .get().url;
     let query = interaction.options.getString("query");
-    if (debug.debug === true) {
+    if (debug === "true") {
       console.log(`[DEBUG] User query: ${query}...`);
       console.log("[DEBUG] Searching...");
     }
     let value = await common.searchContent(default_url, query, 0);
     if (value === "timeout") {
-      if (debug.debug === true)
+      if (debug === "true")
         console.log("[DEBUG] Too many retries, aborting...");
       return interaction.editReply("Connection failed after 4 retries.");
     }
     if (!value.length) {
-      if (debug.debug === true) console.log("[DEBUG] No content was found...");
+      if (debug === "true") console.log("[DEBUG] No content was found...");
       return interaction.editReply(
         "No content was found based on your search query!",
       );
@@ -62,7 +61,7 @@ export default {
       reaction.emoji.name === `4️⃣` ||
       (reaction.emoji.name === `5️⃣` && user.id === interaction.user.id);
     let choice = 0;
-    if (debug.debug === true)
+    if (debug === "true")
       console.log("[DEBUG] Choice required - awaiting user input...");
     embedmessage
       .awaitReactions({ filter, maxUsers: 2 })
@@ -70,7 +69,7 @@ export default {
         collected.forEach(async (emoji) => {
           if (emoji.count > 1) {
             common.endTimeout(id);
-            if (debug.debug === true)
+            if (debug === "true")
               console.log(`[DEBUG] User choice: ${choice}...`);
             let videoid = value[choice].id;
             let url = default_url + "/watch?v=" + videoid;

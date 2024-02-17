@@ -8,21 +8,21 @@ export default {
     const id = interaction.guild.id;
     const connection = getVoiceConnection(id);
     let player = common.getPlayer(id);
-    if (!connection) return interaction.editReply("Nothing to pause!");
+    if (!connection) return interaction.reply("Nothing to pause!");
     switch (player.isPaused) {
       case true: {
         if (debug === "true")
           console.log("[DEBUG] Player is paused, unpausing...");
         player.player.unpause();
         player.isPaused = false;
-        return interaction.editReply({ content: "Unpaused!", ephemeral: true });
+        return interaction.reply({ content: "Unpaused!", ephemeral: true });
       }
       case false: {
         if (debug === "true")
           console.log("[DEBUG] Player is not paused, pausing...");
         player.player.pause();
         player.isPaused = true;
-        return interaction.editReply({ content: "Paused!", ephemeral: true });
+        return interaction.reply({ content: "Paused!", ephemeral: true });
       }
     }
   },

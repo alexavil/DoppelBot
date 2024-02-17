@@ -18,14 +18,14 @@ export default {
     ) {
       if (debug === "true")
         console.log("[DEBUG] User is not admin or alone, stop not allowed...");
-      return interaction.editReply({
+      return interaction.reply({
         content: "You are not allowed to stop!",
         ephemeral: true,
       });
     }
     const connection = getVoiceConnection(id);
     if (!connection)
-      return interaction.editReply({
+      return interaction.reply({
         content: "The bot is already stopped!",
         ephemeral: true,
       });
@@ -35,7 +35,7 @@ export default {
       connection.destroy();
       common.removePlayer(id);
       masterqueue.prepare(`DELETE FROM guild_${id}`).run();
-      return interaction.editReply({ content: "Stopped!", ephemeral: true });
+      return interaction.reply({ content: "Stopped!", ephemeral: true });
     }
   },
 };

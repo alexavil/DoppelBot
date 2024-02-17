@@ -9,12 +9,12 @@ export default {
     const connection = getVoiceConnection(id);
     let player = common.getPlayer(id);
     if (!connection)
-      return interaction.editReply({
+      return interaction.reply({
         content: "No tracks are playing!",
         ephemeral: true,
       });
     let length = convertToString(player.time);
-    return interaction.editReply({
+    return interaction.reply({
       content: `Current time: ${length} / ${player.video.length}`,
       ephemeral: true,
     });

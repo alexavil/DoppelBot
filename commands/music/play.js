@@ -17,7 +17,7 @@ export default {
   async execute(interaction) {
     const id = interaction.guild.id;
     if (!interaction.member.voice.channel) {
-      if (debug.debug === true)
+      if (debug === "true")
         console.log("[DEBUG] No voice channel found, aborting...");
       return interaction.editReply("You need to join a voice channel first!");
     }
@@ -26,7 +26,7 @@ export default {
       let default_url = instances
         .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
         .get().url;
-      if (debug.debug === true)
+      if (debug === "true")
         console.log(
           "[DEBUG] YouTube link detected, redirecting to random instance...",
         );
@@ -44,7 +44,7 @@ export default {
       let default_url = instances
         .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
         .get().url;
-      if (debug.debug === true)
+      if (debug === "true")
         console.log("[DEBUG] ID detected, redirecting to random instance...");
       interaction.channel.send(
         "Your track will be played using a random Invidious instance.",
@@ -52,7 +52,7 @@ export default {
       url = default_url + "/watch?v=" + url;
     }
     common.endTimeout(id);
-    if (debug.debug === true) console.log(`[DEBUG] Validating ${url}...`);
+    if (debug === "true") console.log(`[DEBUG] Validating ${url}...`);
     if (url.includes("/watch?v=")) {
       await common.getVideo(url, interaction, false, true, 0);
     }

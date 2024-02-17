@@ -1,5 +1,5 @@
 import sqlite3 from "better-sqlite3";
-
+const debug = process.env.DEBUG;
 const tags = new sqlite3("./data/tags.db");
 
 export default {
@@ -14,14 +14,17 @@ export default {
     if (tag !== undefined) {
       if (debug === "true")
         console.log("[DEBUG] Tag already exists, aborting...");
-      settings
-        .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
-        .run("commands", "state");
-      return interaction.editReply("A tag with that key word already exists!");
+      return interaction.reply({
+        content: "A tag with that key word already exists!",
+        ephemeral: true,
+      });
     }
     tags
       .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
       .run(keyword, response);
-    return interaction.editReply({ content: "Tag added successfully!" });
+    return interaction.reply({
+      content: "Tag added successfully!",
+      ephemeral: true,
+    });
   },
 };

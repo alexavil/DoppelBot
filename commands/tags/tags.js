@@ -1,4 +1,4 @@
-import Discord from "discord.js";
+import Discord, { ButtonStyle } from "discord.js";
 import sqlite3 from "better-sqlite3";
 const debug = process.env.DEBUG;
 
@@ -15,17 +15,38 @@ export default {
     let tagsembed = new Discord.EmbedBuilder().setTitle(
       `Tags for ${interaction.guild.name}`,
     );
+    let row = undefined;
+    const addtag = new Discord.ButtonBuilder()
+      .setCustomId(`tagcreate`)
+      .setLabel(`Create a tag`)
+      .setStyle(ButtonStyle.Primary);
     if (responses.length === 0) {
       if (debug === "true") console.log("[DEBUG] No tags found...");
       tagsembed.setDescription("This server has no active tags yet!");
-      return interaction.editReply({ embeds: [tagsembed] });
-    }
-    responses.forEach((response) => {
-      tagsembed.addFields({
-        name: `Key Phrase: ${response.tag}`,
-        value: `Response: ${response.response}`,
+      row = new Discord.ActionRowBuilder().addComponents(addtag);
+    } else {
+      responses.forEach((response) => {
+        tagsembed.addFields({
+          name: `Key Phrase: ${response.tag}`,
+          value: `Response: ${response.response}`,
+        });
       });
-    });
-    return interaction.editReply({ embeds: [tagsembed] });
+      const deltag = new Discord.ButtonBuilder()
+        .setCustomId(`tagdelete`)
+        .setLabel(`Delete a tag`)
+        .setStyle(ButtonStyle.Danger);
+      row = new Discord.ActionRowBuilder().addComponents(addtag, deltag);
+    }
+    switch (
+      interaction.member.permissions.has(Discord.PermissionFlagsBits.BanMembers)
+    ) {
+      case true:
+        return interaction.editReply({
+          embeds: [tagsembed],
+          components: [row],
+        });
+      case false:
+        return interaction.editReply({ embeds: [tagsembed] });
+    }
   },
 };

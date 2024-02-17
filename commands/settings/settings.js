@@ -34,14 +34,6 @@ export default {
       .setCustomId(`settimeout`)
       .setLabel(`Set VC timeout`)
       .setStyle(ButtonStyle.Primary);
-    const addtag = new Discord.ButtonBuilder()
-      .setCustomId(`tagcreate`)
-      .setLabel(`Create a tag`)
-      .setStyle(ButtonStyle.Primary);
-    const deltag = new Discord.ButtonBuilder()
-      .setCustomId(`tagdelete`)
-      .setLabel(`Delete a tag`)
-      .setStyle(ButtonStyle.Primary);
     const row1 = new Discord.ActionRowBuilder().addComponents(
       backupbtn,
       restorebtn,
@@ -52,7 +44,6 @@ export default {
       healthbtn,
       timeoutbtn,
     );
-    const row4 = new Discord.ActionRowBuilder().addComponents(addtag, deltag);
     const settingsembed = new Discord.EmbedBuilder()
       .setColor("#0099ff")
       .setTitle("Server Settings for " + interaction.guild.name)
@@ -93,7 +84,7 @@ export default {
       );
     await interaction.editReply({
       embeds: [settingsembed],
-      components: [row1, row2, row3, row4],
+      components: [row1, row2, row3],
     });
     if (owners.includes(interaction.user.id)) {
       const stats = new Discord.ButtonBuilder()

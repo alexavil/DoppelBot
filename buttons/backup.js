@@ -21,7 +21,7 @@ export default {
       console.log("[DEBUG] Tags JSON: " + tags_json);
     }
     await fs.writeJSON(`${id}.json`, json + "\n" + tags_json);
-    await interaction.editReply({
+    await interaction.reply({
       content: "Your backup is ready! Copy it to a safe place.",
       files: [`${id}.json`],
       ephemeral: true,

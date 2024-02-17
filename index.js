@@ -382,8 +382,6 @@ client.on("guildDelete", (guild) => {
 });
 
 client.on("interactionCreate", async (interaction) => {
-  await interaction.deferReply({ ephemeral: true });
-
   if (interaction.isModalSubmit()) {
     const modal = interaction.client.modals.get(interaction.customId);
 
@@ -421,6 +419,7 @@ client.on("interactionCreate", async (interaction) => {
   }
 
   try {
+    await interaction.deferReply({ ephemeral: true });
     await command.execute(interaction);
   } catch (error) {
     console.error(error);

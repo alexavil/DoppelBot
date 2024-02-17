@@ -19,7 +19,7 @@ export default {
     const row = new Discord.ActionRowBuilder().addComponents(cancel);
     const filter = (m) => m.author.id == interaction.user.id;
 
-    interaction.editReply({
+    interaction.reply({
       content:
         "Please provide the JSON file you received as a backup.\n**This will erase all server settings if you proceed!**",
       components: [row],

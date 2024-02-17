@@ -20,7 +20,7 @@ export default {
         settings
           .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
           .run("true", "notifications");
-        return interaction.editReply({
+        return interaction.reply({
           content: `Service notifications are now enabled!`,
           ephemeral: true,
         });
@@ -34,7 +34,7 @@ export default {
         settings
           .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
           .run("false", "notifications");
-        return interaction.editReply({
+        return interaction.reply({
           content: `Service notifications are now disabled!`,
           ephemeral: true,
         });

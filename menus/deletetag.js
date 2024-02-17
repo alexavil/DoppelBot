@@ -16,10 +16,13 @@ export default {
           .get() === undefined
       ) {
         if (debug === "true") console.log("[DEBUG] Invalid input, aborting...");
-        return interaction.editReply("Please type a valid tag to delete!");
+        return interaction.reply("Please type a valid tag to delete!");
       }
       tags.prepare(`DELETE FROM guild_${id} WHERE tag = '${keyword}'`).run();
     }
-    return interaction.editReply("Tags deleted successfully!");
+    return interaction.reply({
+      content: "Tags deleted successfully!",
+      ephemeral: true,
+    });
   },
 };

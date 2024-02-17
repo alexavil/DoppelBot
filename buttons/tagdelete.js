@@ -21,7 +21,7 @@ export default {
       .setMinValues(1)
       .setMaxValues(values.length);
     const row = new Discord.ActionRowBuilder().addComponents(menu);
-    await interaction.editReply({
+    await interaction.reply({
       content: `Select tag(s) to delete.`,
       components: [row],
       ephemeral: true,

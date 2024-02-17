@@ -34,7 +34,7 @@ export default {
       if (debug === "true") console.log(`[DEBUG] Queue for ${id} is empty...`);
       embed.setDescription("The queue is empty!");
     }
-    embed.setTitle("Queue");
+    embed.setTitle(`Queue for ${interaction.guild.name}`);
     embed.setColor("#0099ff");
     return interaction.editReply({ embeds: [embed] });
   },

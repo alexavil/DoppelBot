@@ -200,10 +200,18 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
     if (debug === "true") console.log("[DEBUG] Error: " + error);
     switch (error.code) {
       case InvidJS.ErrorCodes.APIBlocked: {
-        caller.editReply(
-          "The video could not be fetched due to API restrictions. The instance may not support API calls or may be down."
-        );
-        return undefined;
+        if (debug === "true")
+        console.log("[DEBUG] Non-fatal instance error, retrying...");
+      retries++;
+      if (retries === 4) {
+        return caller.editReply("Connection failed after 4 retries.");
+      }
+      let new_url = cache
+        .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
+        .get().url;
+      if (debug === "true") console.log(`[DEBUG] New instance: ${new_url}`);
+      url = url.replace(url.split("/w")[0], new_url);
+      await getVideo(url, caller, isSilent, isAnnounced, retries);
       }
       case InvidJS.ErrorCodes.APIError: {
         caller.editReply(
@@ -262,10 +270,18 @@ async function getPlaylist(url, caller, retries) {
     if (debug === "true") console.log("[DEBUG] Error: " + error);
     switch (error.code) {
       case InvidJS.ErrorCodes.APIBlocked: {
-        caller.editReply(
-          "The playlist could not be fetched due to API restrictions. The instance may not support API calls or may be down."
-        );
-        return undefined;
+        if (debug === "true")
+        console.log("[DEBUG] Non-fatal instance error, retrying...");
+      retries++;
+      if (retries === 4) {
+        return caller.editReply("Connection failed after 4 retries.");
+      }
+      let new_url = cache
+        .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
+        .get().url;
+      if (debug === "true") console.log(`[DEBUG] New instance: ${new_url}`);
+      url = url.replace(url.split("/p")[0], new_url);
+      await getPlaylist(url, caller, retries);
       }
       case InvidJS.ErrorCodes.APIError: {
         caller.editReply(

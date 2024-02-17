@@ -26,11 +26,11 @@ export default {
       console.log(
         "[DEBUG] Too many retries, aborting...",
       );
-      return interaction.updateReply("Connection failed after 4 retries.")
+      return interaction.editReply("Connection failed after 4 retries.")
     }
     if (!value.length) {
       if (debug.debug === true) console.log("[DEBUG] No content was found...");
-      return interaction.updateReply("No content was found based on your search query!");
+      return interaction.editReply("No content was found based on your search query!");
     }
     let searchembed = new Discord.EmbedBuilder();
     value.forEach((track) => {

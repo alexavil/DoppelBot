@@ -14,17 +14,15 @@ export default {
 				.setDescription('Invidious or YT link')
         .setRequired(true)),
   async execute(interaction) {
-  
     const id = interaction.guild.id;
     if (!interaction.member.voice.channel) {
       if (debug.debug === true)
         console.log("[DEBUG] No voice channel found, aborting...");
-      return interaction.updateReply("You need to join a voice channel first!");
+      return interaction.editReply("You need to join a voice channel first!");
     }
-    let default_url = instances.prepare('SELECT * FROM instances ORDER BY RANDOM() LIMIT 1').get().url;
-    console.log(default_url);
     let url = interaction.options.getString("track");
     if (common.disallowedLinks.some((link) => url.startsWith(link))) {
+      let default_url = instances.prepare('SELECT * FROM instances ORDER BY RANDOM() LIMIT 1').get().url;
       if (debug.debug === true)
         console.log("[DEBUG] YouTube link detected, redirecting to random instance...");
       if (url.includes("/watch?v=")) {
@@ -38,6 +36,7 @@ export default {
       }
     }
     if (url.match(/[a-zA-Z0-9_-]{11}/) && url.length === 11) {
+      let default_url = instances.prepare('SELECT * FROM instances ORDER BY RANDOM() LIMIT 1').get().url;
       if (debug.debug === true)
         console.log("[DEBUG] ID detected, redirecting to random instance...");
       interaction.channel.send(

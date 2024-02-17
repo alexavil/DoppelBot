@@ -20,7 +20,10 @@ export default {
     ) {
       if (debug === "true")
         console.log("[DEBUG] User is not admin or alone, skip not allowed...");
-      return interaction.editReply({ content: "You are not allowed to skip!", ephemeral: true });
+      return interaction.editReply({
+        content: "You are not allowed to skip!",
+        ephemeral: true,
+      });
     }
     if (
       masterqueue

@@ -14,15 +14,19 @@ export default {
     const responseInput = new Discord.TextInputBuilder()
       .setCustomId("responseInput")
       .setLabel("Response")
-      .setPlaceholder(`response1
+      .setPlaceholder(
+        `response1
 ---
-response2`)
+response2`,
+      )
       .setStyle(Discord.TextInputStyle.Paragraph)
       .setRequired(true);
     const firstActionRow = new Discord.ActionRowBuilder().addComponents(
-      keywordInput
+      keywordInput,
     );
-    const secondActionRow = new Discord.ActionRowBuilder().addComponents(responseInput);
+    const secondActionRow = new Discord.ActionRowBuilder().addComponents(
+      responseInput,
+    );
     modal.addComponents(firstActionRow, secondActionRow);
     await interaction.showModal(modal);
   },

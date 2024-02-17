@@ -9,20 +9,22 @@ export default {
     let values = [];
     let options = tags.prepare(`SELECT * FROM guild_${id}`).all();
     console.log(options);
-    options.forEach((option => {
-        let menuOption = new Discord.StringSelectMenuOptionBuilder()
-            .setLabel(option.tag)
-            .setValue(option.tag);
-        values.push(menuOption);
-    }))
+    options.forEach((option) => {
+      let menuOption = new Discord.StringSelectMenuOptionBuilder()
+        .setLabel(option.tag)
+        .setValue(option.tag);
+      values.push(menuOption);
+    });
     const menu = new Discord.StringSelectMenuBuilder()
       .setCustomId(`deletetag`)
       .setOptions(values)
       .setMinValues(1)
       .setMaxValues(values.length);
-    const row = new Discord.ActionRowBuilder().addComponents(
-        menu
-    );
-    await interaction.editReply({content: `Select tag(s) to delete.`, components: [row], ephemeral: true});
+    const row = new Discord.ActionRowBuilder().addComponents(menu);
+    await interaction.editReply({
+      content: `Select tag(s) to delete.`,
+      components: [row],
+      ephemeral: true,
+    });
   },
 };

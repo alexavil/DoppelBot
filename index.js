@@ -78,7 +78,7 @@ for (const folder of commandFolders) {
       client.commands.set(command.data.name, command);
     } else {
       console.log(
-        `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
+        `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`,
       );
     }
   }
@@ -86,47 +86,53 @@ for (const folder of commandFolders) {
 
 client.modals = new Discord.Collection();
 const modalPath = path.join(__dirname, "modals");
-const modalFiles = fs.readdirSync(modalPath).filter((file) => file.endsWith(".js"));
+const modalFiles = fs
+  .readdirSync(modalPath)
+  .filter((file) => file.endsWith(".js"));
 
 for (const file of modalFiles) {
-    const { default: modal } = await import(modalPath + "/" + file);
-    if ("name" in modal && "execute" in modal) {
-      client.modals.set(modal.name, modal);
-    } else {
-      console.log(
-        `[WARNING] The modal at ${file} is missing a required "name" or "execute" property.`
-      );
-    }
+  const { default: modal } = await import(modalPath + "/" + file);
+  if ("name" in modal && "execute" in modal) {
+    client.modals.set(modal.name, modal);
+  } else {
+    console.log(
+      `[WARNING] The modal at ${file} is missing a required "name" or "execute" property.`,
+    );
+  }
 }
 
 client.buttons = new Discord.Collection();
 const buttonPath = path.join(__dirname, "buttons");
-const buttonFiles = fs.readdirSync(buttonPath).filter((file) => file.endsWith(".js"));
+const buttonFiles = fs
+  .readdirSync(buttonPath)
+  .filter((file) => file.endsWith(".js"));
 
 for (const file of buttonFiles) {
-    const { default: button } = await import(buttonPath + "/" + file);
-    if ("name" in button && "execute" in button) {
-      client.buttons.set(button.name, button);
-    } else {
-      console.log(
-        `[WARNING] The button at ${file} is missing a required "name" or "execute" property.`
-      );
-    }
+  const { default: button } = await import(buttonPath + "/" + file);
+  if ("name" in button && "execute" in button) {
+    client.buttons.set(button.name, button);
+  } else {
+    console.log(
+      `[WARNING] The button at ${file} is missing a required "name" or "execute" property.`,
+    );
+  }
 }
 
 client.menus = new Discord.Collection();
 const menuPath = path.join(__dirname, "menus");
-const menuFiles = fs.readdirSync(menuPath).filter((file) => file.endsWith(".js"));
+const menuFiles = fs
+  .readdirSync(menuPath)
+  .filter((file) => file.endsWith(".js"));
 
 for (const file of menuFiles) {
-    const { default: menu } = await import(menuPath + "/" + file);
-    if ("name" in menu && "execute" in menu) {
-      client.menus.set(menu.name, menu);
-    } else {
-      console.log(
-        `[WARNING] The menu at ${file} is missing a required "name" or "execute" property.`
-      );
-    }
+  const { default: menu } = await import(menuPath + "/" + file);
+  if ("name" in menu && "execute" in menu) {
+    client.menus.set(menu.name, menu);
+  } else {
+    console.log(
+      `[WARNING] The menu at ${file} is missing a required "name" or "execute" property.`,
+    );
+  }
 }
 
 const RequiredPerms = [
@@ -147,7 +153,7 @@ if (debug === "true") {
   This mode is not recommended for use in production. Please proceed with caution.`);
   console.log(
     "[DEBUG] Build hash: " +
-      child.execSync("git rev-parse --short HEAD").toString().trim()
+      child.execSync("git rev-parse --short HEAD").toString().trim(),
   );
   client.on("debug", console.log);
   client.on("warn", console.log);
@@ -169,7 +175,7 @@ function initSentry() {
       new ProfilingIntegration(),
     ],
     environment: debug ? "testing" : "production",
-    release: "3.0"
+    release: "3.0",
   });
   startMonitor();
 }
@@ -183,19 +189,27 @@ function startMonitor() {
 }
 
 function getInstances() {
-  instances.prepare(`CREATE TABLE IF NOT EXISTS instances (url TEXT UNIQUE, api TEXT, health INTEGER)`).run();
+  instances
+    .prepare(
+      `CREATE TABLE IF NOT EXISTS instances (url TEXT UNIQUE, api TEXT, health INTEGER)`,
+    )
+    .run();
   instances.prepare(`DELETE FROM instances`).run();
   let statement = instances.prepare(
     `INSERT OR IGNORE INTO instances VALUES (?, ?, ?)`,
   );
   InvidJS.fetchInstances({
     type: InvidJS.InstanceTypes.https,
-    api_allowed: true
-  }).then(result => {
-    result.forEach(instance => {
-      statement.run(instance.url, instance.api_allowed.toString(), instance.health)
-    })
-  })
+    api_allowed: true,
+  }).then((result) => {
+    result.forEach((instance) => {
+      statement.run(
+        instance.url,
+        instance.api_allowed.toString(),
+        instance.health,
+      );
+    });
+  });
 }
 
 function CheckForPerms() {
@@ -209,7 +223,7 @@ function CheckForPerms() {
     if (notifs_value === "false") {
       if (debug === "true")
         console.log(
-          `[DEBUG] Guild ${id} has notifications disabled. Message will not be sent.`
+          `[DEBUG] Guild ${id} has notifications disabled. Message will not be sent.`,
         );
       return false;
     }
@@ -245,7 +259,7 @@ function CheckForPerms() {
           if (err.code === Discord.Constants.APIErrors.CANNOT_MESSAGE_USER) {
             if (debug === "true")
               console.log(
-                `[DEBUG] Cannot message owner of guild ${id}. Message will not be sent.`
+                `[DEBUG] Cannot message owner of guild ${id}. Message will not be sent.`,
               );
             return false;
           }
@@ -269,11 +283,11 @@ function createConfig(id) {
     console.log(`[DEBUG] Creating/validating config for guild ${id}.`);
   settings
     .prepare(
-      `CREATE TABLE IF NOT EXISTS guild_${id} (option TEXT UNIQUE, value TEXT)`
+      `CREATE TABLE IF NOT EXISTS guild_${id} (option TEXT UNIQUE, value TEXT)`,
     )
     .run();
   let statement = settings.prepare(
-    `INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`
+    `INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`,
   );
   let transaction = settings.transaction(() => {
     statement.run("notifications", "false");
@@ -284,7 +298,7 @@ function createConfig(id) {
   transaction();
   queue
     .prepare(
-      `CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT, author TEXT, isLooped TEXT)`
+      `CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT, author TEXT, isLooped TEXT)`,
     )
     .run();
   tags
@@ -368,7 +382,7 @@ client.on("guildDelete", (guild) => {
 });
 
 client.on("interactionCreate", async (interaction) => {
-  await interaction.deferReply( {ephemeral: true} );
+  await interaction.deferReply({ ephemeral: true });
 
   if (interaction.isModalSubmit()) {
     const modal = interaction.client.modals.get(interaction.customId);
@@ -442,7 +456,7 @@ client.on("messageCreate", (message) => {
       if (debug === "true") console.log("[DEBUG] Tag found!");
       let responses = tag.response.split("---\n");
       message.channel.send(
-        responses[Math.floor(Math.random() * responses.length)]
+        responses[Math.floor(Math.random() * responses.length)],
       );
     }
   });
@@ -466,6 +480,6 @@ process.on("SIGINT", () => {
   monitor.finish();
   console.log("Exiting...");
   process.exit();
-})
+});
 
 client.login(token);

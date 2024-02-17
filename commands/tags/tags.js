@@ -8,7 +8,7 @@ export default {
   data: new Discord.SlashCommandBuilder()
     .setName("tags")
     .setDescription("List tags"),
- async execute(interaction) {
+  async execute(interaction) {
     let id = interaction.guild.id;
     if (debug === "true") console.log(`[DEBUG] Fetching tag list for ${id}...`);
     let responses = tags.prepare(`SELECT * FROM guild_${id}`).all();

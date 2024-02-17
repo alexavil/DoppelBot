@@ -8,11 +8,12 @@ export default {
   data: new Discord.SlashCommandBuilder()
     .setName("play")
     .setDescription("Play a track")
-    .addStringOption(option =>
-			option
-				.setName('track')
-				.setDescription('Invidious or YT link')
-        .setRequired(true)),
+    .addStringOption((option) =>
+      option
+        .setName("track")
+        .setDescription("Invidious or YT link")
+        .setRequired(true),
+    ),
   async execute(interaction) {
     const id = interaction.guild.id;
     if (!interaction.member.voice.channel) {
@@ -22,9 +23,13 @@ export default {
     }
     let url = interaction.options.getString("track");
     if (common.disallowedLinks.some((link) => url.startsWith(link))) {
-      let default_url = instances.prepare('SELECT * FROM instances ORDER BY RANDOM() LIMIT 1').get().url;
+      let default_url = instances
+        .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
+        .get().url;
       if (debug.debug === true)
-        console.log("[DEBUG] YouTube link detected, redirecting to random instance...");
+        console.log(
+          "[DEBUG] YouTube link detected, redirecting to random instance...",
+        );
       if (url.includes("/watch?v=")) {
         url = default_url + "/watch?v=" + url.split("=")[1];
       }
@@ -36,7 +41,9 @@ export default {
       }
     }
     if (url.match(/[a-zA-Z0-9_-]{11}/) && url.length === 11) {
-      let default_url = instances.prepare('SELECT * FROM instances ORDER BY RANDOM() LIMIT 1').get().url;
+      let default_url = instances
+        .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
+        .get().url;
       if (debug.debug === true)
         console.log("[DEBUG] ID detected, redirecting to random instance...");
       interaction.channel.send(

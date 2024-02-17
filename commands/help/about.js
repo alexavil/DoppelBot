@@ -1,9 +1,9 @@
 import Discord from "discord.js";
 const name = process.env.NAME;
 export default {
-	data: new Discord.SlashCommandBuilder()
-		.setName('about')
-		.setDescription('Get all commands'),
+  data: new Discord.SlashCommandBuilder()
+    .setName("about")
+    .setDescription("Get all commands"),
   async execute(interaction) {
     const help = new Discord.EmbedBuilder()
       .setColor("#0099ff")

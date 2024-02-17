@@ -9,7 +9,8 @@ export default {
     const id = interaction.guild.id;
     const channel = interaction.member.voice.channel;
     const connection = getVoiceConnection(id);
-    if (!channel) return interaction.editReply("You must be in a voice channel!");
+    if (!channel)
+      return interaction.editReply("You must be in a voice channel!");
     if (!connection) return interaction.editReply("Nothing to loop!");
     switch (
       masterqueue
@@ -22,7 +23,10 @@ export default {
         masterqueue
           .prepare(`UPDATE guild_${id} SET isLooped = 'false' LIMIT 1`)
           .run();
-        return interaction.editReply({ content: "The current track will not be looped!", ephemeral: true });
+        return interaction.editReply({
+          content: "The current track will not be looped!",
+          ephemeral: true,
+        });
       }
       case "false": {
         if (debug === "true")
@@ -30,7 +34,10 @@ export default {
         masterqueue
           .prepare(`UPDATE guild_${id} SET isLooped = 'true' LIMIT 1`)
           .run();
-        return interaction.editReply({ content: "The current track will not be looped!", ephemeral: true });
+        return interaction.editReply({
+          content: "The current track will not be looped!",
+          ephemeral: true,
+        });
       }
     }
   },

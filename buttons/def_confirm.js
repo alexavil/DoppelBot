@@ -13,11 +13,11 @@ export default {
     tags.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
     settings
       .prepare(
-        `CREATE TABLE IF NOT EXISTS guild_${id} (option TEXT UNIQUE, value TEXT)`
+        `CREATE TABLE IF NOT EXISTS guild_${id} (option TEXT UNIQUE, value TEXT)`,
       )
       .run();
     let statement = settings.prepare(
-      `INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`
+      `INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`,
     );
     let transaction = settings.transaction(() => {
       statement.run("notifications", "false");
@@ -27,10 +27,14 @@ export default {
     transaction();
     tags
       .prepare(
-        `CREATE TABLE IF NOT EXISTS guild_${id} (tag TEXT, response TEXT)`
+        `CREATE TABLE IF NOT EXISTS guild_${id} (tag TEXT, response TEXT)`,
       )
       .run();
     if (debug === "true") console.log(`[DEBUG] Reset finished for ${id}!`);
-    return interaction.update({content: "Your settings have been reset successfully!", components: [], ephemeral: true});
+    return interaction.update({
+      content: "Your settings have been reset successfully!",
+      components: [],
+      ephemeral: true,
+    });
   },
 };

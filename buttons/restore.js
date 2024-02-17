@@ -48,14 +48,14 @@ export default {
             return interaction.editReply({
               content: "You must provide a valid backup file!",
               components: [],
-              ephemeral: true
+              ephemeral: true,
             });
           }
           fetch(m.attachments.first().url).then((res) => {
             m.delete();
             if (debug === "true")
               console.log(
-                "[DEBUG] User provided a valid JSON file, retrieving..."
+                "[DEBUG] User provided a valid JSON file, retrieving...",
               );
             res.json().then((json) => {
               let settings_backup = JSON.parse(json.split("\n")[0]);
@@ -88,7 +88,7 @@ export default {
               return interaction.editReply({
                 content: "Restore completed successfully!",
                 components: [],
-                ephemeral: true
+                ephemeral: true,
               });
             });
           });

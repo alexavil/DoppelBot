@@ -7,7 +7,7 @@ export default {
   async execute(interaction) {
     const id = interaction.guild.id;
     let timeout = parseInt(
-      interaction.fields.getTextInputValue("timeoutInput")
+      interaction.fields.getTextInputValue("timeoutInput"),
     );
     if (timeout < 0 || !Number.isInteger(timeout)) {
       if (debug === "true") console.log("[DEBUG] Invalid input, aborting...");

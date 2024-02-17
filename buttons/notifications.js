@@ -13,21 +13,31 @@ export default {
       case "false":
         if (debug === "true")
           console.log(
-            "[DEBUG] Notifications are disabled for " + id + ", switching on..."
+            "[DEBUG] Notifications are disabled for " +
+              id +
+              ", switching on...",
           );
         settings
           .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
           .run("true", "notifications");
-        return interaction.editReply({ content: `Service notifications are now enabled!`, ephemeral: true });
+        return interaction.editReply({
+          content: `Service notifications are now enabled!`,
+          ephemeral: true,
+        });
       case "true":
         if (debug === "true")
           console.log(
-            "[DEBUG] Notifications are enabled for " + id + ", switching off..."
+            "[DEBUG] Notifications are enabled for " +
+              id +
+              ", switching off...",
           );
         settings
           .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
           .run("false", "notifications");
-        return interaction.editReply({ content: `Service notifications are now disabled!`, ephemeral: true });
+        return interaction.editReply({
+          content: `Service notifications are now disabled!`,
+          ephemeral: true,
+        });
     }
   },
 };

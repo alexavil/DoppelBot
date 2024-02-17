@@ -18,10 +18,17 @@ export default {
     ) {
       if (debug === "true")
         console.log("[DEBUG] User is not admin or alone, stop not allowed...");
-      return interaction.editReply({ content: "You are not allowed to stop!", ephemeral: true });
+      return interaction.editReply({
+        content: "You are not allowed to stop!",
+        ephemeral: true,
+      });
     }
     const connection = getVoiceConnection(id);
-    if (!connection) return interaction.editReply({ content: "The bot is already stopped!", ephemeral: true });
+    if (!connection)
+      return interaction.editReply({
+        content: "The bot is already stopped!",
+        ephemeral: true,
+      });
     else {
       common.stopCounter(id);
       if (debug === "true") console.log("[DEBUG] Stopping the connection...");

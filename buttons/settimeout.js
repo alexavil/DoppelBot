@@ -11,7 +11,7 @@ export default {
       .setStyle(Discord.TextInputStyle.Short)
       .setRequired(true);
     const firstActionRow = new Discord.ActionRowBuilder().addComponents(
-        timeoutInput
+      timeoutInput,
     );
     modal.addComponents(firstActionRow);
     await interaction.showModal(modal);

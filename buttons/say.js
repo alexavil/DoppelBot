@@ -20,9 +20,11 @@ export default {
       .setStyle(Discord.TextInputStyle.Paragraph)
       .setRequired(true);
     const firstActionRow = new Discord.ActionRowBuilder().addComponents(
-      channelInput
+      channelInput,
     );
-    const secondActionRow = new Discord.ActionRowBuilder().addComponents(responseInput);
+    const secondActionRow = new Discord.ActionRowBuilder().addComponents(
+      responseInput,
+    );
     modal.addComponents(firstActionRow, secondActionRow);
     await interaction.showModal(modal);
   },

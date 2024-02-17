@@ -45,12 +45,12 @@ export default {
     const row1 = new Discord.ActionRowBuilder().addComponents(
       backupbtn,
       restorebtn,
-      defaultbtn
+      defaultbtn,
     );
     const row2 = new Discord.ActionRowBuilder().addComponents(notifbtn);
     const row3 = new Discord.ActionRowBuilder().addComponents(
       healthbtn,
-      timeoutbtn
+      timeoutbtn,
     );
     const row4 = new Discord.ActionRowBuilder().addComponents(addtag, deltag);
     const settingsembed = new Discord.EmbedBuilder()
@@ -63,7 +63,7 @@ export default {
             "Should the bot send alerts and notifications?\nCurrent value: `" +
             settings
               .prepare(
-                `SELECT * FROM guild_${id} WHERE option = 'notifications'`
+                `SELECT * FROM guild_${id} WHERE option = 'notifications'`,
               )
               .get().value +
             "`",
@@ -75,9 +75,9 @@ export default {
             parseInt(
               settings
                 .prepare(
-                  `SELECT * FROM guild_${id} WHERE option = 'disconnect_timeout'`
+                  `SELECT * FROM guild_${id} WHERE option = 'disconnect_timeout'`,
                 )
-                .get().value
+                .get().value,
             ) +
             " seconds`",
         },
@@ -89,7 +89,7 @@ export default {
               .prepare(`SELECT * FROM guild_${id} WHERE option = 'min_health'`)
               .get().value +
             "`",
-        }
+        },
       );
     await interaction.editReply({
       embeds: [settingsembed],
@@ -111,13 +111,13 @@ export default {
       const row = new Discord.ActionRowBuilder().addComponents(
         stats,
         guilds,
-        say
+        say,
       );
       interaction.followUp({
         content:
           "These actions are potentially destructive. Proceed with caution.",
         components: [row],
-        ephemeral: true
+        ephemeral: true,
       });
     }
   },

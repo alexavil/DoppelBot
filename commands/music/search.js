@@ -9,12 +9,14 @@ export default {
     .setName("search")
     .setDescription("Search a track")
     .addStringOption((option) =>
-      option.setName("query").setDescription("Search query").setRequired(true)
+      option.setName("query").setDescription("Search query").setRequired(true),
     ),
   async execute(interaction) {
     const id = interaction.guild.id;
     interaction.deferReply();
-    let default_url = instances.prepare('SELECT * FROM instances ORDER BY RANDOM() LIMIT 1').get().url;
+    let default_url = instances
+      .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
+      .get().url;
     let query = interaction.options.getString("query");
     if (debug.debug === true) {
       console.log(`[DEBUG] User query: ${query}...`);
@@ -23,14 +25,14 @@ export default {
     let value = await common.searchContent(default_url, query, 0);
     if (value === "timeout") {
       if (debug.debug === true)
-      console.log(
-        "[DEBUG] Too many retries, aborting...",
-      );
-      return interaction.editReply("Connection failed after 4 retries.")
+        console.log("[DEBUG] Too many retries, aborting...");
+      return interaction.editReply("Connection failed after 4 retries.");
     }
     if (!value.length) {
       if (debug.debug === true) console.log("[DEBUG] No content was found...");
-      return interaction.editReply("No content was found based on your search query!");
+      return interaction.editReply(
+        "No content was found based on your search query!",
+      );
     }
     let searchembed = new Discord.EmbedBuilder();
     value.forEach((track) => {
@@ -42,7 +44,9 @@ export default {
     });
     searchembed.setTitle("Please select a track:");
     searchembed.setColor("#0099ff");
-    searchembed.setFooter({ text: "Powered by InvidJS - https://invidjs.js.org/" });
+    searchembed.setFooter({
+      text: "Powered by InvidJS - https://invidjs.js.org/",
+    });
     let embedmessage = await interaction.channel.send({
       embeds: [searchembed],
     });

@@ -8,10 +8,15 @@ export default {
     const id = interaction.guild.id;
     const connection = getVoiceConnection(id);
     let player = common.getPlayer(id);
-    if (!connection) return interaction.editReply({ content: "No tracks are playing!", ephemeral: true });
+    if (!connection)
+      return interaction.editReply({
+        content: "No tracks are playing!",
+        ephemeral: true,
+      });
     let length = convertToString(player.time);
-    return interaction.editReply(
-      { content: `Current time: ${length} / ${player.video.length}`, ephemeral: true },
-    );
+    return interaction.editReply({
+      content: `Current time: ${length} / ${player.video.length}`,
+      ephemeral: true,
+    });
   },
 };

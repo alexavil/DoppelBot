@@ -113,7 +113,7 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
           console.log("[DEBUG] Could not reach instance, retrying...");
         retries++;
         if (retries === 4) {
-          return caller.reply("Connection failed after 4 retries.");
+          return caller.editReply("Connection failed after 4 retries.");
         }
         let new_url = cache
           .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
@@ -159,7 +159,7 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
           console.log("[DEBUG] Could not reach instance, retrying...");
         retries++;
         if (retries === 4) {
-          return caller.reply("Connection failed after 4 retries.");
+          return caller.editReply("Connection failed after 4 retries.");
         }
         let new_url = cache
           .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
@@ -200,23 +200,23 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
     if (debug === "true") console.log("[DEBUG] Error: " + error);
     switch (error.code) {
       case InvidJS.ErrorCodes.APIBlocked: {
-        caller.reply(
+        caller.editReply(
           "The video could not be fetched due to API restrictions. The instance may not support API calls or may be down."
         );
         return undefined;
       }
       case InvidJS.ErrorCodes.APIError: {
-        caller.reply(
+        caller.editReply(
           "The video could not be fetched due to an API error. Please try again later."
         );
         return undefined;
       }
       case InvidJS.ErrorCodes.InvalidContent: {
-        caller.reply("This video is invalid. Please try another video.");
+        caller.editReply("This video is invalid. Please try another video.");
         return undefined;
       }
       case InvidJS.ErrorCodes.BlockedVideo: {
-        caller.reply(
+        caller.editReply(
           "This video is blocked - perhaps it's from an auto-generated channel? Please try another video."
         );
         return undefined;
@@ -240,7 +240,7 @@ async function getPlaylist(url, caller, retries) {
         console.log("[DEBUG] Could not reach instance, retrying...");
       retries++;
       if (retries === 4) {
-        return caller.reply("Connection failed after 4 retries.");
+        return caller.editReply("Connection failed after 4 retries.");
       }
       let new_url = cache
         .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
@@ -262,19 +262,19 @@ async function getPlaylist(url, caller, retries) {
     if (debug === "true") console.log("[DEBUG] Error: " + error);
     switch (error.code) {
       case InvidJS.ErrorCodes.APIBlocked: {
-        caller.reply(
+        caller.editReply(
           "The playlist could not be fetched due to API restrictions. The instance may not support API calls or may be down."
         );
         return undefined;
       }
       case InvidJS.ErrorCodes.APIError: {
-        caller.reply(
+        caller.editReply(
           "The playlist could not be fetched due to an API error. Please try again later."
         );
         return undefined;
       }
       case InvidJS.ErrorCodes.InvalidContent: {
-        caller.reply("This playlist is invalid. Please try another playlist.");
+        caller.editReply("This playlist is invalid. Please try another playlist.");
         return undefined;
       }
     }

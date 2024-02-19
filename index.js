@@ -23,8 +23,6 @@ import Sentry from "@sentry/node";
 import { ProfilingIntegration } from "@sentry/profiling-node";
 import { getVoiceConnection } from "@discordjs/voice";
 
-let monitor = undefined;
-
 const token = process.env.TOKEN;
 const debug = process.env.DEBUG;
 const activities = process.env.ACTIVITIES.split(",");
@@ -176,15 +174,6 @@ function initSentry() {
     ],
     environment: debug ? "testing" : "production",
     release: "3.0",
-  });
-  startMonitor();
-}
-
-function startMonitor() {
-  if (monitor !== undefined) monitor.finish();
-  monitor = Sentry.startTransaction({
-    op: "transaction",
-    name: "DoppelBot Performance",
   });
 }
 
@@ -382,12 +371,19 @@ client.on("guildDelete", (guild) => {
 });
 
 client.on("interactionCreate", async (interaction) => {
+  let monitor = Sentry.startInactiveSpan({
+    op: "transaction",
+    name: `DoppelBot Performance - ${interaction.id} (${interaction.guildId} - ${interaction.channelId})`,
+  });
+
   if (interaction.isModalSubmit()) {
     const modal = interaction.client.modals.get(interaction.customId);
 
     try {
-      return modal.execute(interaction);
+      modal.execute(interaction);
+      return monitor.end();
     } catch (error) {
+      Sentry.captureException(error);
       console.error(error);
     }
   }
@@ -396,8 +392,10 @@ client.on("interactionCreate", async (interaction) => {
     const button = interaction.client.buttons.get(interaction.customId);
 
     try {
-      return button.execute(interaction);
+      button.execute(interaction);
+      return monitor.end();
     } catch (error) {
+      Sentry.captureException(error);
       console.error(error);
     }
   }
@@ -406,8 +404,10 @@ client.on("interactionCreate", async (interaction) => {
     const menu = interaction.client.menus.get(interaction.customId);
 
     try {
-      return menu.execute(interaction);
+      menu.execute(interaction);
+      return monitor.end();
     } catch (error) {
+      Sentry.captureException(error);
       console.error(error);
     }
   }
@@ -421,7 +421,9 @@ client.on("interactionCreate", async (interaction) => {
   try {
     await interaction.deferReply({ ephemeral: true });
     await command.execute(interaction);
+    monitor.end();
   } catch (error) {
+    Sentry.captureException(error);
     console.error(error);
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({
@@ -453,10 +455,15 @@ client.on("messageCreate", (message) => {
         .value === "commands"
     ) {
       if (debug === "true") console.log("[DEBUG] Tag found!");
+      let monitor = Sentry.startInactiveSpan({
+        op: "transaction",
+        name: `DoppelBot Performance - ${message.id} (${id} - ${message.channel.id})`,
+      });
       let responses = tag.response.split("---\n");
       message.channel.send(
         responses[Math.floor(Math.random() * responses.length)],
       );
+      monitor.end();
     }
   });
 
@@ -476,7 +483,6 @@ process.on("uncaughtException", (error) => {
 });
 
 process.on("SIGINT", () => {
-  monitor.finish();
   console.log("Exiting...");
   process.exit();
 });

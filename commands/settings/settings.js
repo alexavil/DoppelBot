@@ -91,18 +91,23 @@ export default {
         .setCustomId(`stats`)
         .setLabel(`View stats`)
         .setStyle(ButtonStyle.Primary);
-      const guilds = new Discord.ButtonBuilder()
-        .setCustomId(`gleave`)
-        .setLabel(`Leave guilds`)
-        .setStyle(ButtonStyle.Danger);
       const say = new Discord.ButtonBuilder()
         .setCustomId(`say`)
         .setLabel(`Send a message`)
         .setStyle(ButtonStyle.Primary);
+      const guilds = new Discord.ButtonBuilder()
+        .setCustomId(`gleave`)
+        .setLabel(`Leave guilds`)
+        .setStyle(ButtonStyle.Danger);
+      const destroy = new Discord.ButtonBuilder()
+        .setCustomId(`selfdestruct`)
+        .setLabel(`Wipe all settings`)
+        .setStyle(ButtonStyle.Danger);
       const row = new Discord.ActionRowBuilder().addComponents(
         stats,
-        guilds,
         say,
+        guilds,
+        destroy,
       );
       interaction.followUp({
         content:

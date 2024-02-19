@@ -21,10 +21,10 @@ let players = [];
 let counters = [];
 let resources = [];
 
-function addToQueue(id, file, author, isLooped) {
+function addToQueue(id, file, name, author, isLooped) {
   masterqueue
-    .prepare(`INSERT INTO guild_${id} VALUES (?, ?, ?)`)
-    .run(file, author, isLooped);
+    .prepare(`INSERT INTO guild_${id} VALUES (?, ?, ?, ?)`)
+    .run(file, name, author, isLooped);
 }
 
 function removeFromQueue(id) {
@@ -122,7 +122,7 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
         url = url.replace(url.split("/w")[0], new_url);
         await getVideo(url, caller, isSilent, isAnnounced, retries);
       } else {
-        addToQueue(caller.guild.id, url, caller.user.id, "false");
+        addToQueue(caller.guild.id, url, value.title, caller.user.id, "false");
         if (isSilent === false)
           caller.channel.send({
             content: `Added ${url} to the queue!`,
@@ -176,7 +176,7 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
         );
         if (debug === "true")
           console.log("[DEBUG] Input valid, adding to queue...");
-        addToQueue(caller.guild.id, url, caller.user.id, "false");
+        addToQueue(caller.guild.id, url, value.title, caller.user.id, "false");
         if (isSilent === false)
           caller.channel.send(`Added ${url} to the queue!`);
         if (debug === "true") console.log("[DEBUG] Downloading stream...");

@@ -362,7 +362,9 @@ function announceTrack(url, author, video, caller) {
     skip,
     seek,
   );
-  caller.channel.send({ embeds: [playingembed], components: [row] });
+  caller.channel.send({ embeds: [playingembed] });
+  caller.followUp({content: "Track added successfully!", ephemeral: true});
+  caller.followUp({content: "Use these buttons to control the playback:", components: [row], ephemeral: true});
 }
 
 function playMusic(channel, video, blob, caller, isAnnounced) {

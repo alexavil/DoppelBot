@@ -104,6 +104,39 @@ finish () {
 repairIntro () {
     clear
     echo -e "Welcome to Setup!\nThis script will help you to configure the bot.\nPress Ctrl-C at any time to abort the script.\n\n"
+    PS3="What would you like to do? "
+    options=('Update the dependencies' 'Re-deploy commands' 'Edit the name' 'Edit the Client ID' 'Edit the token' 'Edit the owners' 'Edit the avatar' 'Edit the games' 'Edit telemetry settings' 'Exit')
+    select action in $options
+    do
+        case $REPLY in
+            1)
+                clear
+                echo -e "Updating dependencies..."
+                npm update | tee -a repair.log
+                clear
+                echo -e "Update complete..."
+                break 
+            ;;
+            2)
+                clear
+                echo -e "Deploying commands..."
+                node ./deployment.js | tee -a repair.log
+                clear
+                echo -e "Deployment complete..."
+                break 
+            ;;
+            [3-8]) 
+                clear
+                echo -e "Deploying commands..."
+                node ./deployment.js | tee -a repair.log
+                clear
+                echo -e "Deployment complete..."
+                break 
+            ;;
+            10) break ;;            
+            *) echo -e "Invalid input. Please select a valid telemetry level." ;;
+        esac  
+    done
 }
 
 checkCopy

@@ -2,7 +2,7 @@
 
 checkCopy () {
     clear
-    echo -e "Verifying install..." | tee -a setup.log
+    echo -e "Verifying install..."
     if [ -d ./node_modules/ ] && [ -d ./data/ ]
     then
         repairIntro
@@ -20,7 +20,7 @@ setupIntro () {
 
 checkDeps () {
     clear
-    echo -e "Checking Node.js version...\n\n" | tee -a setup.log
+    echo -e "Checking Node.js version...\n\n"
     node -v | tee -a setup.log
     if [ $? -eq 0 ]
     then
@@ -34,20 +34,32 @@ checkDeps () {
 }
 
 prepare () {
-    echo -e "Installing dependencies...\n\n" | tee -a setup.log
+    echo -e "Installing dependencies...\n\n"
     npm install | tee -a setup.log
-    echo -e "Creating data folder...\n\n" | tee -a setup.log
+    echo -e "Creating data folder...\n\n"
     mkdir -p ./data/ | tee -a setup.log
     wizard
 }
 
 wizard () {
     clear
-    echo -e "Setup will now ask you to fill in some data. You'll be able to change it later.\n\n" | tee -a setup.log
-    read -r -p "Enter the bot's username: " name
-    read -r -p "Enter the bot's client ID: " clientid
-    read -r -p "Enter the bot's token: " token
-    read -r -p "Enter the owner(s) Discord user id(s), separated by a comma: " id
+    echo -e "Setup will now ask you to fill in some data. You'll be able to change it later.\n\n"
+    while [ -z $name ] 
+    do
+        read -r -p "Enter the bot's username: " name
+    done
+    while [ -z $clientid ] 
+    do    
+        read -r -p "Enter the bot's client ID: " clientid
+    done
+    while [ -z $token ] 
+    do
+        read -r -p "Enter the bot's token: " token
+    done
+    while [ -z $id ] 
+    do
+        read -r -p "Enter the owner(s) Discord user id(s), separated by a comma: " id
+    done
     read -r -p "Enter the bot's avatar link (leave blank for empty): " avatar
     read -r -p "Enter the bot's games, separated by a comma (leave blank for empty): " games
     echo -e "Saving preferences...\n\n" | tee -a setup.log
@@ -74,6 +86,13 @@ telemetry_wizard () {
             *) echo -e "Invalid input. Please select a valid telemetry level." ;;
         esac  
     done
+    deployment
+}
+
+deployment () {
+    clear
+    echo -e "Deploying commands..."
+    node ./deployment.js | tee -a setup.log
     finish
 }
 

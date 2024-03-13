@@ -164,14 +164,14 @@ function setProfile() {
 }
 
 function initSentry() {
-  if (debug === true) console.log("[DEBUG] Initializing Sentry...");
+  if (debug === "true") console.log("[DEBUG] Initializing Sentry...");
   Sentry.init({
     dsn: "https://d7c06763ec24990c168e4ad0db91e360@o4504711913340928.ingest.sentry.io/4505981661151232",
     tracesSampleRate: 1.0,
     profilesSampleRate: 1.0,
     integrations: [
       new Sentry.Integrations.Http({ tracing: true }),
-      new nodeProfilingIntegration(),
+      nodeProfilingIntegration(),
     ],
     environment: debug ? "testing" : "production",
     release: "3.0",
@@ -323,10 +323,10 @@ function gamecycle() {
 }
 
 function clearMusicCache() {
-  if (debug === true) console.log("[DEBUG] Clearing music cache...");
+  if (debug === "true") console.log("[DEBUG] Clearing music cache...");
   client.guilds.cache.forEach((guild) => {
     if (!getVoiceConnection(guild.id)) {
-      if (debug === true)
+      if (debug === "true")
         console.log(`[DEBUG] Clearing cache for guild ${guild.id}...`);
       music.clearCache(guild.id);
     }
@@ -334,7 +334,7 @@ function clearMusicCache() {
 }
 
 client.on("ready", () => {
-  if (telemetry !== "none") initSentry();
+  if (telemetry === "true") initSentry();
   setProfile();
   validateSettings();
   getInstances();
@@ -373,22 +373,22 @@ client.on("guildDelete", (guild) => {
 
 client.on("interactionCreate", async (interaction) => {
   let monitor = undefined;
-  if (telemetry === "full") {
-    monitor = Sentry.startInactiveSpan({
-      op: "transaction",
-      name: `DoppelBot Performance - ${interaction.id} (${interaction.guildId} - ${interaction.channelId})`,
-    });
-  }
+  if (telemetry === "true") monitor = Sentry.startInactiveSpan({
+    op: "transaction",
+    name: `DoppelBot Performance - ${interaction.id} (${interaction.guildId} - ${interaction.channelId})`,
+  });
 
   if (interaction.isModalSubmit()) {
     const modal = interaction.client.modals.get(interaction.customId);
 
     try {
       modal.execute(interaction);
-      if (telemetry === "full") monitor.end();
+      if (monitor !== undefined) return monitor.end();
+      else return;
     } catch (error) {
-      if (telemetry !== "none") Sentry.captureException(error);
+      if (telemetry === "true") Sentry.captureException(error);
       console.error(error);
+      return;
     }
   }
 
@@ -397,10 +397,12 @@ client.on("interactionCreate", async (interaction) => {
 
     try {
       button.execute(interaction);
-      if (telemetry === "full") monitor.end();
+      if (monitor !== undefined) return monitor.end();
+      else return;
     } catch (error) {
-      if (telemetry !== "none") Sentry.captureException(error);
+      if (telemetry === "true") Sentry.captureException(error);
       console.error(error);
+      return;
     }
   }
 
@@ -409,10 +411,12 @@ client.on("interactionCreate", async (interaction) => {
 
     try {
       menu.execute(interaction);
-      if (telemetry === "full") monitor.end();
+      if (monitor !== undefined) return monitor.end();
+      else return;
     } catch (error) {
-      if (telemetry !== "none") Sentry.captureException(error);
+      if (telemetry === "true") Sentry.captureException(error);
       console.error(error);
+      return;
     }
   }
   const command = interaction.client.commands.get(interaction.commandName);
@@ -423,11 +427,13 @@ client.on("interactionCreate", async (interaction) => {
   }
 
   try {
-    if (command.shouldWait !== false) await interaction.deferReply({ ephemeral: true });
+    if (command.shouldWait !== false)
+      await interaction.deferReply({ ephemeral: true });
     await command.execute(interaction);
-    if (telemetry === "full") monitor.end();
+    if (monitor !== undefined) return monitor.end();
+    else return;
   } catch (error) {
-    if (telemetry !== "none") Sentry.captureException(error);
+    if (telemetry === "true") Sentry.captureException(error);
     console.error(error);
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({
@@ -461,7 +467,7 @@ client.on("messageCreate", (message) => {
         .value === "commands"
     ) {
       if (debug === "true") console.log("[DEBUG] Tag found!");
-      if (telemetry === "full") {
+      if (telemetry === "true") {
         monitor = Sentry.startInactiveSpan({
           op: "transaction",
           name: `DoppelBot Performance - ${message.id} (${id} - ${message.channel.id})`,
@@ -471,7 +477,7 @@ client.on("messageCreate", (message) => {
       message.channel.send(
         responses[Math.floor(Math.random() * responses.length)],
       );
-      if (telemetry === "full") monitor.end();
+      if (monitor !== undefined) monitor.end();
     }
   });
 
@@ -481,13 +487,13 @@ client.on("messageCreate", (message) => {
 });
 
 process.on("unhandledRejection", (error) => {
-  if (debug === true) console.log("[DEBUG] Error: " + error.message);
-  if (telemetry !== "none") Sentry.captureException(error);
+  if (debug === "true") console.log("[DEBUG] Error: " + error.message);
+  if (telemetry === "true") Sentry.captureException(error);
 });
 
 process.on("uncaughtException", (error) => {
-  if (debug === true) console.log("[DEBUG] Error: " + error.message);
-  if (telemetry !== "none") Sentry.captureException(error);
+  if (debug === "true") console.log("[DEBUG] Error: " + error.message);
+  if (telemetry === "true") Sentry.captureException(error);
 });
 
 process.on("SIGINT", () => {

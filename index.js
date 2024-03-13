@@ -20,7 +20,7 @@ import {
 import * as InvidJS from "@invidjs/invid-js";
 
 import Sentry from "@sentry/node";
-import { ProfilingIntegration } from "@sentry/profiling-node";
+import { nodeProfilingIntegration } from "@sentry/profiling-node";
 import { getVoiceConnection } from "@discordjs/voice";
 
 const token = process.env.TOKEN;
@@ -171,7 +171,7 @@ function initSentry() {
     profilesSampleRate: 1.0,
     integrations: [
       new Sentry.Integrations.Http({ tracing: true }),
-      new ProfilingIntegration(),
+      new nodeProfilingIntegration(),
     ],
     environment: debug ? "testing" : "production",
     release: "3.0",
@@ -423,7 +423,7 @@ client.on("interactionCreate", async (interaction) => {
   }
 
   try {
-    await interaction.deferReply({ ephemeral: true });
+    if (command.shouldWait !== false) await interaction.deferReply({ ephemeral: true });
     await command.execute(interaction);
     if (telemetry === "full") monitor.end();
   } catch (error) {

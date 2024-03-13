@@ -7,6 +7,9 @@ export default {
     for (const guild of guilds) {
       interaction.client.guilds.cache.get(guild).leave();
     }
-    return interaction.update({ content: "Left guild successfully!", components: [] });
+    return interaction.update({
+      content: "Left guild successfully!",
+      components: [],
+    });
   },
 };

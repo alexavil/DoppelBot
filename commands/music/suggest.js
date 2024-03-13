@@ -8,7 +8,7 @@ export default {
     .setName("suggest")
     .setDescription("Suggest search results")
     .addStringOption((option) =>
-      option.setName("query").setDescription("Search query").setRequired(true)
+      option.setName("query").setDescription("Search query").setRequired(true),
     ),
   async execute(interaction) {
     let query = interaction.options.getString("query");
@@ -20,7 +20,7 @@ export default {
     let value = await common.getSuggestions(
       instances[Math.floor(Math.random() * instances.length)].url,
       query,
-      0
+      0,
     );
     if (value === "error") {
       return interaction.editReply("Connection failed after 4 retries.");
@@ -28,7 +28,7 @@ export default {
       if (!value.length) {
         if (debug === "true") console.log("[DEBUG] No content was found...");
         return interaction.editReply(
-          "No suggestions were found based on your search query!"
+          "No suggestions were found based on your search query!",
         );
       }
       let title = "Suggestions for `" + query + "`:";

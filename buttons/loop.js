@@ -9,8 +9,7 @@ export default {
     const id = interaction.guild.id;
     const channel = interaction.member.voice.channel;
     const connection = getVoiceConnection(id);
-    if (!channel)
-      return interaction.reply("You must be in a voice channel!");
+    if (!channel) return interaction.reply("You must be in a voice channel!");
     if (!connection) return interaction.reply("Nothing to loop!");
     switch (
       masterqueue

@@ -26,7 +26,7 @@ export default {
     if (debug === "true") console.log(`[DEBUG] Fetching tag list for ${id}...`);
     let responses = tags.prepare(`SELECT * FROM guild_${id}`).all();
     let tagsembed = new Discord.EmbedBuilder().setTitle(
-      `Tags for ${interaction.guild.name}`
+      `Tags for ${interaction.guild.name}`,
     );
     let row = undefined;
     const addtag = new Discord.ButtonBuilder()

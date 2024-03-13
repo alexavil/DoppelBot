@@ -451,6 +451,8 @@ client.on("messageCreate", (message) => {
 
   if (debug === "true") console.log("[DEBUG] Got a message!");
 
+  let monitor = undefined;
+
   custom_tags.forEach((tag) => {
     if (
       !message.author.bot &&
@@ -459,10 +461,12 @@ client.on("messageCreate", (message) => {
         .value === "commands"
     ) {
       if (debug === "true") console.log("[DEBUG] Tag found!");
-      let monitor = Sentry.startInactiveSpan({
-        op: "transaction",
-        name: `DoppelBot Performance - ${message.id} (${id} - ${message.channel.id})`,
-      });
+      if (telemetry === "full") {
+        monitor = Sentry.startInactiveSpan({
+          op: "transaction",
+          name: `DoppelBot Performance - ${message.id} (${id} - ${message.channel.id})`,
+        });
+      }
       let responses = tag.response.split("---\n");
       message.channel.send(
         responses[Math.floor(Math.random() * responses.length)],

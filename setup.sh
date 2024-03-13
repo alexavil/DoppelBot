@@ -68,24 +68,20 @@ wizard() {
 
 telemetry_wizard() {
     clear
-    echo -e "Read the following notice carefully.\n\nThis bot uses telemetry to make your experience better.\n\nYou have 3 options for telemetry: None, Minimal and Full.\n\nIf you select None, no data will be sent to the developers of the bot.\n\nIf you select Minimal, we will collect the following data:\n- Error messages\n- Stack traces\n- Basic device information (CPU, RAM, OS version, Node version)\n\nIf you select Full, we will also collect:\n- Performance metrics\n- Server and channel IDs for executed commands\n\n"
-    options='None Minimal Full'
-    PS3="What level of telemetry would you like to use? "
+    echo -e "Read the following notice carefully.\n\nThis bot uses telemetry to make your experience better.\n\nIf you decide to opt-out, no data will be sent to the developers of the bot.\n\nIf you decide to opt-in, we will collect the following data:\n- Error messages\n- Stack traces\n- Basic device information (CPU, RAM, OS version, Node version)\n- Performance metrics\n- Server and channel IDs for executed commands\n\n"
+    options='Yes No'
+    PS3="Would you like to enable telemetry? "
     select telemetry_level in $options; do
         case $REPLY in
         1)
-            echo "TELEMETRY=none" >>.env
+            echo "TELEMETRY=true" >>.env
             break
             ;;
         2)
-            echo "TELEMETRY=minimal" >>.env
+            echo "TELEMETRY=false" >>.env
             break
             ;;
-        3)
-            echo "TELEMETRY=full" >>.env
-            break
-            ;;
-        *) echo -e "Invalid input. Please select a valid telemetry level." ;;
+        *) echo -e "Invalid input." ;;
         esac
     done
     deployment
@@ -180,33 +176,26 @@ repairIntro() {
             ;;
         9)
             clear
-            echo -e "Read the following notice carefully.\n\nThis bot uses telemetry to make your experience better.\n\nYou have 3 options for telemetry: None, Minimal and Full.\n\nIf you select None, no data will be sent to the developers of the bot.\n\nIf you select Minimal, we will collect the following data:\n- Error messages\n- Stack traces\n- Basic device information (CPU, RAM, OS version, Node version)\n\nIf you select Full, we will also collect:\n- Performance metrics\n- Server and channel IDs for executed commands\n\n"
-            options='None Minimal Full'
-            PS3="What level of telemetry would you like to use? "
+            echo -e "Read the following notice carefully.\n\nThis bot uses telemetry to make your experience better.\n\nIf you decide to opt-out, no data will be sent to the developers of the bot.\n\nIf you decide to opt-in, we will collect the following data:\n- Error messages\n- Stack traces\n- Basic device information (CPU, RAM, OS version, Node version)\n- Performance metrics\n- Server and channel IDs for executed commands\n\n"
+            options='Yes No'
+            PS3="Would you like to enable telemetry? "
             select telemetry_level in $options; do
                 case $REPLY in
                 1)
                     sed -i "/TELEMETRY=/d" .env
-                    echo "TELEMETRY=none" >>.env
+                    echo "TELEMETRY=true" >>.env
                     clear
                     PS3="What would you like to do? "
                     break
                     ;;
                 2)
                     sed -i "/TELEMETRY=/d" .env
-                    echo "TELEMETRY=minimal" >>.env
+                    echo "TELEMETRY=false" >>.env
                     clear
                     PS3="What would you like to do? "
                     break
                     ;;
-                3)
-                    sed -i "/TELEMETRY=/d" .env
-                    echo "TELEMETRY=full" >>.env
-                    clear
-                    PS3="What would you like to do? "
-                    break
-                    ;;
-                *) echo -e "Invalid input. Please select a valid telemetry level." ;;
+                *) echo -e "Invalid input." ;;
                 esac
             done
             ;;

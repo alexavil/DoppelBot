@@ -335,40 +335,8 @@ function announceTrack(url, author, video, caller) {
     .setDescription(video.title + "\n" + url + `\n\nRequested by <@!${author}>`)
     .setImage(thumb)
     .setFooter({ text: "Powered by InvidJS - https://invidjs.js.org/" });
-  const loop = new Discord.ButtonBuilder()
-    .setCustomId(`loop`)
-    .setEmoji("🔄")
-    .setStyle(ButtonStyle.Primary);
-  const pause = new Discord.ButtonBuilder()
-    .setCustomId(`pause`)
-    .setEmoji("⏸")
-    .setStyle(ButtonStyle.Primary);
-  const skip = new Discord.ButtonBuilder()
-    .setCustomId(`skip`)
-    .setEmoji("⏩")
-    .setStyle(ButtonStyle.Primary);
-  const stop = new Discord.ButtonBuilder()
-    .setCustomId(`stop`)
-    .setEmoji("⏹")
-    .setStyle(ButtonStyle.Danger);
-  const seek = new Discord.ButtonBuilder()
-    .setCustomId(`seek`)
-    .setEmoji("🔎")
-    .setStyle(ButtonStyle.Primary);
-  const row = new Discord.ActionRowBuilder().addComponents(
-    loop,
-    pause,
-    stop,
-    skip,
-    seek,
-  );
   caller.channel.send({ embeds: [playingembed] });
-  caller.followUp({ content: "Track added successfully!", ephemeral: true });
-  caller.followUp({
-    content: "Use these buttons to control the playback:",
-    components: [row],
-    ephemeral: true,
-  });
+  caller.followUp({ content: "Track added successfully! Use `/controls` to pause, stop or loop the track.", ephemeral: true });
 }
 
 function playMusic(channel, video, blob, caller, isAnnounced) {

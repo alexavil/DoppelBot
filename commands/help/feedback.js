@@ -6,7 +6,7 @@ export default {
     .setDescription("Leave feedback for the developers"),
   shouldWait: false,
   async execute(interaction) {
-    if (telemetry === "none")
+    if (telemetry === "false")
       return interaction.reply({
         content:
           "Sorry, this command is disabled due to the restrictions for this bot.",

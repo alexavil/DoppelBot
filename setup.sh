@@ -107,7 +107,7 @@ repairIntro() {
     clear
     echo -e "Welcome to Setup!\nThis script will help you to configure the bot.\nPress Ctrl-C at any time to abort the script.\n\n"
     PS3="What would you like to do? "
-    options=("Update the dependencies" "Re-deploy commands" "Edit the name" "Edit the Client ID" "Edit the token" "Edit the owners" "Edit the avatar" "Edit the games" "Edit telemetry settings" "Exit")
+    options=("Update dependencies" "Re-deploy commands" "Edit username" "Edit Client ID" "Edit token" "Edit owners" "Edit avatar" "Edit games" "Edit telemetry settings" "Toggle Debug Mode" "Exit")
     select action in "${options[@]}"; do
         case $REPLY in
         1)
@@ -210,7 +210,35 @@ repairIntro() {
                 esac
             done
             ;;
-        10) clear ; break ;;
+        10)
+            clear
+            echo -e "Read the following notice carefully.\n\nDebug Mode is intended to be used for testing purposes only.\nIn this mode, the bot will log most actions and commands, including sensitive information.\n\nDebug Mode is not recommended for use in production. Please proceed with caution."
+            options='Yes No'
+            PS3="Would you like to enable Debug Mode? "
+            select telemetry_level in $options; do
+                case $REPLY in
+                1)
+                    sed -i "/DEBUG=/d" .env
+                    echo "DEBUG=true" >>.env
+                    clear
+                    PS3="What would you like to do? "
+                    break
+                    ;;
+                2)
+                    sed -i "/DEBUG=/d" .env
+                    echo "DEBUG=false" >>.env
+                    clear
+                    PS3="What would you like to do? "
+                    break
+                    ;;
+                *) echo -e "Invalid input." ;;
+                esac
+            done
+            ;;
+        11)
+            clear
+            break
+            ;;
         *) ;;
         esac
         echo -e "Bot Configuration Script\n\n"

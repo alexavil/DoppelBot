@@ -98,7 +98,6 @@ deployment() {
 
 finish() {
     clear
-    touch ./data/.firstrun
     echo -e "Congratulations! You've successfully completed the Setup!\nTo start the bot, execute 'node ./index.js' in your terminal."
 }
 

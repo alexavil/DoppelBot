@@ -103,7 +103,7 @@ finish() {
 
 repairIntro() {
     clear
-    echo -e "Welcome to Setup!\nThis script will help you to configure the bot.\nPress Ctrl-C at any time to abort the script.\n\n"
+    echo -e "Welcome to Setup!\nThis script will help you to configure the bot.\nPress Ctrl-C at any time to abort the script.\n\n**Important:** Usage of some functions and commands may be restricted in some countries, such as Russia. Please host the bot in a neutral location.\n\n"
     PS3="What would you like to do? "
     options=("Update dependencies" "Re-deploy commands" "Edit username" "Edit Client ID" "Edit token" "Edit owners" "Edit avatar" "Edit games" "Edit telemetry settings" "Toggle Debug Mode" "Exit")
     select action in "${options[@]}"; do

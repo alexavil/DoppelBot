@@ -4,6 +4,8 @@ A general-purpose Discord bot for entertainment.
 
 We encourage the bot to be self-hosted. Please follow this guide to install the bot.
 
+**Important:** Usage of some functions and commands may be restricted in some countries, such as Russia. Please host the bot in a neutral location.
+
 ### Basic Installation
 
 1. Create a new Discord application and copy the bot's token.

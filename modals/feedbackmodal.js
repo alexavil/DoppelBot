@@ -13,7 +13,7 @@ export default {
       comments: interaction.fields.getTextInputValue("responseInput"),
     };
     Sentry.captureUserFeedback(userFeedback);
-    */ 
+    */
     interaction.reply({ content: "Success!", ephemeral: true });
   },
 };

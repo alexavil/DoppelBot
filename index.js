@@ -147,12 +147,17 @@ const RequiredPerms = [
 ];
 
 if (debug === "true") {
-  const log_file = fs.createWriteStream(__dirname + '/logs/debug.log', {flags : 'a'});
+  const log_file = fs.createWriteStream(__dirname + "/logs/debug.log", {
+    flags: "a",
+  });
   const log_stdout = process.stdout;
 
-  console.log = function(d) { //
-    log_file.write(new Date().toLocaleString() + " --- " + util.format(d) + '\n');
-    log_stdout.write(util.format(d) + '\n');
+  console.log = function (d) {
+    //
+    log_file.write(
+      new Date().toLocaleString() + " --- " + util.format(d) + "\n",
+    );
+    log_stdout.write(util.format(d) + "\n");
   };
 
   console.log(`WARNING: ${name} is in debug mode! 
@@ -384,19 +389,20 @@ client.on("guildDelete", (guild) => {
 client.on("interactionCreate", async (interaction) => {
   let id = interaction.guild.id;
   let monitor = undefined;
-  if (telemetry === "true") monitor = Sentry.startInactiveSpan({
-    op: "transaction",
-    name: `DoppelBot Performance - ${interaction.id} (${interaction.guildId} - ${interaction.channelId})`,
-  });
+  if (telemetry === "true")
+    monitor = Sentry.startInactiveSpan({
+      op: "transaction",
+      name: `DoppelBot Performance - ${interaction.id} (${interaction.guildId} - ${interaction.channelId})`,
+    });
 
   if (interaction.isModalSubmit()) {
     const modal = interaction.client.modals.get(interaction.customId);
 
     try {
       if (debug === "true")
-      console.log(
-        `[DEBUG] Trying to execute ${interaction.customId} in ${id}.`,
-      );
+        console.log(
+          `[DEBUG] Trying to execute ${interaction.customId} in ${id}.`,
+        );
       modal.execute(interaction);
       if (monitor !== undefined) return monitor.end();
       else return;
@@ -412,9 +418,9 @@ client.on("interactionCreate", async (interaction) => {
 
     try {
       if (debug === "true")
-      console.log(
-        `[DEBUG] Trying to execute ${interaction.customId} in ${id}.`,
-      );
+        console.log(
+          `[DEBUG] Trying to execute ${interaction.customId} in ${id}.`,
+        );
       button.execute(interaction);
       if (monitor !== undefined) return monitor.end();
       else return;
@@ -430,9 +436,9 @@ client.on("interactionCreate", async (interaction) => {
 
     try {
       if (debug === "true")
-      console.log(
-        `[DEBUG] Trying to execute ${interaction.customId} in ${id}.`,
-      );
+        console.log(
+          `[DEBUG] Trying to execute ${interaction.customId} in ${id}.`,
+        );
       menu.execute(interaction);
       if (monitor !== undefined) return monitor.end();
       else return;
@@ -451,9 +457,9 @@ client.on("interactionCreate", async (interaction) => {
 
   try {
     if (debug === "true")
-    console.log(
-      `[DEBUG] Trying to execute ${interaction.commandName} in ${id}.`,
-    );
+      console.log(
+        `[DEBUG] Trying to execute ${interaction.commandName} in ${id}.`,
+      );
     if (command.shouldWait !== false)
       await interaction.deferReply({ ephemeral: true });
     await command.execute(interaction);

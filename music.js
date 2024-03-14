@@ -336,7 +336,11 @@ function announceTrack(url, author, video, caller) {
     .setImage(thumb)
     .setFooter({ text: "Powered by InvidJS - https://invidjs.js.org/" });
   caller.channel.send({ embeds: [playingembed] });
-  caller.followUp({ content: "Track added successfully! Use `/controls` to pause, stop or loop the track.", ephemeral: true });
+  caller.followUp({
+    content:
+      "Track added successfully! Use `/controls` to pause, stop or loop the track.",
+    ephemeral: true,
+  });
 }
 
 function playMusic(channel, video, blob, caller, isAnnounced) {

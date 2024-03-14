@@ -2,7 +2,7 @@ import Discord, { ButtonStyle } from "discord.js";
 import sqlite3 from "better-sqlite3";
 const settings = new sqlite3("./data/settings.db");
 const debug = process.env.DEBUG;
-const owners = process.env.OWNERS;
+const owners = process.env.OWNERS.split(",");
 export default {
   data: new Discord.SlashCommandBuilder()
     .setName("settings")
@@ -28,7 +28,7 @@ export default {
       .setStyle(ButtonStyle.Danger);
     const healthbtn = new Discord.ButtonBuilder()
       .setCustomId(`sethealth`)
-      .setLabel(`Invidious: Set Health`)
+      .setLabel(`Invidious: Set health`)
       .setStyle(ButtonStyle.Primary);
     const timeoutbtn = new Discord.ButtonBuilder()
       .setCustomId(`settimeout`)

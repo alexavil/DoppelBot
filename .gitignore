@@ -1,6 +1,7 @@
 *.db
 node_modules/
 data/
+logs/
 start.sh
 .env
 *.log

@@ -7,6 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 import fs from "fs-extra";
+import util from "util";
 import cron from "cron";
 import path from "path";
 import sqlite3 from "better-sqlite3";
@@ -55,6 +56,7 @@ const client = new Discord.Client({
 });
 
 if (!fs.existsSync("./data/")) fs.mkdirSync("./data/");
+if (!fs.existsSync("./logs/")) fs.mkdirSync("./logs/");
 
 const settings = new sqlite3("./data/settings.db");
 const queue = new sqlite3("./data/queue.db");
@@ -145,6 +147,14 @@ const RequiredPerms = [
 ];
 
 if (debug === "true") {
+  const log_file = fs.createWriteStream(__dirname + '/logs/debug.log', {flags : 'a'});
+  const log_stdout = process.stdout;
+
+  console.log = function(d) { //
+    log_file.write(new Date().toLocaleString() + " --- " + util.format(d) + '\n');
+    log_stdout.write(util.format(d) + '\n');
+  };
+
   console.log(`WARNING: ${name} is in debug mode! 
   Debug mode is intended to be used for testing purposes only. 
   In this mode, ${name} will log most actions and commands, including sensitive information. 
@@ -372,6 +382,7 @@ client.on("guildDelete", (guild) => {
 });
 
 client.on("interactionCreate", async (interaction) => {
+  let id = interaction.guild.id;
   let monitor = undefined;
   if (telemetry === "true") monitor = Sentry.startInactiveSpan({
     op: "transaction",
@@ -382,12 +393,16 @@ client.on("interactionCreate", async (interaction) => {
     const modal = interaction.client.modals.get(interaction.customId);
 
     try {
+      if (debug === "true")
+      console.log(
+        `[DEBUG] Trying to execute ${interaction.customId} in ${id}.`,
+      );
       modal.execute(interaction);
       if (monitor !== undefined) return monitor.end();
       else return;
     } catch (error) {
       if (telemetry === "true") Sentry.captureException(error);
-      console.error(error);
+      if (debug === "true") console.log("[DEBUG] Error: " + error.message);
       return;
     }
   }
@@ -396,12 +411,16 @@ client.on("interactionCreate", async (interaction) => {
     const button = interaction.client.buttons.get(interaction.customId);
 
     try {
+      if (debug === "true")
+      console.log(
+        `[DEBUG] Trying to execute ${interaction.customId} in ${id}.`,
+      );
       button.execute(interaction);
       if (monitor !== undefined) return monitor.end();
       else return;
     } catch (error) {
       if (telemetry === "true") Sentry.captureException(error);
-      console.error(error);
+      if (debug === "true") console.log("[DEBUG] Error: " + error.message);
       return;
     }
   }
@@ -410,12 +429,16 @@ client.on("interactionCreate", async (interaction) => {
     const menu = interaction.client.menus.get(interaction.customId);
 
     try {
+      if (debug === "true")
+      console.log(
+        `[DEBUG] Trying to execute ${interaction.customId} in ${id}.`,
+      );
       menu.execute(interaction);
       if (monitor !== undefined) return monitor.end();
       else return;
     } catch (error) {
       if (telemetry === "true") Sentry.captureException(error);
-      console.error(error);
+      if (debug === "true") console.log("[DEBUG] Error: " + error.message);
       return;
     }
   }
@@ -427,6 +450,10 @@ client.on("interactionCreate", async (interaction) => {
   }
 
   try {
+    if (debug === "true")
+    console.log(
+      `[DEBUG] Trying to execute ${interaction.commandName} in ${id}.`,
+    );
     if (command.shouldWait !== false)
       await interaction.deferReply({ ephemeral: true });
     await command.execute(interaction);
@@ -434,7 +461,7 @@ client.on("interactionCreate", async (interaction) => {
     else return;
   } catch (error) {
     if (telemetry === "true") Sentry.captureException(error);
-    console.error(error);
+    if (debug === "true") console.log("[DEBUG] Error: " + error.message);
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({
         content: "uhh can u say that again?",

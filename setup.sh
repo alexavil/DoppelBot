@@ -2,6 +2,8 @@
 
 checkCopy() {
     clear
+    echo -e "Getting ready..."
+    mkdir -p ./logs
     echo -e "Verifying install..."
     if [ -d ./node_modules/ ] && [ -d ./data/ ]; then
         repairIntro
@@ -20,22 +22,22 @@ setupIntro() {
 checkDeps() {
     clear
     echo -e "Checking Node.js version...\n\n"
-    node -v | tee -a setup.log
+    node -v | tee -a ./logs/setup.log
     if [ $? -eq 0 ]; then
         prepare
     else
-        sudo apt update -y | tee -a setup.log
-        curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - && \  | tee -a setup.log
-        sudo apt-get install -y nodejs | tee -a setup.log
+        sudo apt update -y | tee -a ./logs/setup.log
+        curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - && \  | tee -a ./logs/setup.log
+        sudo apt-get install -y nodejs | tee -a ./logs/setup.log
         prepare
     fi
 }
 
 prepare() {
     echo -e "Installing dependencies...\n\n"
-    npm install | tee -a setup.log
+    npm install | tee -a ./logs/setup.log
     echo -e "Creating data folder...\n\n"
-    mkdir -p ./data/ | tee -a setup.log
+    mkdir -p ./data/ | tee -a ./logs/setup.log
     wizard
 }
 
@@ -56,7 +58,7 @@ wizard() {
     done
     read -r -p "Enter the bot's avatar link (leave blank for empty): " avatar
     read -r -p "Enter the bot's games, separated by a comma (leave blank for empty): " games
-    echo -e "Saving preferences...\n\n" | tee -a setup.log
+    echo -e "Saving preferences...\n\n" | tee -a ./logs/setup.log
     echo "NAME='${name}'" >>.env
     echo "CLIENTID=${clientid}" >>.env
     echo "TOKEN=${token}" >>.env
@@ -90,12 +92,13 @@ telemetry_wizard() {
 deployment() {
     clear
     echo -e "Deploying commands..."
-    node ./deployment.js | tee -a setup.log
+    node ./deployment.js | tee -a ./logs/setup.log
     finish
 }
 
 finish() {
     clear
+    touch ./data/.firstrun
     echo -e "Congratulations! You've successfully completed the Setup!\nTo start the bot, execute 'node ./index.js' in your terminal."
 }
 
@@ -109,14 +112,14 @@ repairIntro() {
         1)
             clear
             echo -e "Updating dependencies..."
-            npm update | tee -a repair.log
+            npm update | tee -a ./logs/repair.log
             clear
             echo -e "Update complete."
             ;;
         2)
             clear
             echo -e "Deploying commands..."
-            node ./deployment.js | tee -a repair.log
+            node ./deployment.js | tee -a ./logs/repair.log
             clear
             echo -e "Deployment complete..."
             ;;

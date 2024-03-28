@@ -269,15 +269,11 @@ function announceTrack(url, author, video, caller) {
   ).url;
   let playingembed = new Discord.EmbedBuilder()
     .setTitle("Now Playing")
-    .setDescription(video.title + "\n" + url + `\n\nRequested by <@!${author}>`)
+    .setDescription(`${video.title}\n${url}\n\nRequested by <@!${author}>\n\n` + 'Use `/controls` to pause, stop or loop the track.')
     .setImage(thumb)
     .setFooter({ text: "Powered by InvidJS - https://invidjs.js.org/" });
   caller.channel.send({ embeds: [playingembed] });
-  caller.followUp({
-    content:
-      "Track added successfully! Use `/controls` to pause, stop or loop the track.",
-    ephemeral: true,
-  });
+  caller.editReply("Success!");
 }
 
 function playMusic(channel, video, blob, caller, isAnnounced) {

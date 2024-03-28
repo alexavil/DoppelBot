@@ -11,7 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "@discordjs/voice": "^0.16.0",
-    "@invidjs/invid-js": "^2.0.0",
+    "@invidjs/invid-js": "^2.0.2",
     "@sentry/node": "^7.48.0",
     "@sentry/profiling-node": "^7.101.1",
     "@sentry/tracing": "^7.48.0",

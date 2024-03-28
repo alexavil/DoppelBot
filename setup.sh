@@ -105,24 +105,31 @@ repairIntro() {
     clear
     echo -e "Welcome to Setup!\nThis script will help you to configure the bot.\nPress Ctrl-C at any time to abort the script.\n\n**Important:** Usage of some functions and commands may be restricted in some countries, such as Russia. Please host the bot in a neutral location.\n\n"
     PS3="What would you like to do? "
-    options=("Update dependencies" "Re-deploy commands" "Edit username" "Edit Client ID" "Edit token" "Edit owners" "Edit avatar" "Edit games" "Edit telemetry settings" "Toggle Debug Mode" "Exit")
+    options=("Pull the latest updates" "Update dependencies" "Re-deploy commands" "Edit username" "Edit Client ID" "Edit token" "Edit owners" "Edit avatar" "Edit games" "Edit telemetry settings" "Toggle Debug Mode" "Exit")
     select action in "${options[@]}"; do
         case $REPLY in
         1)
             clear
-            echo -e "Updating dependencies..."
-            npm update | tee -a ./logs/repair.log
+            echo -e "Updating the bot..."
+            git pull | tee -a ./logs/repair.log
             clear
             echo -e "Update complete."
             ;;
         2)
             clear
+            echo -e "Updating dependencies..."
+            npm update | tee -a ./logs/repair.log
+            clear
+            echo -e "Dependencies update complete."
+            ;;
+        3)
+            clear
             echo -e "Deploying commands..."
             node ./deployment.js | tee -a ./logs/repair.log
             clear
-            echo -e "Deployment complete..."
+            echo -e "Deployment complete."
             ;;
-        3)
+        4)
             clear
             read -r -p "Enter the bot's new username (leave blank to cancel): " name
             if [ ! -z "$name" ]; then
@@ -131,7 +138,7 @@ repairIntro() {
             fi
             clear
             ;;
-        4)
+        5)
             clear
             read -r -p "Enter the bot's new Client ID (leave blank to cancel): " clientid
             if [ ! -z "$clientid" ]; then
@@ -140,7 +147,7 @@ repairIntro() {
             fi
             clear
             ;;
-        5)
+        6)
             clear
             read -r -p "Enter the bot's new token (leave blank to cancel): " token
             if [ ! -z "$token" ]; then
@@ -149,7 +156,7 @@ repairIntro() {
             fi
             clear
             ;;
-        6)
+        7)
             clear
             read -r -p "Enter the bot's new owner(s) (leave blank to cancel): " id
             if [ ! -z "$id" ]; then
@@ -158,7 +165,7 @@ repairIntro() {
             fi
             clear
             ;;
-        7)
+        8)
             clear
             read -r -p "Enter the bot's new avatar (leave blank to cancel): " avatar
             if [ ! -z "$avatar" ]; then
@@ -167,7 +174,7 @@ repairIntro() {
             fi
             clear
             ;;
-        8)
+        9)
             clear
             read -r -p "Enter the bot's new games (leave blank to cancel): " games
             if [ ! -z "$games" ]; then
@@ -176,7 +183,7 @@ repairIntro() {
             fi
             clear
             ;;
-        9)
+        10)
             clear
             echo -e "Read the following notice carefully.\n\nThis bot uses telemetry to make your experience better.\n\nIf you decide to opt-out, no data will be sent to the developers of the bot.\n\nIf you decide to opt-in, we will collect the following data:\n- Error messages\n- Stack traces\n- Basic device information (CPU, RAM, OS version, Node version)\n- Performance metrics\n- Server and channel IDs for executed commands\n\n"
             options='Yes No'
@@ -201,7 +208,7 @@ repairIntro() {
                 esac
             done
             ;;
-        10)
+        11)
             clear
             echo -e "Read the following notice carefully.\n\nDebug Mode is intended to be used for testing purposes only.\nIn this mode, the bot will log most actions and commands, including sensitive information.\n\nDebug Mode is not recommended for use in production. Please proceed with caution."
             options='Yes No'
@@ -226,7 +233,7 @@ repairIntro() {
                 esac
             done
             ;;
-        11)
+        12)
             clear
             break
             ;;

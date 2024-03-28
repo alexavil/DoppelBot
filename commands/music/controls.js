@@ -1,5 +1,4 @@
 import Discord from "discord.js";
-import * as InvidJS from "@invidjs/invid-js";
 const debug = process.env.DEBUG;
 const { default: common } = await import("../../music.js");
 
@@ -12,6 +11,11 @@ export default {
       if (debug === "true")
         console.log("[DEBUG] No voice channel found, aborting...");
       return interaction.editReply("You need to join a voice channel first!");
+    }
+    if (common.getQueueLength(interaction.guild.id) === 0) {
+      if (debug === "true")
+        console.log("[DEBUG] No tracks are playing, aborting...");
+      return interaction.editReply("The queue is empty, add tracks to use the player controls!");
     }
     const loop = new Discord.ButtonBuilder()
       .setCustomId(`loop`)

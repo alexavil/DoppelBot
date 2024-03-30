@@ -38,8 +38,12 @@ export default {
       const deftag = new Discord.ButtonBuilder()
         .setCustomId(`tagdefaults`)
         .setLabel(`Clear all tags`)
-        .setStyle(ButtonStyle.Danger);  
-      row = new Discord.ActionRowBuilder().addComponents(addtag, deltag, deftag);
+        .setStyle(ButtonStyle.Danger);
+      row = new Discord.ActionRowBuilder().addComponents(
+        addtag,
+        deltag,
+        deftag,
+      );
     }
     switch (
       interaction.member.permissions.has(Discord.PermissionFlagsBits.BanMembers)

@@ -6,11 +6,11 @@ export default {
   async execute(interaction) {
     const id = interaction.guild.id;
     if (debug === "true")
-      console.log(`[DEBUG] Preparing to reset settings for ${id}...`);
+      console.log(`[DEBUG] Preparing to clear tags for ${id}...`);
     if (debug === "true")
       console.log("[DEBUG] Confirmation required - awaiting user input...");
     const confirm = new Discord.ButtonBuilder()
-      .setCustomId(`def_confirm`)
+      .setCustomId(`tagdef_confirm`)
       .setLabel(`Yes`)
       .setStyle(ButtonStyle.Danger);
     const cancel = new Discord.ButtonBuilder()
@@ -19,7 +19,7 @@ export default {
       .setStyle(ButtonStyle.Primary);
     const row = new Discord.ActionRowBuilder().addComponents(confirm, cancel);
     interaction.reply({
-      content: `**ALERT:** This action will reset your server settings! Are you sure you want to proceed?`,
+      content: `**ALERT:** This action will wipe your tags! Are you sure you want to proceed?`,
       components: [row],
       ephemeral: true,
     });

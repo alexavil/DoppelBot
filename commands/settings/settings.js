@@ -25,7 +25,12 @@ export default {
       .setCustomId(`defaults`)
       .setLabel(`Reset to defaults`)
       .setStyle(ButtonStyle.Danger);
-    const row = new Discord.ActionRowBuilder().addComponents(notifbtn, healthbtn, timeoutbtn, defaultbtn);
+    const row = new Discord.ActionRowBuilder().addComponents(
+      notifbtn,
+      healthbtn,
+      timeoutbtn,
+      defaultbtn,
+    );
     const settingsembed = new Discord.EmbedBuilder()
       .setColor("#0099ff")
       .setTitle("Server Settings for " + interaction.guild.name)

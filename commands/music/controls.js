@@ -15,7 +15,9 @@ export default {
     if (common.getQueueLength(interaction.guild.id) === 0) {
       if (debug === "true")
         console.log("[DEBUG] No tracks are playing, aborting...");
-      return interaction.editReply("The queue is empty, add tracks to use the player controls!");
+      return interaction.editReply(
+        "The queue is empty, add tracks to use the player controls!",
+      );
     }
     const loop = new Discord.ButtonBuilder()
       .setCustomId(`loop`)

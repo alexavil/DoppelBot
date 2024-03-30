@@ -33,9 +33,13 @@ export default {
       });
       const deltag = new Discord.ButtonBuilder()
         .setCustomId(`tagdelete`)
-        .setLabel(`Delete a tag`)
+        .setLabel(`Delete tags`)
         .setStyle(ButtonStyle.Danger);
-      row = new Discord.ActionRowBuilder().addComponents(addtag, deltag);
+      const deftag = new Discord.ButtonBuilder()
+        .setCustomId(`tagdefaults`)
+        .setLabel(`Clear all tags`)
+        .setStyle(ButtonStyle.Danger);  
+      row = new Discord.ActionRowBuilder().addComponents(addtag, deltag, deftag);
     }
     switch (
       interaction.member.permissions.has(Discord.PermissionFlagsBits.BanMembers)

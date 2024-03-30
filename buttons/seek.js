@@ -1,4 +1,3 @@
-const debug = process.env.DEBUG;
 const { default: common } = await import("../music.js");
 import { getVoiceConnection } from "@discordjs/voice";
 import { convertToString } from "../utils/TimeConverter.js";

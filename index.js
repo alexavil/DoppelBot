@@ -298,7 +298,6 @@ function createConfig(id) {
     statement.run("notifications", "false");
     statement.run("disconnect_timeout", "30");
     statement.run("min_health", "75");
-    statement.run("state", "commands");
   });
   transaction();
   queue
@@ -359,9 +358,6 @@ client.on("ready", () => {
   client.guilds.cache.forEach((guild) => {
     createConfig(guild.id);
     clearQueue(guild.id);
-    settings
-      .prepare(`UPDATE guild_${guild.id} SET value = ? WHERE option = ?`)
-      .run("commands", "state");
   });
   if (activities !== undefined) {
     let job = new cron.CronJob("00 00 * * * *", gamecycle);

@@ -14,7 +14,8 @@ export default {
           value: `\`/play\` - play music
           \`/suggest\` - suggest search queries for a string
             \`/search\` - search for music
-            \`/queue\` - view the current queue`,
+            \`/queue\` - view the current queue
+            \`/controls\` - bring up the music player controls`,
         },
         {
           name: "Tags",

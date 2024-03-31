@@ -1,5 +1,5 @@
 import * as InvidJS from "@invidjs/invid-js";
-import Discord from "discord.js";
+import Discord, { ButtonStyle } from "discord.js";
 const debug = process.env.DEBUG;
 import {
   joinVoiceChannel,
@@ -42,48 +42,96 @@ function getQueueLength(id) {
 }
 
 async function getSuggestions(url, query, retries) {
-  let instance = await InvidJS.fetchInstances({ url: url });
-  let results = InvidJS.fetchSearchSuggestions(instance[0], query);
-  let timeout = new Promise((res) => setTimeout(() => res("timeout"), 10000));
-  const value = await Promise.race([results, timeout]);
-  if (value === "timeout") {
-    if (debug === "true")
-      console.log("[DEBUG] Could not reach instance, retrying...");
-    retries++;
-    if (retries === 4) {
-      return "error";
+  try {
+    let instance = await InvidJS.fetchInstances({ url: url });
+    let results = InvidJS.fetchSearchSuggestions(instance[0], query);
+    let timeout = new Promise((res) => setTimeout(() => res("timeout"), 10000));
+    const value = await Promise.race([results, timeout]);
+    if (value === "timeout") {
+      if (debug === "true")
+        console.log("[DEBUG] Could not reach instance, retrying...");
+      retries++;
+      if (retries === 4) {
+        return "error";
+      }
+      url = cache
+        .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
+        .get().url;
+      if (debug === "true") console.log(`[DEBUG] New instance: ${url}`);
+      await getSuggestions(url, query, retries);
     }
-    url = cache
-      .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
-      .get().url;
-    if (debug === "true") console.log(`[DEBUG] New instance: ${url}`);
-    await getSuggestions(url, query, retries);
+    return value;
+  } catch (error) {
+    if (debug === "true") console.log("[DEBUG] Error: " + error);
+    switch (error.isFatal) {
+      case false: {
+        if (debug === "true")
+          console.log("[DEBUG] Non-fatal instance error, retrying...");
+        retries++;
+        if (retries === 4) {
+          return "error";
+        }
+        let new_url = cache
+          .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
+          .get().url;
+        if (debug === "true") console.log(`[DEBUG] New instance: ${new_url}`);
+        url = url.replace(url.split("/w")[0], new_url);
+        await getSuggestions(url, query, retries);
+      }
+      case true: {
+        return undefined;
+      }
+    }
+    return undefined;
   }
-  return value;
 }
 
 async function searchContent(url, query, retries) {
-  let instance = await InvidJS.fetchInstances({ url: url });
-  let results = InvidJS.searchContent(instance[0], query, {
-    limit: 5,
-    type: InvidJS.ContentTypes.Video,
-  });
-  let timeout = new Promise((res) => setTimeout(() => res("timeout"), 10000));
-  const value = await Promise.race([results, timeout]);
-  if (value === "timeout") {
-    if (debug === "true")
-      console.log("[DEBUG] Could not reach instance, retrying...");
-    retries++;
-    if (retries === 4) {
-      return "error";
+  try {
+    let instance = await InvidJS.fetchInstances({ url: url });
+    let results = InvidJS.searchContent(instance[0], query, {
+      limit: 5,
+      type: InvidJS.ContentTypes.Video,
+    });
+    let timeout = new Promise((res) => setTimeout(() => res("timeout"), 10000));
+    const value = await Promise.race([results, timeout]);
+    if (value === "timeout") {
+      if (debug === "true")
+        console.log("[DEBUG] Could not reach instance, retrying...");
+      retries++;
+      if (retries === 4) {
+        return "error";
+      }
+      url = cache
+        .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
+        .get().url;
+      if (debug === "true") console.log(`[DEBUG] New instance: ${url}`);
+      await searchContent(url, query, retries);
     }
-    url = cache
-      .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
-      .get().url;
-    if (debug === "true") console.log(`[DEBUG] New instance: ${url}`);
-    await searchContent(url, query, retries);
+    return value;
+  } catch (error) {
+    if (debug === "true") console.log("[DEBUG] Error: " + error);
+    switch (error.isFatal) {
+      case false: {
+        if (debug === "true")
+          console.log("[DEBUG] Non-fatal instance error, retrying...");
+        retries++;
+        if (retries === 4) {
+          return "error";
+        }
+        let new_url = cache
+          .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
+          .get().url;
+        if (debug === "true") console.log(`[DEBUG] New instance: ${new_url}`);
+        url = url.replace(url.split("/w")[0], new_url);
+        await searchContent(url, query, retries);
+      }
+      case true: {
+        return undefined;
+      }
+    }
+    return undefined;
   }
-  return value;
 }
 
 async function getVideo(url, caller, isSilent, isAnnounced, retries) {
@@ -138,8 +186,8 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
     }
   } catch (error) {
     if (debug === "true") console.log("[DEBUG] Error: " + error);
-    switch (error.code) {
-      case InvidJS.ErrorCodes.APIBlocked: {
+    switch (error.isFatal) {
+      case false: {
         if (debug === "true")
           console.log("[DEBUG] Non-fatal instance error, retrying...");
         retries++;
@@ -153,21 +201,27 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
         url = url.replace(url.split("/w")[0], new_url);
         await getVideo(url, caller, isSilent, isAnnounced, retries);
       }
-      case InvidJS.ErrorCodes.APIError: {
-        caller.editReply(
-          "The video could not be fetched due to an API error. Please try again later.",
-        );
-        return undefined;
-      }
-      case InvidJS.ErrorCodes.InvalidContent: {
-        caller.editReply("This video is invalid. Please try another video.");
-        return undefined;
-      }
-      case InvidJS.ErrorCodes.BlockedVideo: {
-        caller.editReply(
-          "This video is blocked - perhaps it's from an auto-generated channel? Please try another video.",
-        );
-        return undefined;
+      case true: {
+        switch (error.code) {
+          case InvidJS.ErrorCodes.APIError: {
+            caller.editReply(
+              "The video could not be fetched due to an API error. Please try again later.",
+            );
+            return undefined;
+          }
+          case InvidJS.ErrorCodes.InvalidContent: {
+            caller.editReply(
+              "This video is invalid. Please try another video.",
+            );
+            return undefined;
+          }
+          case InvidJS.ErrorCodes.BlockedVideo: {
+            caller.editReply(
+              "This video is blocked - perhaps it's from an auto-generated channel? Please try another video.",
+            );
+            return undefined;
+          }
+        }
       }
     }
     return undefined;
@@ -208,8 +262,8 @@ async function getPlaylist(url, caller, retries) {
     }
   } catch (error) {
     if (debug === "true") console.log("[DEBUG] Error: " + error);
-    switch (error.code) {
-      case InvidJS.ErrorCodes.APIBlocked: {
+    switch (error.isFatal) {
+      case true: {
         if (debug === "true")
           console.log("[DEBUG] Non-fatal instance error, retrying...");
         retries++;
@@ -223,16 +277,62 @@ async function getPlaylist(url, caller, retries) {
         url = url.replace(url.split("/p")[0], new_url);
         await getPlaylist(url, caller, retries);
       }
-      case InvidJS.ErrorCodes.APIError: {
-        caller.editReply(
-          "The playlist could not be fetched due to an API error. Please try again later.",
-        );
-        return undefined;
+      case false: {
+        switch (error.code) {
+          case InvidJS.ErrorCodes.APIError: {
+            caller.editReply(
+              "The playlist could not be fetched due to an API error. Please try again later.",
+            );
+            return undefined;
+          }
+          case InvidJS.ErrorCodes.InvalidContent: {
+            caller.editReply(
+              "This playlist is invalid. Please try another playlist.",
+            );
+            return undefined;
+          }
+        }
       }
-      case InvidJS.ErrorCodes.InvalidContent: {
-        caller.editReply(
-          "This playlist is invalid. Please try another playlist.",
-        );
+    }
+    return undefined;
+  }
+}
+
+async function getVideoInfo(url, retries) {
+  try {
+    let instances = await InvidJS.fetchInstances({
+      url: url.split("/w")[0],
+    });
+    let instance = instances[0];
+    let video = await InvidJS.fetchVideo(instance, url.split("=")[1], {
+      type: InvidJS.FetchTypes.Full,
+    });
+    let format = video.formats.find(
+      (format) => format.audio_quality === InvidJS.AudioQuality.Medium,
+    );
+    return {
+      video,
+      instance,
+      format,
+    };
+  } catch (error) {
+    if (debug === "true") console.log("[DEBUG] Error: " + error);
+    switch (error.isFatal) {
+      case false: {
+        if (debug === "true")
+          console.log("[DEBUG] Non-fatal instance error, retrying...");
+        retries++;
+        if (retries === 4) {
+          return "error";
+        }
+        let new_url = cache
+          .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
+          .get().url;
+        if (debug === "true") console.log(`[DEBUG] New instance: ${new_url}`);
+        url = url.replace(url.split("/w")[0], new_url);
+        await getVideoInfo(url, retries);
+      }
+      case true: {
         return undefined;
       }
     }
@@ -240,27 +340,33 @@ async function getPlaylist(url, caller, retries) {
   }
 }
 
-async function getVideoInfo(url) {
-  let instances = await InvidJS.fetchInstances({
-    url: url.split("/w")[0],
-  });
-  let instance = instances[0];
-  let video = await InvidJS.fetchVideo(instance, url.split("=")[1], {
-    type: InvidJS.FetchTypes.Full,
-  });
-  let format = video.formats.find(
-    (format) => format.audio_quality === InvidJS.AudioQuality.Medium,
-  );
-  return {
-    video,
-    instance,
-    format,
-  };
-}
-
-async function downloadTrack(instance, video, format) {
-  let blob = await InvidJS.saveStream(instance, video, format);
-  return blob;
+async function downloadTrack(instance, video, format, retries) {
+  try {
+    let blob = await InvidJS.saveStream(instance, video, format);
+    return blob;
+  } catch (error) {
+    if (debug === "true") console.log("[DEBUG] Error: " + error);
+    switch (error.isFatal) {
+      case false: {
+        if (debug === "true")
+          console.log("[DEBUG] Non-fatal instance error, retrying...");
+        retries++;
+        if (retries === 4) {
+          return "error";
+        }
+        let new_url = cache
+          .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
+          .get().url;
+        if (debug === "true") console.log(`[DEBUG] New instance: ${new_url}`);
+        url = url.replace(url.split("/w")[0], new_url);
+        await downloadTrack(instance, video, format, retries);
+      }
+      case true: {
+        return undefined;
+      }
+    }
+    return undefined;
+  }
 }
 
 function announceTrack(url, author, video, caller) {

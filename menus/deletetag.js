@@ -38,7 +38,15 @@ export default {
         .setCustomId(`tagdelete`)
         .setLabel(`Delete a tag`)
         .setStyle(ButtonStyle.Danger);
-      row = new Discord.ActionRowBuilder().addComponents(addtag, deltag);
+      const deftag = new Discord.ButtonBuilder()
+        .setCustomId(`tagdefaults`)
+        .setLabel(`Clear all tags`)
+        .setStyle(ButtonStyle.Danger);
+      row = new Discord.ActionRowBuilder().addComponents(
+        addtag,
+        deltag,
+        deftag,
+      );
     }
     return interaction.update({
       content: "Tags deleted successfully!",

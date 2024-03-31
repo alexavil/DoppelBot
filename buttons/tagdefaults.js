@@ -18,9 +18,10 @@ export default {
       .setLabel(`No`)
       .setStyle(ButtonStyle.Primary);
     const row = new Discord.ActionRowBuilder().addComponents(confirm, cancel);
-    interaction.reply({
+    interaction.update({
       content: `**ALERT:** This action will wipe your tags! Are you sure you want to proceed?`,
       components: [row],
+      embeds: [],
       ephemeral: true,
     });
   },

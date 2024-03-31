@@ -1,7 +1,7 @@
 const debug = process.env.DEBUG;
 import sqlite3 from "better-sqlite3";
 const { default: common } = await import("../../music.js");
-import Discord from "discord.js";
+import Discord, { ButtonStyle } from "discord.js";
 
 const instances = new sqlite3("./data/instances_cache.db");
 export default {

@@ -25,7 +25,7 @@ export default {
       .setCustomId(`defaults`)
       .setLabel(`Reset to defaults`)
       .setStyle(ButtonStyle.Danger);
-    const row = new Discord.ActionRowBuilder().addComponents(
+    const adminrow = new Discord.ActionRowBuilder().addComponents(
       notifbtn,
       healthbtn,
       timeoutbtn,
@@ -69,10 +69,6 @@ export default {
             "`",
         },
       );
-    await interaction.editReply({
-      embeds: [settingsembed],
-      components: [row],
-    });
     if (owners.includes(interaction.user.id)) {
       const stats = new Discord.ButtonBuilder()
         .setCustomId(`stats`)
@@ -86,16 +82,19 @@ export default {
         .setCustomId(`gleave`)
         .setLabel(`Leave guilds`)
         .setStyle(ButtonStyle.Danger);
-      const row = new Discord.ActionRowBuilder().addComponents(
+      const ownerrow = new Discord.ActionRowBuilder().addComponents(
         stats,
         say,
         guilds,
       );
-      interaction.followUp({
-        content:
-          "These actions are potentially destructive. Proceed with caution.",
-        components: [row],
-        ephemeral: true,
+      await interaction.editReply({
+        embeds: [settingsembed],
+        components: [adminrow, ownerrow],
+      });
+    } else {
+      await interaction.editReply({
+        embeds: [settingsembed],
+        components: [adminrow],
       });
     }
   },

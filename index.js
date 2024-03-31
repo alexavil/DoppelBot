@@ -489,10 +489,7 @@ client.on("messageCreate", (message) => {
   let monitor = undefined;
 
   custom_tags.forEach((tag) => {
-    if (
-      !message.author.bot &&
-      message.content === tag.tag
-    ) {
+    if (!message.author.bot && message.content === tag.tag) {
       if (debug === "true") console.log("[DEBUG] Tag found!");
       if (telemetry === "true") {
         monitor = Sentry.startInactiveSpan({

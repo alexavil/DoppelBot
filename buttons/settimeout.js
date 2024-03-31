@@ -1,4 +1,4 @@
-import Discord from "discord.js";
+import Discord, { ButtonStyle } from "discord.js";
 export default {
   name: "settimeout",
   async execute(interaction) {

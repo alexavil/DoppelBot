@@ -1,4 +1,4 @@
-import Discord from "discord.js";
+import Discord, { ButtonStyle } from "discord.js";
 import child from "child_process";
 const name = process.env.NAME;
 import os from "os";
@@ -35,6 +35,6 @@ Total Users: ${Array.from(interaction.client.users.cache).length}
 WebSocket Ping: ${interaction.client.ws.ping}ms.\`\`\``,
         },
       );
-    interaction.reply({ embeds: [stats], ephemeral: true });
+    interaction.update({ embeds: [stats], components: [], ephemeral: true });
   },
 };

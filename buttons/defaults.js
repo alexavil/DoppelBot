@@ -18,9 +18,10 @@ export default {
       .setLabel(`No`)
       .setStyle(ButtonStyle.Primary);
     const row = new Discord.ActionRowBuilder().addComponents(confirm, cancel);
-    interaction.reply({
+    interaction.update({
       content: `**ALERT:** This action will reset your server settings! Are you sure you want to proceed?`,
       components: [row],
+      embeds: [],
       ephemeral: true,
     });
   },

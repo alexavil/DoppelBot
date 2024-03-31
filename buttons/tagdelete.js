@@ -1,4 +1,4 @@
-import Discord from "discord.js";
+import Discord, { ButtonStyle } from "discord.js";
 import sqlite3 from "better-sqlite3";
 const tags = new sqlite3("./data/tags.db");
 
@@ -20,10 +20,15 @@ export default {
       .setOptions(values)
       .setMinValues(1)
       .setMaxValues(values.length);
+    const cancel = new Discord.ButtonBuilder()
+      .setCustomId(`cancel`)
+      .setLabel(`Cancel`)
+      .setStyle(ButtonStyle.Primary);
     const row = new Discord.ActionRowBuilder().addComponents(menu);
+    const row2 = new Discord.ActionRowBuilder().addComponents(cancel);
     await interaction.update({
       content: `Select tag(s) to delete.`,
-      components: [row],
+      components: [row, row2],
       ephemeral: true,
     });
   },

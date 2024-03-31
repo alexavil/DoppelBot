@@ -1,4 +1,4 @@
-import Discord from "discord.js";
+import Discord, { ButtonStyle } from "discord.js";
 const debug = process.env.DEBUG;
 import sqlite3 from "better-sqlite3";
 

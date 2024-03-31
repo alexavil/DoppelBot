@@ -1,5 +1,5 @@
 const debug = process.env.DEBUG;
-import Discord from "discord.js";
+import Discord, { ButtonStyle } from "discord.js";
 export default {
   name: "gleave",
   async execute(interaction) {
@@ -16,10 +16,16 @@ export default {
       .setOptions(values)
       .setMinValues(1)
       .setMaxValues(values.length);
+    const cancel = new Discord.ButtonBuilder()
+      .setCustomId(`cancel`)
+      .setLabel(`Cancel`)
+      .setStyle(ButtonStyle.Primary);
     const row = new Discord.ActionRowBuilder().addComponents(menu);
-    await interaction.reply({
+    const row2 = new Discord.ActionRowBuilder().addComponents(cancel);
+    await interaction.update({
       content: `Select guild(s) to leave.`,
-      components: [row],
+      embeds: [],
+      components: [row, row2],
       ephemeral: true,
     });
   },

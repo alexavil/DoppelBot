@@ -491,9 +491,7 @@ client.on("messageCreate", (message) => {
   custom_tags.forEach((tag) => {
     if (
       !message.author.bot &&
-      message.content === tag.tag &&
-      settings.prepare(`SELECT * FROM guild_${id} WHERE option = 'state'`).get()
-        .value === "commands"
+      message.content === tag.tag
     ) {
       if (debug === "true") console.log("[DEBUG] Tag found!");
       if (telemetry === "true") {

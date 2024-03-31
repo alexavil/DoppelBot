@@ -2,7 +2,7 @@ const debug = process.env.DEBUG;
 import Discord, { ButtonStyle } from "discord.js";
 
 export default {
-  name: "defaults",
+  name: "tagdefaults",
   async execute(interaction) {
     const id = interaction.guild.id;
     if (debug === "true")

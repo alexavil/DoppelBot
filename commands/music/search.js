@@ -22,7 +22,7 @@ export default {
       console.log("[DEBUG] Searching...");
     }
     let value = await common.searchContent(default_url, query, 0);
-    if (value === "timeout") {
+    if (!typeof(value) === 'array') {
       if (debug === "true")
         console.log("[DEBUG] Too many retries, aborting...");
       return interaction.editReply("Connection failed after 4 retries.");

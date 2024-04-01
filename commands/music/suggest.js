@@ -22,7 +22,9 @@ export default {
       query,
       0,
     );
-    if (value === "error") {
+    if (!typeof(value) === 'array') {
+      if (debug === "true")
+        console.log("[DEBUG] Too many retries, aborting...");
       return interaction.editReply("Connection failed after 4 retries.");
     } else {
       if (!value.length) {

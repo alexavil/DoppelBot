@@ -286,11 +286,8 @@ async function getPlaylist(url, caller, retries) {
   }
 }
 
-async function getVideoInfo(url, retries) {
+async function getVideoInfo(url) {
   try {
-    if (retries === 4) {
-      return "error";
-    }
     let instances = await InvidJS.fetchInstances({
       url: url.split("/w")[0],
     });
@@ -312,13 +309,12 @@ async function getVideoInfo(url, retries) {
       case false: {
         if (debug === "true")
           console.log("[DEBUG] Non-fatal instance error, retrying...");
-        retries++;
         let new_url = cache
           .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
           .get().url;
         if (debug === "true") console.log(`[DEBUG] New instance: ${new_url}`);
         url = url.replace(url.split("/w")[0], new_url);
-        await getVideoInfo(url, retries);
+        await getVideoInfo(url);
       }
       case true: {
         return undefined;
@@ -328,11 +324,8 @@ async function getVideoInfo(url, retries) {
   }
 }
 
-async function downloadTrack(instance, video, format, retries) {
+async function downloadTrack(instance, video, format) {
   try {
-    if (retries === 4) {
-      return "error";
-    }
     let blob = await InvidJS.saveStream(instance, video, format);
     return blob;
   } catch (error) {
@@ -341,13 +334,12 @@ async function downloadTrack(instance, video, format, retries) {
       case false: {
         if (debug === "true")
           console.log("[DEBUG] Non-fatal instance error, retrying...");
-        retries++;
         let new_url = cache
           .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
           .get().url;
         if (debug === "true") console.log(`[DEBUG] New instance: ${new_url}`);
         url = url.replace(url.split("/w")[0], new_url);
-        await downloadTrack(instance, video, format, retries);
+        await downloadTrack(instance, video, format);
       }
       case true: {
         return undefined;

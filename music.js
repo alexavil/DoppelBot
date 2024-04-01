@@ -182,7 +182,7 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
           caller,
           isAnnounced,
         );
-      } else return undefined;
+      } else return caller.editReply("Success! Wait for your new track to play, or use the Skip button!");
     }
   } catch (error) {
     if (debug === "true") console.log("[DEBUG] Error: " + error);

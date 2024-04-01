@@ -43,6 +43,9 @@ function getQueueLength(id) {
 
 async function getSuggestions(url, query, retries) {
   try {
+    if (retries === 4) {
+      return "error";
+    }
     let instance = await InvidJS.fetchInstances({ url: url });
     let results = InvidJS.fetchSearchSuggestions(instance[0], query);
     let timeout = new Promise((res) => setTimeout(() => res("timeout"), 10000));
@@ -51,9 +54,6 @@ async function getSuggestions(url, query, retries) {
       if (debug === "true")
         console.log("[DEBUG] Could not reach instance, retrying...");
       retries++;
-      if (retries === 4) {
-        return "error";
-      }
       url = cache
         .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
         .get().url;
@@ -68,9 +68,6 @@ async function getSuggestions(url, query, retries) {
         if (debug === "true")
           console.log("[DEBUG] Non-fatal instance error, retrying...");
         retries++;
-        if (retries === 4) {
-          return "error";
-        }
         let new_url = cache
           .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
           .get().url;
@@ -88,6 +85,9 @@ async function getSuggestions(url, query, retries) {
 
 async function searchContent(url, query, retries) {
   try {
+    if (retries === 4) {
+      return "error";
+    }
     let instance = await InvidJS.fetchInstances({ url: url });
     let results = InvidJS.searchContent(instance[0], query, {
       limit: 5,
@@ -99,9 +99,6 @@ async function searchContent(url, query, retries) {
       if (debug === "true")
         console.log("[DEBUG] Could not reach instance, retrying...");
       retries++;
-      if (retries === 4) {
-        return "error";
-      }
       url = cache
         .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
         .get().url;
@@ -116,9 +113,6 @@ async function searchContent(url, query, retries) {
         if (debug === "true")
           console.log("[DEBUG] Non-fatal instance error, retrying...");
         retries++;
-        if (retries === 4) {
-          return "error";
-        }
         let new_url = cache
           .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
           .get().url;
@@ -136,6 +130,9 @@ async function searchContent(url, query, retries) {
 
 async function getVideo(url, caller, isSilent, isAnnounced, retries) {
   try {
+    if (retries === 4) {
+      return caller.editReply("Connection failed after 4 retries.");
+    }
     let id = url.split("=")[1];
     let instances = await InvidJS.fetchInstances({
       url: url.split("/w")[0],
@@ -150,9 +147,6 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
       if (debug === "true")
         console.log("[DEBUG] Could not reach instance, retrying...");
       retries++;
-      if (retries === 4) {
-        return caller.editReply("Connection failed after 4 retries.");
-      }
       let new_url = cache
         .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
         .get().url;
@@ -191,9 +185,6 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
         if (debug === "true")
           console.log("[DEBUG] Non-fatal instance error, retrying...");
         retries++;
-        if (retries === 4) {
-          return caller.editReply("Connection failed after 4 retries.");
-        }
         let new_url = cache
           .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
           .get().url;
@@ -230,6 +221,9 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
 
 async function getPlaylist(url, caller, retries) {
   try {
+    if (retries === 4) {
+      return caller.editReply("Connection failed after 4 retries.");
+    }
     let instances = await InvidJS.fetchInstances({
       url: url.split("/p")[0],
     });
@@ -241,9 +235,6 @@ async function getPlaylist(url, caller, retries) {
       if (debug === "true")
         console.log("[DEBUG] Could not reach instance, retrying...");
       retries++;
-      if (retries === 4) {
-        return caller.editReply("Connection failed after 4 retries.");
-      }
       let new_url = cache
         .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
         .get().url;
@@ -267,9 +258,6 @@ async function getPlaylist(url, caller, retries) {
         if (debug === "true")
           console.log("[DEBUG] Non-fatal instance error, retrying...");
         retries++;
-        if (retries === 4) {
-          return caller.editReply("Connection failed after 4 retries.");
-        }
         let new_url = cache
           .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
           .get().url;
@@ -300,6 +288,9 @@ async function getPlaylist(url, caller, retries) {
 
 async function getVideoInfo(url, retries) {
   try {
+    if (retries === 4) {
+      return "error";
+    }
     let instances = await InvidJS.fetchInstances({
       url: url.split("/w")[0],
     });
@@ -322,9 +313,6 @@ async function getVideoInfo(url, retries) {
         if (debug === "true")
           console.log("[DEBUG] Non-fatal instance error, retrying...");
         retries++;
-        if (retries === 4) {
-          return "error";
-        }
         let new_url = cache
           .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
           .get().url;
@@ -342,6 +330,9 @@ async function getVideoInfo(url, retries) {
 
 async function downloadTrack(instance, video, format, retries) {
   try {
+    if (retries === 4) {
+      return "error";
+    }
     let blob = await InvidJS.saveStream(instance, video, format);
     return blob;
   } catch (error) {
@@ -351,9 +342,6 @@ async function downloadTrack(instance, video, format, retries) {
         if (debug === "true")
           console.log("[DEBUG] Non-fatal instance error, retrying...");
         retries++;
-        if (retries === 4) {
-          return "error";
-        }
         let new_url = cache
           .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
           .get().url;

@@ -35,7 +35,7 @@ export default {
       connection.destroy();
       common.removePlayer(id);
       masterqueue.prepare(`DELETE FROM guild_${id}`).run();
-      return interaction.reply({ content: "Stopped!", ephemeral: true });
+      return interaction.update({ content: "Stopped!", components: [], ephemeral: true });
     }
   },
 };

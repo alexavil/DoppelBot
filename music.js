@@ -163,7 +163,7 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
       if (isSilent === false) caller.channel.send(`Added ${url} to the queue!`);
       if (debug === "true") console.log("[DEBUG] Downloading stream...");
       let resource = await downloadTrack(instance, value, format);
-      addResource(caller.guild.id, resource, id);
+      addResource(caller.guild.id, resource, id, instance, video, format);
       if (getQueueLength(caller.guild.id) === 1) {
         if (debug === "true")
           console.log("[DEBUG] This is the first track, starting playback...");
@@ -286,44 +286,6 @@ async function getPlaylist(url, caller, retries) {
   }
 }
 
-async function getVideoInfo(url) {
-  try {
-    let instances = await InvidJS.fetchInstances({
-      url: url.split("/w")[0],
-    });
-    let instance = instances[0];
-    let video = await InvidJS.fetchVideo(instance, url.split("=")[1], {
-      type: InvidJS.FetchTypes.Full,
-    });
-    let format = video.formats.find(
-      (format) => format.audio_quality === InvidJS.AudioQuality.Medium,
-    );
-    return {
-      video,
-      instance,
-      format,
-    };
-  } catch (error) {
-    if (debug === "true") console.log("[DEBUG] Error: " + error);
-    switch (error.isFatal) {
-      case false: {
-        if (debug === "true")
-          console.log("[DEBUG] Non-fatal instance error, retrying...");
-        let new_url = cache
-          .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
-          .get().url;
-        if (debug === "true") console.log(`[DEBUG] New instance: ${new_url}`);
-        url = url.replace(url.split("/w")[0], new_url);
-        await getVideoInfo(url);
-      }
-      case true: {
-        return undefined;
-      }
-    }
-    return undefined;
-  }
-}
-
 async function downloadTrack(instance, video, format) {
   try {
     let blob = await InvidJS.saveStream(instance, video, format);
@@ -408,17 +370,15 @@ function playMusic(channel, video, blob, caller, isAnnounced) {
       if (debug === "true") {
         console.log("[DEBUG] Starting the next track...");
       }
-      return getVideoInfo(getFromQueue(channel.guild.id).track).then((info) => {
-        let res = getResource(channel.guild.id, info.video.id);
-        if (isAnnounced === true)
-          announceTrack(
-            getFromQueue(channel.guild.id).track,
-            getFromQueue(channel.guild.id).author,
-            info.video,
-            caller,
-          );
-        playMusic(channel, info.video, res.track, caller, isAnnounced);
-      });
+      let res = getResource(channel.guild.id, info.video.id);
+      if (isAnnounced === true)
+        announceTrack(
+          getFromQueue(channel.guild.id).track,
+          getFromQueue(channel.guild.id).author,
+          res.info.video,
+          caller,
+        );
+      return playMusic(channel, info.video, res.track, caller, isAnnounced);
     } else {
       if (debug === "true") {
         console.log("[DEBUG] No more tracks to play, starting timeout...");
@@ -441,11 +401,16 @@ function playMusic(channel, video, blob, caller, isAnnounced) {
   });
 }
 
-function addResource(id, resource, videoId) {
+function addResource(id, resource, videoId, instance, video, format) {
   resources.push({
     id: id,
     track: resource,
     videoId: videoId,
+    info: {
+      instance: instance,
+      video: video,
+      format: format,
+    }
   });
 }
 

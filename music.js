@@ -370,7 +370,7 @@ function playMusic(channel, video, blob, caller, isAnnounced) {
       if (debug === "true") {
         console.log("[DEBUG] Starting the next track...");
       }
-      let res = getResource(channel.guild.id, info.video.id);
+      let res = getResource(channel.guild.id, player.video.id);
       if (isAnnounced === true)
         announceTrack(
           getFromQueue(channel.guild.id).track,

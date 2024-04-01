@@ -412,7 +412,7 @@ function playMusic(channel, video, blob, caller, isAnnounced) {
   } else {
     player = getPlayer(channel.guild.id).player;
   }
-  let stream = blob;
+  let stream = blob.rewind();
   let resource = createAudioResource(stream, {
     inputType: stream.type,
   });

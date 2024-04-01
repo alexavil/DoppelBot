@@ -22,7 +22,7 @@ export default {
       query,
       0,
     );
-    if (value === "error" || value === "timeout") {
+    if (value === "error") {
       return interaction.editReply("Connection failed after 4 retries.");
     } else {
       if (!value.length) {

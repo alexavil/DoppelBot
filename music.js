@@ -378,7 +378,7 @@ function playMusic(channel, video, blob, caller, isAnnounced) {
           res.info.video,
           caller,
         );
-      return playMusic(channel, info.video, res.track, caller, isAnnounced);
+      return playMusic(channel, res.info.video, res.track, caller, isAnnounced);
     } else {
       if (debug === "true") {
         console.log("[DEBUG] No more tracks to play, starting timeout...");

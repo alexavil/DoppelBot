@@ -163,7 +163,7 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
       if (isSilent === false) caller.channel.send(`Added ${url} to the queue!`);
       if (debug === "true") console.log("[DEBUG] Downloading stream...");
       let resource = await downloadTrack(instance, value, format);
-      addResource(caller.guild.id, resource, id, instance, video, format);
+      addResource(caller.guild.id, resource, id, instance, value, format);
       if (getQueueLength(caller.guild.id) === 1) {
         if (debug === "true")
           console.log("[DEBUG] This is the first track, starting playback...");

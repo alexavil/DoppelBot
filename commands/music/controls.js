@@ -46,6 +46,9 @@ export default {
       skip,
       seek,
     );
+    if (common.getQueueLength(interaction.guild.id) === 1) {
+      skip.setDisabled(true);
+    }
 
     return interaction.editReply({
       content: "Use these buttons to control the playback.",

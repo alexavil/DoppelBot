@@ -176,7 +176,9 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
           caller,
           isAnnounced,
         );
-      } else return caller.editReply("Success! Wait for your new track to play, or use the Skip button!");
+      }
+      if (caller.replied || caller.deferred) return caller.editReply("Success!");
+      else return caller.reply("Success!");
     }
   } catch (error) {
     if (debug === "true") console.log("[DEBUG] Error: " + error);
@@ -324,7 +326,6 @@ function announceTrack(url, author, video, caller) {
     .setImage(thumb)
     .setFooter({ text: "Powered by InvidJS - https://invidjs.js.org/" });
   caller.channel.send({ embeds: [playingembed] });
-  caller.editReply("Success!");
 }
 
 function playMusic(channel, video, blob, caller, isAnnounced) {

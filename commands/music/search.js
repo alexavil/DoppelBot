@@ -13,6 +13,11 @@ export default {
     ),
   async execute(interaction) {
     const id = interaction.guild.id;
+    if (!interaction.member.voice.channel) {
+      if (debug === "true")
+        console.log("[DEBUG] No voice channel found, aborting...");
+      return interaction.editReply("You need to join a voice channel first!");
+    }
     let default_url = instances
       .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
       .get().url;
@@ -34,51 +39,33 @@ export default {
       );
     }
     let searchembed = new Discord.EmbedBuilder();
+    let values = [];
     value.forEach((track) => {
       searchembed.addFields({
         name: track.title,
         value: default_url + "/watch?v=" + track.id,
         inline: false,
       });
+      let menuOption = new Discord.StringSelectMenuOptionBuilder()
+        .setLabel(track.title)
+        .setValue(default_url + "/watch?v=" + track.id);
+      values.push(menuOption);
     });
     searchembed.setTitle("Please select a track:");
     searchembed.setColor("#0099ff");
     searchembed.setFooter({
       text: "Powered by InvidJS - https://invidjs.js.org/",
     });
-    let embedmessage = await interaction.channel.send({
+    const menu = new Discord.StringSelectMenuBuilder()
+      .setCustomId(`selecttrack`)
+      .setOptions(values)
+      .setMinValues(1)
+      .setMaxValues(values.length);
+    const row = new Discord.ActionRowBuilder().addComponents(menu);
+    return interaction.editReply({
       embeds: [searchembed],
+      components: [row],
+      ephemeral: true
     });
-    embedmessage.react(`1️⃣`);
-    embedmessage.react(`2️⃣`);
-    embedmessage.react(`3️⃣`);
-    embedmessage.react(`4️⃣`);
-    embedmessage.react(`5️⃣`);
-    const filter = (reaction, user) =>
-      reaction.emoji.name === `1️⃣` ||
-      reaction.emoji.name === `2️⃣` ||
-      reaction.emoji.name === `3️⃣` ||
-      reaction.emoji.name === `4️⃣` ||
-      (reaction.emoji.name === `5️⃣` && user.id === interaction.user.id);
-    let choice = 0;
-    if (debug === "true")
-      console.log("[DEBUG] Choice required - awaiting user input...");
-    embedmessage
-      .awaitReactions({ filter, maxUsers: 2 })
-      .then((collected) =>
-        collected.forEach(async (emoji) => {
-          if (emoji.count > 1) {
-            common.endTimeout(id);
-            if (debug === "true")
-              console.log(`[DEBUG] User choice: ${choice}...`);
-            let videoid = value[choice].id;
-            let url = default_url + "/watch?v=" + videoid;
-            await common.getVideo(url, interaction, false, true, 0);
-          } else {
-            choice++;
-          }
-        }),
-      )
-      .catch();
   },
 };

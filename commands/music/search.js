@@ -43,12 +43,12 @@ export default {
     value.forEach((track) => {
       searchembed.addFields({
         name: track.title,
-        value: default_url + "/watch?v=" + track.id,
+        value: track.url,
         inline: false,
       });
       let menuOption = new Discord.StringSelectMenuOptionBuilder()
         .setLabel(track.title)
-        .setValue(default_url + "/watch?v=" + track.id);
+        .setValue(track.url);
       values.push(menuOption);
     });
     searchembed.setTitle("Please select a track:");

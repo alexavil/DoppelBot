@@ -91,7 +91,6 @@ async function searchContent(url, query, retries) {
     let instance = await InvidJS.fetchInstances({ url: url });
     let results = InvidJS.searchContent(instance[0], query, {
       limit: 5,
-      type: InvidJS.ContentTypes.Video,
     });
     let timeout = new Promise((res) => setTimeout(() => res("timeout"), 10000));
     const value = await Promise.race([results, timeout]);

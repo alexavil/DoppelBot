@@ -15,7 +15,12 @@ export default {
     const tracks = interaction.values;
     for (const track of tracks) {
       let url = track;
-      await common.getVideo(url, interaction, false, true, 0);
+      if (url.includes("/watch?v=")) {
+        await common.getVideo(url, interaction, false, true, 0);
+      }
+      if (url.includes("/playlist?list=")) {
+        await common.getPlaylist(url, interaction, 0);
+      }
     }
   },
 };

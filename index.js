@@ -329,7 +329,7 @@ function deleteConfig(id) {
   tags.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
 }
 
-function gamecycle() {
+function editActivity() {
   let gamestring = Math.floor(Math.random() * activities.length);
   if (debug === "true") console.log(`[DEBUG] Editing bot activity...`);
   client.user.setActivity(activities[gamestring]);
@@ -359,9 +359,9 @@ client.on("ready", () => {
     clearQueue(guild.id);
   });
   if (activities !== undefined) {
-    let job = new cron.CronJob("00 00 * * * *", gamecycle);
+    let job = new cron.CronJob("00 00 * * * *", editActivity);
     job.start();
-    gamecycle();
+    editActivity();
   }
   let cacheclear = new cron.CronJob("00 00 00 * * *", clearMusicCache);
   cacheclear.start();

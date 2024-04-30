@@ -4,7 +4,7 @@ const tags = new sqlite3("./data/tags.db");
 import Discord, { ButtonStyle } from "discord.js";
 
 export default {
-  name: "createtag",
+  name: "tagcreate",
   async execute(interaction) {
     let id = interaction.guild.id;
     let keyword = interaction.fields.getTextInputValue("keywordInput");

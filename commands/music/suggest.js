@@ -22,7 +22,7 @@ export default {
       query,
       0,
     );
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       if (debug === "true")
         console.log("[DEBUG] Too many retries, aborting...");
       return interaction.editReply("Connection failed after 4 retries.");

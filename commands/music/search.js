@@ -27,7 +27,7 @@ export default {
       console.log("[DEBUG] Searching...");
     }
     let value = await common.searchContent(default_url, query, 0);
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       if (debug === "true")
         console.log("[DEBUG] Too many retries, aborting...");
       return interaction.editReply("Connection failed after 4 retries.");
@@ -65,7 +65,7 @@ export default {
     return interaction.editReply({
       embeds: [searchembed],
       components: [row],
-      ephemeral: true
+      ephemeral: true,
     });
   },
 };

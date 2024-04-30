@@ -4,7 +4,7 @@ const debug = process.env.DEBUG;
 import Discord, { ButtonStyle } from "discord.js";
 
 export default {
-  name: "deletetag",
+  name: "tagdelete",
   async execute(interaction) {
     let id = interaction.guild.id;
     if (debug === "true")

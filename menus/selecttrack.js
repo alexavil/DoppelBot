@@ -8,9 +8,9 @@ export default {
     if (debug === "true")
       console.log(`[DEBUG] Adding track(s) to the queue...`);
     interaction.update({
-        content: "Success!",
-        embeds: [],
-        components: [],
+      content: "Success!",
+      embeds: [],
+      components: [],
     });
     const tracks = interaction.values;
     for (const track of tracks) {

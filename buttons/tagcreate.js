@@ -4,7 +4,7 @@ export default {
   name: "tagcreate",
   async execute(interaction) {
     const modal = new Discord.ModalBuilder()
-      .setCustomId(`createtag`)
+      .setCustomId(`tagcreate`)
       .setTitle("Create a tag");
     const keywordInput = new Discord.TextInputBuilder()
       .setCustomId("keywordInput")

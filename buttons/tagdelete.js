@@ -16,7 +16,7 @@ export default {
       values.push(menuOption);
     });
     const menu = new Discord.StringSelectMenuBuilder()
-      .setCustomId(`deletetag`)
+      .setCustomId(`tagdelete`)
       .setOptions(values)
       .setMinValues(1)
       .setMaxValues(values.length);

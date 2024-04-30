@@ -176,7 +176,8 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
           isAnnounced,
         );
       }
-      if (caller.replied || caller.deferred) return caller.editReply("Success!");
+      if (caller.replied || caller.deferred)
+        return caller.editReply("Success!");
       else return caller.reply("Success!");
     }
   } catch (error) {
@@ -370,7 +371,10 @@ function playMusic(channel, video, blob, caller, isAnnounced) {
       if (debug === "true") {
         console.log("[DEBUG] Starting the next track...");
       }
-      let res = getResource(channel.guild.id, getFromQueue(channel.guild.id).track.split("=")[1]);
+      let res = getResource(
+        channel.guild.id,
+        getFromQueue(channel.guild.id).track.split("=")[1],
+      );
       if (isAnnounced === true)
         announceTrack(
           getFromQueue(channel.guild.id).track,
@@ -410,7 +414,7 @@ function addResource(id, resource, videoId, instance, video, format) {
       instance: instance,
       video: video,
       format: format,
-    }
+    },
   });
 }
 

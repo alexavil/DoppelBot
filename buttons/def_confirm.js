@@ -23,6 +23,7 @@ export default {
       statement.run("notifications", "false");
       statement.run("disconnect_timeout", "30");
       statement.run("min_health", "75");
+      statement.run("fail_threshold", "10");
     });
     transaction();
     if (debug === "true") console.log(`[DEBUG] Reset finished for ${id}!`);

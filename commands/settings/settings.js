@@ -15,7 +15,11 @@ export default {
       .setStyle(ButtonStyle.Primary);
     const healthbtn = new Discord.ButtonBuilder()
       .setCustomId(`sethealth`)
-      .setLabel(`Invidious: Set health`)
+      .setLabel(`Set minimum health`)
+      .setStyle(ButtonStyle.Primary);
+    const errorsbtn = new Discord.ButtonBuilder()
+      .setCustomId(`setfails`)
+      .setLabel(`Set error threshold`)
       .setStyle(ButtonStyle.Primary);
     const timeoutbtn = new Discord.ButtonBuilder()
       .setCustomId(`settimeout`)
@@ -28,6 +32,7 @@ export default {
     const adminrow = new Discord.ActionRowBuilder().addComponents(
       notifbtn,
       healthbtn,
+      errorsbtn,
       timeoutbtn,
       defaultbtn,
     );
@@ -65,6 +70,17 @@ export default {
             "The bot will send a warning if trying to use an instance with health below this number.\nCurrent value: `" +
             settings
               .prepare(`SELECT * FROM guild_${id} WHERE option = 'min_health'`)
+              .get().value +
+            "`",
+        },
+        {
+          name: "**Error Threshold**",
+          value:
+            "The bot will send a warning if trying to use an instance that failed this many times during the day.\nCurrent value: `" +
+            settings
+              .prepare(
+                `SELECT * FROM guild_${id} WHERE option = 'fail_threshold'`,
+              )
               .get().value +
             "`",
         },

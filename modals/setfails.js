@@ -4,24 +4,22 @@ const debug = process.env.DEBUG;
 import Discord, { ButtonStyle } from "discord.js";
 
 export default {
-  name: "settimeout",
+  name: "setfails",
   async execute(interaction) {
     const id = interaction.guild.id;
-    let timeout = parseInt(
-      interaction.fields.getTextInputValue("timeoutInput"),
-    );
-    if (timeout < 0 || !Number.isInteger(timeout)) {
+    let errors = parseInt(interaction.fields.getTextInputValue("errorInput"));
+    if (errors < 0 || !Number.isInteger(errors)) {
       if (debug === "true") console.log("[DEBUG] Invalid input, aborting...");
       return interaction.reply({
-        content: "Please provide a valid number in seconds!",
+        content: "Please provide a valid number!",
         ephemeral: true,
       });
     }
     if (debug === "true")
-      console.log(`[DEBUG] New disconnect timeout for ${id}: ${timeout}...`);
+      console.log(`[DEBUG] New error threshold for ${id}: ${errors}...`);
     settings
       .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
-      .run(timeout, "disconnect_timeout");
+      .run(errors, "fail_threshold");
     const settingsembed = new Discord.EmbedBuilder()
       .setColor("#0099ff")
       .setTitle("Server Settings for " + interaction.guild.name)

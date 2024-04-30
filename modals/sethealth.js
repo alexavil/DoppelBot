@@ -59,6 +59,17 @@ export default {
               .get().value +
             "`",
         },
+        {
+          name: "**Error Threshold**",
+          value:
+            "The bot will send a warning if trying to use an instance that failed this many times during the day.\nCurrent value: `" +
+            settings
+              .prepare(
+                `SELECT * FROM guild_${id} WHERE option = 'fail_threshold'`,
+              )
+              .get().value +
+            "`",
+        },
       );
     return interaction.update({
       embeds: [settingsembed],

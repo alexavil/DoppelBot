@@ -24,7 +24,9 @@ export default {
     let url = interaction.options.getString("track");
     if (common.disallowedLinks.some((link) => url.startsWith(link))) {
       let default_url = instances
-        .prepare(`SELECT * FROM instances WHERE health >= ${common.getHealth(id)} AND fails < ${common.getFails(id)} ORDER BY RANDOM() LIMIT 1`)
+        .prepare(
+          `SELECT * FROM instances WHERE health >= ${common.getHealth(id)} AND fails < ${common.getFails(id)} ORDER BY RANDOM() LIMIT 1`,
+        )
         .get().url;
       if (debug === "true")
         console.log(
@@ -42,7 +44,9 @@ export default {
     }
     if (url.match(/[a-zA-Z0-9_-]{11}/) && url.length === 11) {
       let default_url = instances
-        .prepare(`SELECT * FROM instances WHERE health >= ${getHealth(id)} AND fails < ${getFails(id)} ORDER BY RANDOM() LIMIT 1`)
+        .prepare(
+          `SELECT * FROM instances WHERE health >= ${getHealth(id)} AND fails < ${getFails(id)} ORDER BY RANDOM() LIMIT 1`,
+        )
         .get().url;
       if (debug === "true")
         console.log("[DEBUG] ID detected, redirecting to random instance...");

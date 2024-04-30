@@ -211,7 +211,7 @@ function getInstances() {
         instance.url,
         instance.api_allowed.toString(),
         instance.health,
-        0
+        0,
       );
     });
   });

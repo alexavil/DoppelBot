@@ -30,13 +30,13 @@ function addToQueue(id, file, name, author, isLooped) {
 function getHealth(id) {
   return settings
     .prepare(`SELECT * FROM guild_${id} WHERE option = 'min_health'`)
-    .get().value
+    .get().value;
 }
 
 function getFails(id) {
   return settings
     .prepare(`SELECT * FROM guild_${id} WHERE option = 'fail_threshold'`)
-    .get().value
+    .get().value;
 }
 
 function removeFromQueue(id) {
@@ -54,8 +54,14 @@ function getQueueLength(id) {
 }
 
 function addError(instance) {
-  let errors = cache.prepare(`SELECT * FROM instances WHERE url = '${instance}'`).get().fails;
-  cache.prepare(`UPDATE instances SET fails = '${errors + 1}' WHERE url = '${instance}'`).run();
+  let errors = cache
+    .prepare(`SELECT * FROM instances WHERE url = '${instance}'`)
+    .get().fails;
+  cache
+    .prepare(
+      `UPDATE instances SET fails = '${errors + 1}' WHERE url = '${instance}'`,
+    )
+    .run();
 }
 
 async function getSuggestions(caller, url, query, retries) {
@@ -74,7 +80,9 @@ async function getSuggestions(caller, url, query, retries) {
         console.log("[DEBUG] Could not reach instance, retrying...");
       retries++;
       url = cache
-        .prepare(`SELECT * FROM instances WHERE health >= ${getHealth(id)} AND fails < ${getFails(id)} ORDER BY RANDOM() LIMIT 1`)
+        .prepare(
+          `SELECT * FROM instances WHERE health >= ${getHealth(id)} AND fails < ${getFails(id)} ORDER BY RANDOM() LIMIT 1`,
+        )
         .get().url;
       if (debug === "true") console.log(`[DEBUG] New instance: ${url}`);
       await getSuggestions(url, query, retries);
@@ -90,7 +98,9 @@ async function getSuggestions(caller, url, query, retries) {
           console.log("[DEBUG] Non-fatal instance error, retrying...");
         retries++;
         let new_url = cache
-          .prepare(`SELECT * FROM instances WHERE health >= ${getHealth(id)} AND fails < ${getFails(id)} ORDER BY RANDOM() LIMIT 1`)
+          .prepare(
+            `SELECT * FROM instances WHERE health >= ${getHealth(id)} AND fails < ${getFails(id)} ORDER BY RANDOM() LIMIT 1`,
+          )
           .get().url;
         if (debug === "true") console.log(`[DEBUG] New instance: ${new_url}`);
         url = url.replace(url.split("/w")[0], new_url);
@@ -122,7 +132,9 @@ async function searchContent(caller, url, query, retries) {
         console.log("[DEBUG] Could not reach instance, retrying...");
       retries++;
       url = cache
-        .prepare(`SELECT * FROM instances WHERE health >= ${getHealth(id)} AND fails < ${getFails(id)} ORDER BY RANDOM() LIMIT 1`)
+        .prepare(
+          `SELECT * FROM instances WHERE health >= ${getHealth(id)} AND fails < ${getFails(id)} ORDER BY RANDOM() LIMIT 1`,
+        )
         .get().url;
       if (debug === "true") console.log(`[DEBUG] New instance: ${url}`);
       await searchContent(url, query, retries);
@@ -138,7 +150,9 @@ async function searchContent(caller, url, query, retries) {
           console.log("[DEBUG] Non-fatal instance error, retrying...");
         retries++;
         let new_url = cache
-          .prepare(`SELECT * FROM instances WHERE health >= ${getHealth(id)} AND fails < ${getFails(id)} ORDER BY RANDOM() LIMIT 1`)
+          .prepare(
+            `SELECT * FROM instances WHERE health >= ${getHealth(id)} AND fails < ${getFails(id)} ORDER BY RANDOM() LIMIT 1`,
+          )
           .get().url;
         if (debug === "true") console.log(`[DEBUG] New instance: ${new_url}`);
         url = url.replace(url.split("/w")[0], new_url);
@@ -174,7 +188,9 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
         console.log("[DEBUG] Could not reach instance, retrying...");
       retries++;
       let new_url = cache
-        .prepare(`SELECT * FROM instances WHERE health >= ${getHealth(guildId)} AND fails < ${getFails(guildId)} ORDER BY RANDOM() LIMIT 1`)
+        .prepare(
+          `SELECT * FROM instances WHERE health >= ${getHealth(guildId)} AND fails < ${getFails(guildId)} ORDER BY RANDOM() LIMIT 1`,
+        )
         .get().url;
       if (debug === "true") console.log(`[DEBUG] New instance: ${new_url}`);
       url = url.replace(url.split("/w")[0], new_url);
@@ -217,7 +233,9 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
           console.log("[DEBUG] Non-fatal instance error, retrying...");
         retries++;
         let new_url = cache
-          .prepare(`SELECT * FROM instances WHERE health >= ${getHealth(guildId)} AND fails < ${getFails(guildId)} ORDER BY RANDOM() LIMIT 1`)
+          .prepare(
+            `SELECT * FROM instances WHERE health >= ${getHealth(guildId)} AND fails < ${getFails(guildId)} ORDER BY RANDOM() LIMIT 1`,
+          )
           .get().url;
         if (debug === "true") console.log(`[DEBUG] New instance: ${new_url}`);
         url = url.replace(url.split("/w")[0], new_url);
@@ -269,7 +287,9 @@ async function getPlaylist(url, caller, retries) {
         console.log("[DEBUG] Could not reach instance, retrying...");
       retries++;
       let new_url = cache
-        .prepare(`SELECT * FROM instances WHERE health >= ${getHealth(id)} AND fails < ${getFails(id)} ORDER BY RANDOM() LIMIT 1`)
+        .prepare(
+          `SELECT * FROM instances WHERE health >= ${getHealth(id)} AND fails < ${getFails(id)} ORDER BY RANDOM() LIMIT 1`,
+        )
         .get().url;
       if (debug === "true") console.log(`[DEBUG] New instance: ${new_url}`);
       url = url.replace(url.split("/p")[0], new_url);
@@ -294,7 +314,9 @@ async function getPlaylist(url, caller, retries) {
           console.log("[DEBUG] Non-fatal instance error, retrying...");
         retries++;
         let new_url = cache
-          .prepare(`SELECT * FROM instances WHERE health >= ${getHealth(id)} AND fails < ${getFails(id)} ORDER BY RANDOM() LIMIT 1`)
+          .prepare(
+            `SELECT * FROM instances WHERE health >= ${getHealth(id)} AND fails < ${getFails(id)} ORDER BY RANDOM() LIMIT 1`,
+          )
           .get().url;
         if (debug === "true") console.log(`[DEBUG] New instance: ${new_url}`);
         url = url.replace(url.split("/p")[0], new_url);
@@ -334,7 +356,9 @@ async function downloadTrack(caller, instance, video, format) {
         if (debug === "true")
           console.log("[DEBUG] Non-fatal instance error, retrying...");
         let new_url = cache
-          .prepare(`SELECT * FROM instances WHERE health >= ${getHealth(id)} AND fails < ${getFails(id)} ORDER BY RANDOM() LIMIT 1`)
+          .prepare(
+            `SELECT * FROM instances WHERE health >= ${getHealth(id)} AND fails < ${getFails(id)} ORDER BY RANDOM() LIMIT 1`,
+          )
           .get().url;
         if (debug === "true") console.log(`[DEBUG] New instance: ${new_url}`);
         url = url.replace(url.split("/w")[0], new_url);
@@ -573,5 +597,5 @@ export default {
   removeResource,
   clearCache,
   getFails,
-  getHealth
+  getHealth,
 };

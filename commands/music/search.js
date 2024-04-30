@@ -19,7 +19,9 @@ export default {
       return interaction.editReply("You need to join a voice channel first!");
     }
     let default_url = instances
-      .prepare(`SELECT * FROM instances WHERE health >= ${common.getHealth(id)} AND fails < ${common.getFails(id)} ORDER BY RANDOM() LIMIT 1`)
+      .prepare(
+        `SELECT * FROM instances WHERE health >= ${common.getHealth(id)} AND fails < ${common.getFails(id)} ORDER BY RANDOM() LIMIT 1`,
+      )
       .get().url;
     let query = interaction.options.getString("query");
     if (debug === "true") {

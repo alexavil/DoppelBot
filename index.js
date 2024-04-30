@@ -143,7 +143,6 @@ const RequiredPerms = [
   [PermissionsBitField.Flags.ManageMessages, "Manage Messages"],
   [PermissionsBitField.Flags.Connect, "Connect"],
   [PermissionsBitField.Flags.Speak, "Speak"],
-  [PermissionsBitField.Flags.AddReactions, "Add Reactions"],
 ];
 
 if (debug === "true") {

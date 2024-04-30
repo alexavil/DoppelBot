@@ -62,6 +62,10 @@ const settings = new sqlite3("./data/settings.db");
 const queue = new sqlite3("./data/queue.db");
 const tags = new sqlite3("./data/tags.db");
 const instances = new sqlite3("./data/instances_cache.db");
+settings.pragma('journal_mode = WAL');
+queue.pragma('journal_mode = WAL');
+tags.pragma('journal_mode = WAL');
+instances.pragma('journal_mode = WAL');
 
 client.commands = new Discord.Collection();
 const foldersPath = path.join(__dirname, "commands");

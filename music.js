@@ -27,6 +27,18 @@ function addToQueue(id, file, name, author, isLooped) {
     .run(file, name, author, isLooped);
 }
 
+function getHealth(id) {
+  return settings
+    .prepare(`SELECT * FROM guild_${id} WHERE option = 'min_health'`)
+    .get().value
+}
+
+function getFails(id) {
+  return settings
+    .prepare(`SELECT * FROM guild_${id} WHERE option = 'fail_threshold'`)
+    .get().value
+}
+
 function removeFromQueue(id) {
   masterqueue.prepare(`DELETE FROM guild_${id} ORDER BY rowid LIMIT 1`).run();
 }
@@ -41,27 +53,36 @@ function getQueueLength(id) {
   return masterqueue.prepare(`SELECT * FROM guild_${id}`).all().length;
 }
 
-async function getSuggestions(url, query, retries) {
+function addError(instance) {
+  let errors = cache.prepare(`SELECT * FROM instances WHERE url = '${instance}'`).get().fails;
+  cache.prepare(`UPDATE instances SET fails = '${errors + 1}' WHERE url = '${instance}'`).run();
+}
+
+async function getSuggestions(caller, url, query, retries) {
   try {
     if (retries === 4) {
       return "error";
     }
+    let id = caller.guild.id;
     let instance = await InvidJS.fetchInstances({ url: url });
     let results = InvidJS.fetchSearchSuggestions(instance[0], query);
     let timeout = new Promise((res) => setTimeout(() => res("timeout"), 10000));
     const value = await Promise.race([results, timeout]);
     if (value === "timeout") {
+      addError(url);
       if (debug === "true")
         console.log("[DEBUG] Could not reach instance, retrying...");
       retries++;
       url = cache
-        .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
+        .prepare(`SELECT * FROM instances WHERE health >= ${getHealth(id)} AND fails < ${getFails(id)} ORDER BY RANDOM() LIMIT 1`)
         .get().url;
       if (debug === "true") console.log(`[DEBUG] New instance: ${url}`);
       await getSuggestions(url, query, retries);
     }
     return value;
   } catch (error) {
+    addError(url);
+    let id = caller.guild.id;
     if (debug === "true") console.log("[DEBUG] Error: " + error);
     switch (error.isFatal) {
       case false: {
@@ -69,7 +90,7 @@ async function getSuggestions(url, query, retries) {
           console.log("[DEBUG] Non-fatal instance error, retrying...");
         retries++;
         let new_url = cache
-          .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
+          .prepare(`SELECT * FROM instances WHERE health >= ${getHealth(id)} AND fails < ${getFails(id)} ORDER BY RANDOM() LIMIT 1`)
           .get().url;
         if (debug === "true") console.log(`[DEBUG] New instance: ${new_url}`);
         url = url.replace(url.split("/w")[0], new_url);
@@ -83,11 +104,12 @@ async function getSuggestions(url, query, retries) {
   }
 }
 
-async function searchContent(url, query, retries) {
+async function searchContent(caller, url, query, retries) {
   try {
     if (retries === 4) {
       return "error";
     }
+    let id = caller.guild.id;
     let instance = await InvidJS.fetchInstances({ url: url });
     let results = InvidJS.searchContent(instance[0], query, {
       limit: 5,
@@ -95,17 +117,20 @@ async function searchContent(url, query, retries) {
     let timeout = new Promise((res) => setTimeout(() => res("timeout"), 10000));
     const value = await Promise.race([results, timeout]);
     if (value === "timeout") {
+      addError(url);
       if (debug === "true")
         console.log("[DEBUG] Could not reach instance, retrying...");
       retries++;
       url = cache
-        .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
+        .prepare(`SELECT * FROM instances WHERE health >= ${getHealth(id)} AND fails < ${getFails(id)} ORDER BY RANDOM() LIMIT 1`)
         .get().url;
       if (debug === "true") console.log(`[DEBUG] New instance: ${url}`);
       await searchContent(url, query, retries);
     }
     return value;
   } catch (error) {
+    addError(url);
+    let id = caller.guild.id;
     if (debug === "true") console.log("[DEBUG] Error: " + error);
     switch (error.isFatal) {
       case false: {
@@ -113,7 +138,7 @@ async function searchContent(url, query, retries) {
           console.log("[DEBUG] Non-fatal instance error, retrying...");
         retries++;
         let new_url = cache
-          .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
+          .prepare(`SELECT * FROM instances WHERE health >= ${getHealth(id)} AND fails < ${getFails(id)} ORDER BY RANDOM() LIMIT 1`)
           .get().url;
         if (debug === "true") console.log(`[DEBUG] New instance: ${new_url}`);
         url = url.replace(url.split("/w")[0], new_url);
@@ -132,6 +157,7 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
     if (retries === 4) {
       return caller.editReply("Connection failed after 4 retries.");
     }
+    let guildId = caller.guild.id;
     let id = url.split("=")[1];
     let instances = await InvidJS.fetchInstances({
       url: url.split("/w")[0],
@@ -143,11 +169,12 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
     let timeout = new Promise((res) => setTimeout(() => res("timeout"), 10000));
     const value = await Promise.race([video, timeout]);
     if (value === "timeout") {
+      addError(url.split("/w")[0]);
       if (debug === "true")
         console.log("[DEBUG] Could not reach instance, retrying...");
       retries++;
       let new_url = cache
-        .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
+        .prepare(`SELECT * FROM instances WHERE health >= ${getHealth(guildId)} AND fails < ${getFails(guildId)} ORDER BY RANDOM() LIMIT 1`)
         .get().url;
       if (debug === "true") console.log(`[DEBUG] New instance: ${new_url}`);
       url = url.replace(url.split("/w")[0], new_url);
@@ -161,7 +188,7 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
       addToQueue(caller.guild.id, url, value.title, caller.user.id, "false");
       if (isSilent === false) caller.channel.send(`Added ${url} to the queue!`);
       if (debug === "true") console.log("[DEBUG] Downloading stream...");
-      let resource = await downloadTrack(instance, value, format);
+      let resource = await downloadTrack(caller, instance, value, format);
       addResource(caller.guild.id, resource, id, instance, value, format);
       if (getQueueLength(caller.guild.id) === 1) {
         if (debug === "true")
@@ -181,6 +208,8 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
       else return caller.reply("Success!");
     }
   } catch (error) {
+    addError(url.split("/w")[0]);
+    let guildId = caller.guild.id;
     if (debug === "true") console.log("[DEBUG] Error: " + error);
     switch (error.isFatal) {
       case false: {
@@ -188,7 +217,7 @@ async function getVideo(url, caller, isSilent, isAnnounced, retries) {
           console.log("[DEBUG] Non-fatal instance error, retrying...");
         retries++;
         let new_url = cache
-          .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
+          .prepare(`SELECT * FROM instances WHERE health >= ${getHealth(guildId)} AND fails < ${getFails(guildId)} ORDER BY RANDOM() LIMIT 1`)
           .get().url;
         if (debug === "true") console.log(`[DEBUG] New instance: ${new_url}`);
         url = url.replace(url.split("/w")[0], new_url);
@@ -229,16 +258,18 @@ async function getPlaylist(url, caller, retries) {
     let instances = await InvidJS.fetchInstances({
       url: url.split("/p")[0],
     });
+    let id = caller.guild.id;
     let instance = instances[0];
     let playlist = InvidJS.fetchPlaylist(instance, url.split("=")[1]);
     let timeout = new Promise((res) => setTimeout(() => res("timeout"), 10000));
     const value = await Promise.race([playlist, timeout]);
     if (value === "timeout") {
+      addError(url.split("/p")[0]);
       if (debug === "true")
         console.log("[DEBUG] Could not reach instance, retrying...");
       retries++;
       let new_url = cache
-        .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
+        .prepare(`SELECT * FROM instances WHERE health >= ${getHealth(id)} AND fails < ${getFails(id)} ORDER BY RANDOM() LIMIT 1`)
         .get().url;
       if (debug === "true") console.log(`[DEBUG] New instance: ${new_url}`);
       url = url.replace(url.split("/p")[0], new_url);
@@ -254,6 +285,8 @@ async function getPlaylist(url, caller, retries) {
       }
     }
   } catch (error) {
+    addError(url.split("/p")[0]);
+    let id = caller.guild.id;
     if (debug === "true") console.log("[DEBUG] Error: " + error);
     switch (error.isFatal) {
       case true: {
@@ -261,7 +294,7 @@ async function getPlaylist(url, caller, retries) {
           console.log("[DEBUG] Non-fatal instance error, retrying...");
         retries++;
         let new_url = cache
-          .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
+          .prepare(`SELECT * FROM instances WHERE health >= ${getHealth(id)} AND fails < ${getFails(id)} ORDER BY RANDOM() LIMIT 1`)
           .get().url;
         if (debug === "true") console.log(`[DEBUG] New instance: ${new_url}`);
         url = url.replace(url.split("/p")[0], new_url);
@@ -288,22 +321,24 @@ async function getPlaylist(url, caller, retries) {
   }
 }
 
-async function downloadTrack(instance, video, format) {
+async function downloadTrack(caller, instance, video, format) {
   try {
     let blob = await InvidJS.saveStream(instance, video, format);
     return blob;
   } catch (error) {
+    addError(url);
+    let id = caller.guild.id;
     if (debug === "true") console.log("[DEBUG] Error: " + error);
     switch (error.isFatal) {
       case false: {
         if (debug === "true")
           console.log("[DEBUG] Non-fatal instance error, retrying...");
         let new_url = cache
-          .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
+          .prepare(`SELECT * FROM instances WHERE health >= ${getHealth(id)} AND fails < ${getFails(id)} ORDER BY RANDOM() LIMIT 1`)
           .get().url;
         if (debug === "true") console.log(`[DEBUG] New instance: ${new_url}`);
         url = url.replace(url.split("/w")[0], new_url);
-        await downloadTrack(instance, video, format);
+        await downloadTrack(caller, instance, video, format);
       }
       case true: {
         return undefined;
@@ -537,4 +572,6 @@ export default {
   getResource,
   removeResource,
   clearCache,
+  getFails,
+  getHealth
 };

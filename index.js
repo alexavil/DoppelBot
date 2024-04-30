@@ -195,12 +195,12 @@ function initSentry() {
 function getInstances() {
   instances
     .prepare(
-      `CREATE TABLE IF NOT EXISTS instances (url TEXT UNIQUE, api TEXT, health INTEGER)`,
+      `CREATE TABLE IF NOT EXISTS instances (url TEXT UNIQUE, api TEXT, health INTEGER, fails INTEGER)`,
     )
     .run();
   instances.prepare(`DELETE FROM instances`).run();
   let statement = instances.prepare(
-    `INSERT OR IGNORE INTO instances VALUES (?, ?, ?)`,
+    `INSERT OR IGNORE INTO instances VALUES (?, ?, ?, ?)`,
   );
   InvidJS.fetchInstances({
     type: InvidJS.InstanceTypes.https,
@@ -211,6 +211,7 @@ function getInstances() {
         instance.url,
         instance.api_allowed.toString(),
         instance.health,
+        0
       );
     });
   });
@@ -351,6 +352,8 @@ client.on("ready", () => {
   if (telemetry === "true") initSentry();
   setProfile();
   validateSettings();
+  let instancecache = new cron.CronJob("00 00 00 * * *", getInstances);
+  instancecache.start();
   getInstances();
   let permcheck = new cron.CronJob("00 00 */8 * * *", CheckForPerms);
   permcheck.start();

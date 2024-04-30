@@ -19,14 +19,14 @@ export default {
       return interaction.editReply("You need to join a voice channel first!");
     }
     let default_url = instances
-      .prepare("SELECT * FROM instances ORDER BY RANDOM() LIMIT 1")
+      .prepare(`SELECT * FROM instances WHERE health >= ${common.getHealth(id)} AND fails < ${common.getFails(id)} ORDER BY RANDOM() LIMIT 1`)
       .get().url;
     let query = interaction.options.getString("query");
     if (debug === "true") {
       console.log(`[DEBUG] User query: ${query}...`);
       console.log("[DEBUG] Searching...");
     }
-    let value = await common.searchContent(default_url, query, 0);
+    let value = await common.searchContent(interaction, default_url, query, 0);
     if (typeof value === "string") {
       if (debug === "true")
         console.log("[DEBUG] Too many retries, aborting...");

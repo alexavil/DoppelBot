@@ -11,6 +11,9 @@ export default {
       option.setName("query").setDescription("Search query").setRequired(true),
     ),
   async execute(interaction) {
+    let default_url = instances
+      .prepare(`SELECT * FROM instances WHERE health >= ${common.getHealth(id)} AND fails < ${common.getFails(id)} ORDER BY RANDOM() LIMIT 1`)
+      .get().url;
     let query = interaction.options.getString("query");
     if (debug === "true") {
       console.log(`[DEBUG] User query: ${query}...`);
@@ -18,7 +21,8 @@ export default {
     }
     let instances = await InvidJS.fetchInstances({ api_allowed: true });
     let value = await common.getSuggestions(
-      instances[Math.floor(Math.random() * instances.length)].url,
+      interaction,
+      default_url,
       query,
       0,
     );

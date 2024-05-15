@@ -296,7 +296,7 @@ async function getPlaylist(url, caller, retries) {
       await getPlaylist(url, caller, retries);
     } else {
       caller.channel.send(
-        `Successfully added ${value.videoCount} items to the queue!`,
+        `Successfully added playlist to the queue!`,
       );
       for (let i = 0; i < value.videos.length; i++) {
         const video = value.videos[i];

@@ -24,7 +24,7 @@ Available RAM: ${Math.round(
           )} / ${Math.round(os.totalmem() / 1024 / 1024)} MB,
 CPU: ${os.cpus()[0].model}
 CPU Usage: ${os.loadavg()[0].toFixed(2)}%
-DoppelBot Uptime: ${convertToString(process.uptime())}
+Bot Uptime: ${convertToString(process.uptime())}
 OS Uptime: ${convertToString(os.uptime())}\`\`\``,
         },
         {

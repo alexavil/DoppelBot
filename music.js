@@ -295,9 +295,7 @@ async function getPlaylist(url, caller, retries) {
       url = url.replace(url.split("/p")[0], new_url);
       await getPlaylist(url, caller, retries);
     } else {
-      caller.channel.send(
-        `Successfully added playlist to the queue!`,
-      );
+      caller.channel.send(`Successfully added playlist to the queue!`);
       for (let i = 0; i < value.videos.length; i++) {
         const video = value.videos[i];
         let videoUrl = instance.url + "/watch?v=" + video.id;

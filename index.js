@@ -24,10 +24,23 @@ import Sentry from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
 import { getVoiceConnection } from "@discordjs/voice";
 
-const token = process.env.TOKEN;
+const token = undefined;
+const name = undefined;
+const activities = undefined;
+
+if (process.env.TOKEN) token = process.env.TOKEN;
+else {
+  console.error("Please provide a valid token!");
+  process.exit();
+}
+if (process.env.NAME) name = process.env.NAME;
+else {
+  console.error("Please provide a valid username!");
+  process.exit();
+}
+if (process.env.ACTIVITIES) activities = process.env.ACTIVITIES.split(",");
+
 const debug = process.env.DEBUG;
-const activities = process.env.ACTIVITIES.split(",");
-const name = process.env.NAME;
 const avatar = process.env.AVATAR;
 const telemetry = process.env.TELEMETRY;
 
@@ -173,8 +186,10 @@ if (debug === "true") {
 }
 
 function setProfile() {
-  if (client.user.username !== name) client.user.setUsername(name);
-  if (client.user.avatar !== avatar) client.user.setAvatar(avatar);
+  if (client.user.username !== name && name !== undefined)
+    client.user.setUsername(name);
+  if (client.user.avatar !== avatar && avatar !== undefined)
+    client.user.setAvatar(avatar);
 }
 
 function initSentry() {

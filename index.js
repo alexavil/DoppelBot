@@ -24,9 +24,9 @@ import * as Sentry from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
 import { getVoiceConnection } from "@discordjs/voice";
 
-const token = undefined;
-const name = undefined;
-const activities = undefined;
+let token = undefined;
+let name = undefined;
+let activities = undefined;
 
 if (process.env.TOKEN) token = process.env.TOKEN;
 else {
@@ -40,9 +40,9 @@ else {
 }
 if (process.env.ACTIVITIES) activities = process.env.ACTIVITIES.split(",");
 
-const debug = process.env.DEBUG;
-const avatar = process.env.AVATAR;
-const telemetry = process.env.TELEMETRY;
+let debug = process.env.DEBUG;
+let avatar = process.env.AVATAR;
+let telemetry = process.env.TELEMETRY;
 
 const client = new Discord.Client({
   intents: [

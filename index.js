@@ -20,7 +20,7 @@ import {
 } from "discord.js";
 import * as InvidJS from "@invidjs/invid-js";
 
-import Sentry from "@sentry/node";
+import * as Sentry from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
 import { getVoiceConnection } from "@discordjs/voice";
 

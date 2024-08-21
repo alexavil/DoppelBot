@@ -1,0 +1,17 @@
+version: 35
+jobs:
+- name: GitHub Sync
+  steps:
+  - !PushRepository
+    name: Sync
+    remoteUrl: https://github.com/alexavil/DoppelBot.git
+    userName: alexavil
+    passwordSecret: github_token
+    force: false
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  triggers:
+  - !BranchUpdateTrigger {}
+  retryCondition: never
+  maxRetries: 3
+  retryDelay: 30
+  timeout: 3600

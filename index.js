@@ -73,7 +73,6 @@ if (!fs.existsSync("./logs/")) fs.mkdirSync("./logs/");
 const settings = new sqlite3("./data/settings.db");
 const queue = new sqlite3("./data/queue.db");
 const tags = new sqlite3("./data/tags.db");
-const instances = new sqlite3("./data/instances_cache.db");
 
 client.commands = new Discord.Collection();
 const foldersPath = path.join(__dirname, "commands");
@@ -194,15 +193,15 @@ function setProfile() {
 function initSentry() {
   if (debug === "true") console.log("[DEBUG] Initializing Sentry...");
   Sentry.init({
-    dsn: "https://d7c06763ec24990c168e4ad0db91e360@o4504711913340928.ingest.sentry.io/4505981661151232",
-    tracesSampleRate: 1.0,
-    profilesSampleRate: 1.0,
+    dsn: "https://3f2f508f31b53efc75cf35eda503e49b@o4505970900467712.ingest.us.sentry.io/4509011809796097",
     integrations: [
-      new Sentry.Integrations.Http({ tracing: true }),
       nodeProfilingIntegration(),
     ],
+    // Tracing
+    tracesSampleRate: 1.0,
+    profilesSampleRate: 1.0,
     environment: debug ? "testing" : "production",
-    release: "3.0",
+    release: "3.0"
   });
 }
 
@@ -361,7 +360,7 @@ client.on("guildDelete", (guild) => {
 client.on("interactionCreate", async (interaction) => {
   let id = interaction.guild.id;
   let monitor = undefined;
-  if (telemetry === "true")
+  if (telemetry === "true" || debug === "true")
     monitor = Sentry.startInactiveSpan({
       op: "transaction",
       name: `DoppelBot Performance - ${interaction.id} (${interaction.guildId} - ${interaction.channelId})`,
@@ -379,7 +378,7 @@ client.on("interactionCreate", async (interaction) => {
       if (monitor !== undefined) return monitor.end();
       else return;
     } catch (error) {
-      if (telemetry === "true") Sentry.captureException(error);
+      if (telemetry === "true" || debug === "true") Sentry.captureException(error);
       if (debug === "true") console.log("[DEBUG] Error: " + error.message);
       return;
     }
@@ -397,7 +396,7 @@ client.on("interactionCreate", async (interaction) => {
       if (monitor !== undefined) return monitor.end();
       else return;
     } catch (error) {
-      if (telemetry === "true") Sentry.captureException(error);
+      if (telemetry === "true" || debug === "true") Sentry.captureException(error);
       if (debug === "true") console.log("[DEBUG] Error: " + error.message);
       return;
     }
@@ -415,7 +414,7 @@ client.on("interactionCreate", async (interaction) => {
       if (monitor !== undefined) return monitor.end();
       else return;
     } catch (error) {
-      if (telemetry === "true") Sentry.captureException(error);
+      if (telemetry === "true" || debug === "true") Sentry.captureException(error);
       if (debug === "true") console.log("[DEBUG] Error: " + error.message);
       return;
     }
@@ -438,7 +437,7 @@ client.on("interactionCreate", async (interaction) => {
     if (monitor !== undefined) return monitor.end();
     else return;
   } catch (error) {
-    if (telemetry === "true") Sentry.captureException(error);
+    if (telemetry === "true" || debug === "true") Sentry.captureException(error);
     if (debug === "true") console.log("[DEBUG] Error: " + error.message);
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({
@@ -467,7 +466,7 @@ client.on("messageCreate", (message) => {
   custom_tags.forEach((tag) => {
     if (!message.author.bot && message.content === tag.tag) {
       if (debug === "true") console.log("[DEBUG] Tag found!");
-      if (telemetry === "true") {
+      if (telemetry === "true" || debug === "true") {
         monitor = Sentry.startInactiveSpan({
           op: "transaction",
           name: `DoppelBot Performance - ${message.id} (${id} - ${message.channel.id})`,
@@ -488,12 +487,12 @@ client.on("messageCreate", (message) => {
 
 process.on("unhandledRejection", (error) => {
   if (debug === "true") console.log("[DEBUG] Error: " + error.message);
-  if (telemetry === "true") Sentry.captureException(error);
+  if (telemetry === "true" || debug === "true") Sentry.captureException(error);
 });
 
 process.on("uncaughtException", (error) => {
   if (debug === "true") console.log("[DEBUG] Error: " + error.message);
-  if (telemetry === "true") Sentry.captureException(error);
+  if (telemetry === "true" || debug === "true") Sentry.captureException(error);
 });
 
 process.on("SIGINT", () => {

@@ -1,5 +1,5 @@
 import Discord, { ButtonStyle } from "discord.js";
-import * as InvidJS from "@invidjs/invid-js";
+
 const debug = process.env.DEBUG;
 const { default: common } = await import("../../music.js");
 

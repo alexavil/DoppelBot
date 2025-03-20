@@ -1,4 +1,4 @@
-import * as InvidJS from "@invidjs/invid-js";
+
 import Discord, { ButtonStyle } from "discord.js";
 const debug = process.env.DEBUG;
 import {

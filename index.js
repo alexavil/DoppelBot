@@ -18,7 +18,6 @@ import {
   PermissionsBitField,
   ChannelType,
 } from "discord.js";
-import * as InvidJS from "@invidjs/invid-js";
 
 import * as Sentry from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
@@ -207,31 +206,6 @@ function initSentry() {
   });
 }
 
-function getInstances() {
-  instances
-    .prepare(
-      `CREATE TABLE IF NOT EXISTS instances (url TEXT UNIQUE, api TEXT, health INTEGER, fails INTEGER)`,
-    )
-    .run();
-  instances.prepare(`DELETE FROM instances`).run();
-  let statement = instances.prepare(
-    `INSERT OR IGNORE INTO instances VALUES (?, ?, ?, ?)`,
-  );
-  InvidJS.fetchInstances({
-    type: InvidJS.InstanceTypes.https,
-    api_allowed: true,
-  }).then((result) => {
-    result.forEach((instance) => {
-      statement.run(
-        instance.url,
-        instance.api_allowed.toString(),
-        instance.health,
-        0,
-      );
-    });
-  });
-}
-
 function CheckForPerms() {
   client.guilds.cache.forEach((guild) => {
     let id = guild.id;
@@ -367,9 +341,6 @@ client.on("ready", () => {
   if (telemetry === "true") initSentry();
   setProfile();
   validateSettings();
-  let instancecache = new cron.CronJob("00 00 00 * * *", getInstances);
-  instancecache.start();
-  getInstances();
   let permcheck = new cron.CronJob("00 00 */8 * * *", CheckForPerms);
   permcheck.start();
   if (debug === "true") console.log("[DEBUG] Running jobs for every guild...");

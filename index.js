@@ -326,17 +326,6 @@ function editActivity() {
   client.user.setActivity(activities[gamestring]);
 }
 
-function clearMusicCache() {
-  if (debug === "true") console.log("[DEBUG] Clearing music cache...");
-  client.guilds.cache.forEach((guild) => {
-    if (!getVoiceConnection(guild.id)) {
-      if (debug === "true")
-        console.log(`[DEBUG] Clearing cache for guild ${guild.id}...`);
-      music.clearCache(guild.id);
-    }
-  });
-}
-
 client.on("ready", () => {
   if (telemetry === "true") initSentry();
   setProfile();
@@ -353,8 +342,6 @@ client.on("ready", () => {
     job.start();
     editActivity();
   }
-  let cacheclear = new cron.CronJob("00 00 00 * * *", clearMusicCache);
-  cacheclear.start();
   if (debug === "true") console.log("[DEBUG] Jobs completed...");
   console.log("I am ready!");
 });

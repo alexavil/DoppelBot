@@ -327,7 +327,7 @@ function editActivity() {
 }
 
 client.on("ready", () => {
-  if (telemetry === "true") initSentry();
+  if (telemetry === "true" || debug === "true") initSentry();
   setProfile();
   validateSettings();
   let permcheck = new cron.CronJob("00 00 */8 * * *", CheckForPerms);

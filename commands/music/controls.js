@@ -7,7 +7,11 @@ export default {
     .setName("controls")
     .setDescription("Display player controls (VC only)"),
   async execute(interaction) {
-    if (!interaction.member.voice.channel) {
+    return interaction.editReply({
+      content: "Music commands are currently unavailable.",
+      flags: Discord.MessageFlags.Ephemeral,
+    });
+    /*    if (!interaction.member.voice.channel) {
       if (debug === "true")
         console.log("[DEBUG] No voice channel found, aborting...");
       return interaction.editReply("You need to join a voice channel first!");
@@ -55,5 +59,6 @@ export default {
       components: [row],
       flags: Discord.MessageFlags.Ephemeral,
     });
+  */
   },
 };

@@ -11,7 +11,11 @@ export default {
       option.setName("query").setDescription("Search query").setRequired(true),
     ),
   async execute(interaction) {
-    let default_url = instances
+    return interaction.editReply({
+      content: "Music commands are currently unavailable.",
+      flags: Discord.MessageFlags.Ephemeral,
+    });
+    /*    let default_url = instances
       .prepare(
         `SELECT * FROM instances WHERE health >= ${common.getHealth(id)} AND fails < ${common.getFails(id)} ORDER BY RANDOM() LIMIT 1`,
       )
@@ -46,5 +50,6 @@ export default {
         .setFooter({ text: "Powered by InvidJS - https://invidjs.js.org/" });
       return interaction.editReply({ embeds: [embed] });
     }
+      */
   },
 };

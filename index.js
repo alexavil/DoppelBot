@@ -194,14 +194,12 @@ function initSentry() {
   if (debug === "true") console.log("[DEBUG] Initializing Sentry...");
   Sentry.init({
     dsn: "https://3f2f508f31b53efc75cf35eda503e49b@o4505970900467712.ingest.us.sentry.io/4509011809796097",
-    integrations: [
-      nodeProfilingIntegration(),
-    ],
+    integrations: [nodeProfilingIntegration()],
     // Tracing
     tracesSampleRate: 1.0,
     profilesSampleRate: 1.0,
     environment: debug ? "testing" : "production",
-    release: "3.0"
+    release: "3.0",
   });
 }
 
@@ -377,7 +375,8 @@ client.on("interactionCreate", async (interaction) => {
       if (monitor !== undefined) return monitor.end();
       else return;
     } catch (error) {
-      if (telemetry === "true" || debug === "true") Sentry.captureException(error);
+      if (telemetry === "true" || debug === "true")
+        Sentry.captureException(error);
       if (debug === "true") console.log("[DEBUG] Error: " + error.message);
       return;
     }
@@ -395,7 +394,8 @@ client.on("interactionCreate", async (interaction) => {
       if (monitor !== undefined) return monitor.end();
       else return;
     } catch (error) {
-      if (telemetry === "true" || debug === "true") Sentry.captureException(error);
+      if (telemetry === "true" || debug === "true")
+        Sentry.captureException(error);
       if (debug === "true") console.log("[DEBUG] Error: " + error.message);
       return;
     }
@@ -413,7 +413,8 @@ client.on("interactionCreate", async (interaction) => {
       if (monitor !== undefined) return monitor.end();
       else return;
     } catch (error) {
-      if (telemetry === "true" || debug === "true") Sentry.captureException(error);
+      if (telemetry === "true" || debug === "true")
+        Sentry.captureException(error);
       if (debug === "true") console.log("[DEBUG] Error: " + error.message);
       return;
     }
@@ -436,7 +437,8 @@ client.on("interactionCreate", async (interaction) => {
     if (monitor !== undefined) return monitor.end();
     else return;
   } catch (error) {
-    if (telemetry === "true" || debug === "true") Sentry.captureException(error);
+    if (telemetry === "true" || debug === "true")
+      Sentry.captureException(error);
     if (debug === "true") console.log("[DEBUG] Error: " + error.message);
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({

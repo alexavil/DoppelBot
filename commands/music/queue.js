@@ -8,7 +8,11 @@ export default {
     .setName("queue")
     .setDescription("View current queue"),
   async execute(interaction) {
-    const id = interaction.guild.id;
+    return interaction.editReply({
+      content: "Music commands are currently unavailable.",
+      flags: Discord.MessageFlags.Ephemeral,
+    });
+    /*    const id = interaction.guild.id;
     let counter = 0;
     let embed = new Discord.EmbedBuilder();
     let queuelength = masterqueue
@@ -37,5 +41,6 @@ export default {
     embed.setTitle(`Queue for ${interaction.guild.name}`);
     embed.setColor("#0099ff");
     return interaction.editReply({ embeds: [embed] });
+    */
   },
 };

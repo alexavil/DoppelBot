@@ -39,6 +39,9 @@ export default {
     if (debug === "true") console.log("[DEBUG] Skipping the current track...");
     let player = common.getPlayer(id);
     player.player.stop();
-    interaction.reply({ content: "Skipped!", flags: Discord.MessageFlags.Ephemeral });
+    interaction.reply({
+      content: "Skipped!",
+      flags: Discord.MessageFlags.Ephemeral,
+    });
   },
 };

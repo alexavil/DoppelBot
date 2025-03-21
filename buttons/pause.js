@@ -15,14 +15,20 @@ export default {
           console.log("[DEBUG] Player is paused, unpausing...");
         player.player.unpause();
         player.isPaused = false;
-        return interaction.reply({ content: "Unpaused!", flags: Discord.MessageFlags.Ephemeral });
+        return interaction.reply({
+          content: "Unpaused!",
+          flags: Discord.MessageFlags.Ephemeral,
+        });
       }
       case false: {
         if (debug === "true")
           console.log("[DEBUG] Player is not paused, pausing...");
         player.player.pause();
         player.isPaused = true;
-        return interaction.reply({ content: "Paused!", flags: Discord.MessageFlags.Ephemeral });
+        return interaction.reply({
+          content: "Paused!",
+          flags: Discord.MessageFlags.Ephemeral,
+        });
       }
     }
   },

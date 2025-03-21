@@ -12,7 +12,11 @@ export default {
       option.setName("query").setDescription("Search query").setRequired(true),
     ),
   async execute(interaction) {
-    const id = interaction.guild.id;
+    return interaction.editReply({
+      content: "Music commands are currently unavailable.",
+      flags: Discord.MessageFlags.Ephemeral,
+    });
+    /*    const id = interaction.guild.id;
     if (!interaction.member.voice.channel) {
       if (debug === "true")
         console.log("[DEBUG] No voice channel found, aborting...");
@@ -69,5 +73,6 @@ export default {
       components: [row],
       flags: Discord.MessageFlags.Ephemeral,
     });
+    */
   },
 };

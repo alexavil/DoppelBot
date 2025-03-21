@@ -29,7 +29,7 @@ export default {
     await interaction.update({
       content: `Select tag(s) to delete.`,
       components: [row, row2],
-      ephemeral: true,
+      flags: Discord.MessageFlags.Ephemeral,
     });
   },
 };

@@ -2,7 +2,7 @@ import Discord, { ButtonStyle } from "discord.js";
 const debug = process.env.DEBUG;
 import sqlite3 from "better-sqlite3";
 
-const masterqueue = new sqlite3("./data/queue.db");
+const queue = new sqlite3("./data/queue.db");
 export default {
   data: new Discord.SlashCommandBuilder()
     .setName("queue")
@@ -11,13 +11,13 @@ export default {
     const id = interaction.guild.id;
     let counter = 0;
     let embed = new Discord.EmbedBuilder();
-    let queuelength = masterqueue
+    let queuelength = queue
       .prepare(`SELECT * FROM guild_${id}`)
       .all().length;
     if (queuelength !== 0) {
       if (debug === "true")
         console.log(`[DEBUG] Queue for ${id} is not empty, fetching tracks...`);
-      masterqueue
+      queue
         .prepare(`SELECT * FROM guild_${id}`)
         .all()
         .forEach((track) => {
@@ -32,7 +32,7 @@ export default {
         });
     } else {
       if (debug === "true") console.log(`[DEBUG] Queue for ${id} is empty...`);
-      embed.setDescription("The queue is empty!");
+      embed.setDescription("The queue is currently empty.");
     }
     embed.setTitle(`Queue for ${interaction.guild.name}`);
     embed.setColor("#0099ff");

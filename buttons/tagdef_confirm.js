@@ -19,7 +19,7 @@ export default {
     return interaction.update({
       content: "Your tags have been wiped successfully!",
       components: [],
-      ephemeral: true,
+      flags: Discord.MessageFlags.Ephemeral,
     });
   },
 };

@@ -18,7 +18,6 @@ import {
   PermissionsBitField,
   ChannelType,
 } from "discord.js";
-import * as InvidJS from "@invidjs/invid-js";
 
 import * as Sentry from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
@@ -74,7 +73,6 @@ if (!fs.existsSync("./logs/")) fs.mkdirSync("./logs/");
 const settings = new sqlite3("./data/settings.db");
 const queue = new sqlite3("./data/queue.db");
 const tags = new sqlite3("./data/tags.db");
-const instances = new sqlite3("./data/instances_cache.db");
 
 client.commands = new Discord.Collection();
 const foldersPath = path.join(__dirname, "commands");
@@ -195,40 +193,13 @@ function setProfile() {
 function initSentry() {
   if (debug === "true") console.log("[DEBUG] Initializing Sentry...");
   Sentry.init({
-    dsn: "https://d7c06763ec24990c168e4ad0db91e360@o4504711913340928.ingest.sentry.io/4505981661151232",
+    dsn: "https://3f2f508f31b53efc75cf35eda503e49b@o4505970900467712.ingest.us.sentry.io/4509011809796097",
+    integrations: [nodeProfilingIntegration()],
+    // Tracing
     tracesSampleRate: 1.0,
     profilesSampleRate: 1.0,
-    integrations: [
-      new Sentry.Integrations.Http({ tracing: true }),
-      nodeProfilingIntegration(),
-    ],
     environment: debug ? "testing" : "production",
     release: "3.0",
-  });
-}
-
-function getInstances() {
-  instances
-    .prepare(
-      `CREATE TABLE IF NOT EXISTS instances (url TEXT UNIQUE, api TEXT, health INTEGER, fails INTEGER)`,
-    )
-    .run();
-  instances.prepare(`DELETE FROM instances`).run();
-  let statement = instances.prepare(
-    `INSERT OR IGNORE INTO instances VALUES (?, ?, ?, ?)`,
-  );
-  InvidJS.fetchInstances({
-    type: InvidJS.InstanceTypes.https,
-    api_allowed: true,
-  }).then((result) => {
-    result.forEach((instance) => {
-      statement.run(
-        instance.url,
-        instance.api_allowed.toString(),
-        instance.health,
-        0,
-      );
-    });
   });
 }
 
@@ -312,7 +283,6 @@ function createConfig(id) {
   let transaction = settings.transaction(() => {
     statement.run("notifications", "false");
     statement.run("disconnect_timeout", "30");
-    statement.run("min_health", "75");
     statement.run("fail_threshold", "10");
   });
   transaction();
@@ -352,24 +322,10 @@ function editActivity() {
   client.user.setActivity(activities[gamestring]);
 }
 
-function clearMusicCache() {
-  if (debug === "true") console.log("[DEBUG] Clearing music cache...");
-  client.guilds.cache.forEach((guild) => {
-    if (!getVoiceConnection(guild.id)) {
-      if (debug === "true")
-        console.log(`[DEBUG] Clearing cache for guild ${guild.id}...`);
-      music.clearCache(guild.id);
-    }
-  });
-}
-
 client.on("ready", () => {
-  if (telemetry === "true") initSentry();
+  if (telemetry === "true" || debug === "true") initSentry();
   setProfile();
   validateSettings();
-  let instancecache = new cron.CronJob("00 00 00 * * *", getInstances);
-  instancecache.start();
-  getInstances();
   let permcheck = new cron.CronJob("00 00 */8 * * *", CheckForPerms);
   permcheck.start();
   if (debug === "true") console.log("[DEBUG] Running jobs for every guild...");
@@ -382,8 +338,6 @@ client.on("ready", () => {
     job.start();
     editActivity();
   }
-  let cacheclear = new cron.CronJob("00 00 00 * * *", clearMusicCache);
-  cacheclear.start();
   if (debug === "true") console.log("[DEBUG] Jobs completed...");
   console.log("I am ready!");
 });
@@ -403,7 +357,7 @@ client.on("guildDelete", (guild) => {
 client.on("interactionCreate", async (interaction) => {
   let id = interaction.guild.id;
   let monitor = undefined;
-  if (telemetry === "true")
+  if (telemetry === "true" || debug === "true")
     monitor = Sentry.startInactiveSpan({
       op: "transaction",
       name: `DoppelBot Performance - ${interaction.id} (${interaction.guildId} - ${interaction.channelId})`,
@@ -421,7 +375,8 @@ client.on("interactionCreate", async (interaction) => {
       if (monitor !== undefined) return monitor.end();
       else return;
     } catch (error) {
-      if (telemetry === "true") Sentry.captureException(error);
+      if (telemetry === "true" || debug === "true")
+        Sentry.captureException(error);
       if (debug === "true") console.log("[DEBUG] Error: " + error.message);
       return;
     }
@@ -439,7 +394,8 @@ client.on("interactionCreate", async (interaction) => {
       if (monitor !== undefined) return monitor.end();
       else return;
     } catch (error) {
-      if (telemetry === "true") Sentry.captureException(error);
+      if (telemetry === "true" || debug === "true")
+        Sentry.captureException(error);
       if (debug === "true") console.log("[DEBUG] Error: " + error.message);
       return;
     }
@@ -457,7 +413,8 @@ client.on("interactionCreate", async (interaction) => {
       if (monitor !== undefined) return monitor.end();
       else return;
     } catch (error) {
-      if (telemetry === "true") Sentry.captureException(error);
+      if (telemetry === "true" || debug === "true")
+        Sentry.captureException(error);
       if (debug === "true") console.log("[DEBUG] Error: " + error.message);
       return;
     }
@@ -475,22 +432,23 @@ client.on("interactionCreate", async (interaction) => {
         `[DEBUG] Trying to execute ${interaction.commandName} in ${id}.`,
       );
     if (command.shouldWait !== false)
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ flags: Discord.MessageFlags.Ephemeral });
     await command.execute(interaction);
     if (monitor !== undefined) return monitor.end();
     else return;
   } catch (error) {
-    if (telemetry === "true") Sentry.captureException(error);
+    if (telemetry === "true" || debug === "true")
+      Sentry.captureException(error);
     if (debug === "true") console.log("[DEBUG] Error: " + error.message);
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({
         content: "uhh can u say that again?",
-        ephemeral: true,
+        flags: Discord.MessageFlags.Ephemeral,
       });
     } else {
       await interaction.editReply({
         content: "uhh can u say that again?",
-        ephemeral: true,
+        flags: Discord.MessageFlags.Ephemeral,
       });
     }
   }
@@ -509,7 +467,7 @@ client.on("messageCreate", (message) => {
   custom_tags.forEach((tag) => {
     if (!message.author.bot && message.content === tag.tag) {
       if (debug === "true") console.log("[DEBUG] Tag found!");
-      if (telemetry === "true") {
+      if (telemetry === "true" || debug === "true") {
         monitor = Sentry.startInactiveSpan({
           op: "transaction",
           name: `DoppelBot Performance - ${message.id} (${id} - ${message.channel.id})`,
@@ -530,12 +488,12 @@ client.on("messageCreate", (message) => {
 
 process.on("unhandledRejection", (error) => {
   if (debug === "true") console.log("[DEBUG] Error: " + error.message);
-  if (telemetry === "true") Sentry.captureException(error);
+  if (telemetry === "true" || debug === "true") Sentry.captureException(error);
 });
 
 process.on("uncaughtException", (error) => {
   if (debug === "true") console.log("[DEBUG] Error: " + error.message);
-  if (telemetry === "true") Sentry.captureException(error);
+  if (telemetry === "true" || debug === "true") Sentry.captureException(error);
 });
 
 process.on("SIGINT", () => {

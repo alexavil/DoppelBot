@@ -17,7 +17,7 @@ export default {
         console.log("[DEBUG] Tag already exists, aborting...");
       return interaction.update({
         content: "A tag with that key word already exists!",
-        ephemeral: true,
+        flags: Discord.MessageFlags.Ephemeral,
       });
     }
     tags

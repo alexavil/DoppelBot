@@ -9,7 +9,7 @@ export default {
       .setColor("#0099ff")
       .setTitle(`${name} Help`)
       .addFields(
-        {
+/*        {
           name: "Music commands",
           value: `\`/play\` - play music
           \`/suggest\` - suggest search queries for a string
@@ -17,6 +17,7 @@ export default {
             \`/queue\` - view the current queue
             \`/controls\` - bring up the music player controls`,
         },
+        */
         {
           name: "Tags",
           value: `Certain servers may use key phrases and give out a response! You can view all the tags with \`/tags\`.`,

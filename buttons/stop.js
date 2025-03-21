@@ -20,14 +20,14 @@ export default {
         console.log("[DEBUG] User is not admin or alone, stop not allowed...");
       return interaction.reply({
         content: "You are not allowed to stop!",
-        ephemeral: true,
+        flags: Discord.MessageFlags.Ephemeral,
       });
     }
     const connection = getVoiceConnection(id);
     if (!connection)
       return interaction.reply({
         content: "The bot is already stopped!",
-        ephemeral: true,
+        flags: Discord.MessageFlags.Ephemeral,
       });
     else {
       common.stopCounter(id);
@@ -38,7 +38,7 @@ export default {
       return interaction.update({
         content: "Stopped!",
         components: [],
-        ephemeral: true,
+        flags: Discord.MessageFlags.Ephemeral,
       });
     }
   },

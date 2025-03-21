@@ -4,7 +4,7 @@ export default {
     return interaction.update({
       content: "Cancelled!",
       components: [],
-      ephemeral: true,
+      flags: Discord.MessageFlags.Ephemeral,
     });
   },
 };

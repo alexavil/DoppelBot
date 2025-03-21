@@ -35,6 +35,6 @@ Total Users: ${Array.from(interaction.client.users.cache).length}
 WebSocket Ping: ${interaction.client.ws.ping}ms.\`\`\``,
         },
       );
-    interaction.update({ embeds: [stats], components: [], ephemeral: true });
+    interaction.update({ embeds: [stats], components: [], flags: Discord.MessageFlags.Ephemeral });
   },
 };

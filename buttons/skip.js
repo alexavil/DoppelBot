@@ -22,7 +22,7 @@ export default {
         console.log("[DEBUG] User is not admin or alone, skip not allowed...");
       return interaction.reply({
         content: "You are not allowed to skip!",
-        ephemeral: true,
+        flags: Discord.MessageFlags.Ephemeral,
       });
     }
     if (
@@ -39,6 +39,6 @@ export default {
     if (debug === "true") console.log("[DEBUG] Skipping the current track...");
     let player = common.getPlayer(id);
     player.player.stop();
-    interaction.reply({ content: "Skipped!", ephemeral: true });
+    interaction.reply({ content: "Skipped!", flags: Discord.MessageFlags.Ephemeral });
   },
 };

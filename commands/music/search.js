@@ -67,7 +67,7 @@ export default {
     return interaction.editReply({
       embeds: [searchembed],
       components: [row],
-      ephemeral: true,
+      flags: Discord.MessageFlags.Ephemeral,
     });
   },
 };

@@ -53,7 +53,7 @@ export default {
     return interaction.editReply({
       content: "Use these buttons to control the playback.",
       components: [row],
-      ephemeral: true,
+      flags: Discord.MessageFlags.Ephemeral,
     });
   },
 };

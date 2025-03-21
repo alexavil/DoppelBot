@@ -8,14 +8,14 @@ export default {
       if (debug === "true")
         console.log(`[DEBUG] Sending dev-generated message to ${chl}...`);
       interaction.client.channels.cache.get(chl).send(msg);
-      interaction.reply({ content: "Success!", ephemeral: true });
+      interaction.reply({ content: "Success!", flags: Discord.MessageFlags.Ephemeral });
     } else {
       if (debug === "true")
         console.log(
           `[DEBUG] Sending dev-generated message to ${interaction.channel.id}...`,
         );
       interaction.channel.send(msg);
-      interaction.reply({ content: "Success!", ephemeral: true });
+      interaction.reply({ content: "Success!", flags: Discord.MessageFlags.Ephemeral });
     }
   },
 };

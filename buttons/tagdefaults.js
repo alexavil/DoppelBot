@@ -22,7 +22,7 @@ export default {
       content: `**ALERT:** This action will wipe your tags! Are you sure you want to proceed?`,
       components: [row],
       embeds: [],
-      ephemeral: true,
+      flags: Discord.MessageFlags.Ephemeral,
     });
   },
 };

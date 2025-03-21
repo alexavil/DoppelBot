@@ -10,12 +10,12 @@ export default {
     if (!connection)
       return interaction.reply({
         content: "No tracks are playing!",
-        ephemeral: true,
+        flags: Discord.MessageFlags.Ephemeral,
       });
     let length = convertToString(player.time);
     return interaction.reply({
       content: `Current time: ${length} / ${player.video.length}`,
-      ephemeral: true,
+      flags: Discord.MessageFlags.Ephemeral,
     });
   },
 };

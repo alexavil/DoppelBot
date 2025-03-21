@@ -22,7 +22,7 @@ export default {
       content: `**ALERT:** This action will reset your server settings! Are you sure you want to proceed?`,
       components: [row],
       embeds: [],
-      ephemeral: true,
+      flags: Discord.MessageFlags.Ephemeral,
     });
   },
 };

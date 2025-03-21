@@ -28,7 +28,7 @@ export default {
     return interaction.update({
       content: "Your settings have been reset successfully!",
       components: [],
-      ephemeral: true,
+      flags: Discord.MessageFlags.Ephemeral,
     });
   },
 };

@@ -431,7 +431,7 @@ client.on("interactionCreate", async (interaction) => {
         `[DEBUG] Trying to execute ${interaction.commandName} in ${id}.`,
       );
     if (command.shouldWait !== false)
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ flags: Discord.MessageFlags.Ephemeral });
     await command.execute(interaction);
     if (monitor !== undefined) return monitor.end();
     else return;
@@ -441,12 +441,12 @@ client.on("interactionCreate", async (interaction) => {
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({
         content: "uhh can u say that again?",
-        ephemeral: true,
+        flags: Discord.MessageFlags.Ephemeral,
       });
     } else {
       await interaction.editReply({
         content: "uhh can u say that again?",
-        ephemeral: true,
+        flags: Discord.MessageFlags.Ephemeral,
       });
     }
   }

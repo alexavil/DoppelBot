@@ -24,7 +24,7 @@ export default {
           .run();
         return interaction.reply({
           content: "The current track will not be looped!",
-          ephemeral: true,
+          flags: Discord.MessageFlags.Ephemeral,
         });
       }
       case "false": {
@@ -35,7 +35,7 @@ export default {
           .run();
         return interaction.reply({
           content: "The current track will be looped!",
-          ephemeral: true,
+          flags: Discord.MessageFlags.Ephemeral,
         });
       }
     }

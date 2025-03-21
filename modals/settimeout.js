@@ -14,7 +14,7 @@ export default {
       if (debug === "true") console.log("[DEBUG] Invalid input, aborting...");
       return interaction.reply({
         content: "Please provide a valid number in seconds!",
-        ephemeral: true,
+        flags: Discord.MessageFlags.Ephemeral,
       });
     }
     if (debug === "true")

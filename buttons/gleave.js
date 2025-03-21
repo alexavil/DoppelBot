@@ -26,7 +26,7 @@ export default {
       content: `Select guild(s) to leave.`,
       embeds: [],
       components: [row, row2],
-      ephemeral: true,
+      flags: Discord.MessageFlags.Ephemeral,
     });
   },
 };

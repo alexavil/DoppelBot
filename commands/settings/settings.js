@@ -65,18 +65,9 @@ export default {
             " seconds`",
         },
         {
-          name: "**Lowest Instance Health**",
-          value:
-            "The bot will look for an instance with health above this number.\nCurrent value: `" +
-            settings
-              .prepare(`SELECT * FROM guild_${id} WHERE option = 'min_health'`)
-              .get().value +
-            "`",
-        },
-        {
           name: "**Error Threshold**",
           value:
-            "The bot will avoid instances that failed this many times during the day.\nCurrent value: `" +
+            "The bot will give up if the download failed this many times.\nCurrent value: `" +
             settings
               .prepare(
                 `SELECT * FROM guild_${id} WHERE option = 'fail_threshold'`,

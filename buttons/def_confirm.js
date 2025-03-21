@@ -10,7 +10,6 @@ export default {
     let id = interaction.guild.id;
     if (debug === "true") console.log("[DEBUG] User confirmed, proceeding...");
     settings.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
-    tags.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
     settings
       .prepare(
         `CREATE TABLE IF NOT EXISTS guild_${id} (option TEXT UNIQUE, value TEXT)`,

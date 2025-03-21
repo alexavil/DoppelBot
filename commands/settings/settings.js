@@ -13,10 +13,6 @@ export default {
       .setCustomId(`notifications`)
       .setLabel(`Toggle service notifications`)
       .setStyle(ButtonStyle.Primary);
-    const healthbtn = new Discord.ButtonBuilder()
-      .setCustomId(`sethealth`)
-      .setLabel(`Set minimum health`)
-      .setStyle(ButtonStyle.Primary);
     const errorsbtn = new Discord.ButtonBuilder()
       .setCustomId(`setfails`)
       .setLabel(`Set error threshold`)
@@ -31,7 +27,6 @@ export default {
       .setStyle(ButtonStyle.Danger);
     const adminrow = new Discord.ActionRowBuilder().addComponents(
       notifbtn,
-      healthbtn,
       errorsbtn,
       timeoutbtn,
       defaultbtn,

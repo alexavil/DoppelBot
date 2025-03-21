@@ -5,3 +5,4 @@ logs/
 start.sh
 .env
 *.log
+deprecated/

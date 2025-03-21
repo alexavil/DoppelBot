@@ -6,3 +6,4 @@ start.sh
 .env
 *.log
 deprecated/
+tools/

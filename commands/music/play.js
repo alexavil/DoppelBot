@@ -50,7 +50,7 @@ export default {
               let track = interaction.options.getAttachment("track");
               let connection = music.getConnection(interaction);
               music.addToQueue(interaction.guild.id, track.url, track.name, interaction.member.id);
-              music.playLocalFile(track, connection, interaction);
+              music.playLocalFile(track.url, connection, interaction);
               music.announceTrack(track.name, interaction.member.id, interaction);
               return interaction.editReply({
                 content: "Success!",

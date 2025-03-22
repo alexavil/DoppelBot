@@ -61,11 +61,22 @@ function announceTrack(title, author, interaction) {
 function playLocalFile(file, connection) {
         let player = createAudioPlayer();
         connection.subscribe(player);
-        const resource = createAudioResource(file.url);
+        const resource = createAudioResource(file);
         player.play(resource);
         player.on(AudioPlayerStatus.Idle, async () => {
             if (debug.debug === true) {
               console.log("[DEBUG] No more tracks to play, starting timeout...");
+            }
+            if (getFromQueue(connection.joinConfig.guildId).isLooped === "false") {
+                removeFromQueue(connection.joinConfig.guildId);
+            }
+            if (getQueueLength(connection.joinConfig.guildId) > 0) {
+                if (debug === "true") {
+                  console.log("[DEBUG] Starting the next track...");
+                }
+                let track = getFromQueue(connection.joinConfig.guildId);
+                console.log(track);
+                playLocalFile(track.url, connection)
             }
         });
 }

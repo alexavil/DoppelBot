@@ -9,7 +9,7 @@ export default {
       .setColor("#0099ff")
       .setTitle(`${name} Help`)
       .addFields(
-/*        {
+        /*        {
           name: "Music commands",
           value: `\`/play\` - play music
           \`/suggest\` - suggest search queries for a string

@@ -11,9 +11,7 @@ export default {
     const id = interaction.guild.id;
     let counter = 0;
     let embed = new Discord.EmbedBuilder();
-    let queuelength = queue
-      .prepare(`SELECT * FROM guild_${id}`)
-      .all().length;
+    let queuelength = queue.prepare(`SELECT * FROM guild_${id}`).all().length;
     if (queuelength !== 0) {
       if (debug === "true")
         console.log(`[DEBUG] Queue for ${id} is not empty, fetching tracks...`);

@@ -19,17 +19,17 @@ function addToQueue(id, url, name, author) {
 }
 
 function removeFromQueue(id) {
-  masterqueue.prepare(`DELETE FROM guild_${id} ORDER BY rowid LIMIT 1`).run();
+  queue.prepare(`DELETE FROM guild_${id} ORDER BY rowid LIMIT 1`).run();
 }
 
 function getFromQueue(id) {
-  return masterqueue
+  return queue
     .prepare(`SELECT rowid, * FROM guild_${id} ORDER BY rowid LIMIT 1`)
     .get();
 }
 
 function getQueueLength(id) {
-  return masterqueue.prepare(`SELECT * FROM guild_${id}`).all().length;
+  return queue.prepare(`SELECT * FROM guild_${id}`).all().length;
 }
 
 function getConnection(interaction) {

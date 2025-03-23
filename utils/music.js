@@ -70,7 +70,7 @@ function announceTrack(title, author, interaction) {
 }
 
 async function getLocalFile(file) {
-  if (fs.existsSync(path.join(__dirname, cacheFolder, file.name))) return "File already exists!";
+  if (fs.existsSync(path.join(__dirname, cacheFolder, file.name))) return -1;
   else {
     let download = fs.createWriteStream(
       path.join(__dirname, cacheFolder, file.name),
@@ -80,13 +80,13 @@ async function getLocalFile(file) {
         response.pipe(download);
         download.on("finish", () => {
           download.close(() => {
-            return "File uploaded successfully!";
+            return 0;
           });
         });
       })
       .on("error", (err) => {
         fs.unlink(path.join(__dirname, cacheFolder, file.name), () => {
-          return "Error uploading file!";
+          return 1;
         });
       });
   }
@@ -95,7 +95,7 @@ async function getLocalFile(file) {
 function playLocalFile(file, connection) {
   let player = createAudioPlayer();
   connection.subscribe(player);
-  const resource = createAudioResource(file);
+  const resource = createAudioResource(path.join(__dirname, cacheFolder, file));
   player.play(resource);
   player.on(AudioPlayerStatus.Idle, async () => {
     if (debug.debug === true) {
@@ -108,9 +108,8 @@ function playLocalFile(file, connection) {
       if (debug === "true") {
         console.log("[DEBUG] Starting the next track...");
       }
-      let track = getFromQueue(connection.joinConfig.guildId);
-      console.log(track);
-      playLocalFile(track.url, connection);
+      let file = getFromQueue(connection.joinConfig.guildId);
+      playLocalFile(file.name, connection);
     }
   });
 }

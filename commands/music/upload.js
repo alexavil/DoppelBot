@@ -23,8 +23,23 @@ export default {
       });
     } else {
       let msg = await music.getLocalFile(track);
+      let message;
+      switch (msg) {
+        case -1: {
+            message = "This file already exists in the cache!";
+            break;
+        }
+        case 0: {
+            message = "File uploaded successfully!";
+            break;
+        }
+        case 1: {
+            message = "There was an error uploading your file!";
+            break;
+        }
+      }
       return interaction.editReply({
-        content: msg,
+        content: message,
         flags: Discord.MessageFlags.Ephemeral,
       });
     }

@@ -7,7 +7,7 @@ export default {
     .setName("controls")
     .setDescription("Display player controls (VC only)"),
   async execute(interaction) {
-     if (!interaction.member.voice.channel) {
+    if (!interaction.member.voice.channel) {
       if (debug === "true")
         console.log("[DEBUG] No voice channel found, aborting...");
       return interaction.editReply("You need to join a voice channel first!");

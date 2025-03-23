@@ -50,7 +50,7 @@ const client = new Discord.Client({
     GatewayIntentBits.DirectMessageReactions,
     GatewayIntentBits.DirectMessageTyping,
     GatewayIntentBits.DirectMessages,
-    GatewayIntentBits.GuildEmojisAndStickers,
+    GatewayIntentBits.GuildExpressions,
     GatewayIntentBits.GuildIntegrations,
     GatewayIntentBits.GuildInvites,
     GatewayIntentBits.GuildMembers,
@@ -69,6 +69,7 @@ const client = new Discord.Client({
 
 if (!fs.existsSync("./data/")) fs.mkdirSync("./data/");
 if (!fs.existsSync("./logs/")) fs.mkdirSync("./logs/");
+if (!fs.existsSync("./cache/")) fs.mkdirSync("./cache/");
 
 const settings = new sqlite3("./data/settings.db");
 const queue = new sqlite3("./data/queue.db");

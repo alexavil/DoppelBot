@@ -13,9 +13,8 @@ export default {
     if (!channel) return interaction.reply("You must be in a voice channel!");
     if (!connection) return interaction.reply("Nothing to loop!");
     switch (
-      queue
-        .prepare(`SELECT * FROM guild_${id} ORDER BY ROWID LIMIT 1`)
-        .get().isLooped
+      queue.prepare(`SELECT * FROM guild_${id} ORDER BY ROWID LIMIT 1`).get()
+        .isLooped
     ) {
       case "true": {
         if (debug === "true")
@@ -31,9 +30,7 @@ export default {
       case "false": {
         if (debug === "true")
           console.log("[DEBUG] Looping the current track...");
-        queue
-          .prepare(`UPDATE guild_${id} SET isLooped = 'true' LIMIT 1`)
-          .run();
+        queue.prepare(`UPDATE guild_${id} SET isLooped = 'true' LIMIT 1`).run();
         return interaction.reply({
           content: "The current track will be looped!",
           flags: Discord.MessageFlags.Ephemeral,

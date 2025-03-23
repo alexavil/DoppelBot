@@ -41,28 +41,35 @@ export default {
   async execute(interaction) {
     const id = interaction.guild.id;
     switch (interaction.options.getSubcommand()) {
-        case "local": {
-            if (!interaction.member.voice.channel) {
-                if (debug === "true")
-                  console.log("[DEBUG] No voice channel found, aborting...");
-                return interaction.editReply("You need to join a voice channel first!");
-              }
-              let track = interaction.options.getAttachment("track");
-              let connection = music.getConnection(interaction);
-              music.addToQueue(interaction.guild.id, track.url, track.name, interaction.member.id);
-              music.playLocalFile(track.url, connection, interaction);
-              music.announceTrack(track.name, interaction.member.id, interaction);
-              return interaction.editReply({
-                content: "Success!",
-                flags: Discord.MessageFlags.Ephemeral,
-            });
+      case "local": {
+        if (!interaction.member.voice.channel) {
+          if (debug === "true")
+            console.log("[DEBUG] No voice channel found, aborting...");
+          return interaction.editReply(
+            "You need to join a voice channel first!",
+          );
         }
-        case "online": {
-            return interaction.editReply({
-                content: "Online files are currently unavailable.",
-                flags: Discord.MessageFlags.Ephemeral,
-            });
-        }
+        let track = interaction.options.getAttachment("track");
+        let connection = music.getConnection(interaction);
+        music.addToQueue(
+          interaction.guild.id,
+          track.url,
+          track.name,
+          interaction.member.id,
+        );
+        await music.getLocalFile(track);
+        music.announceTrack(track.name, interaction.member.id, interaction);
+        return interaction.editReply({
+          content: "Success!",
+          flags: Discord.MessageFlags.Ephemeral,
+        });
+      }
+      case "online": {
+        return interaction.editReply({
+          content: "Online files are currently unavailable.",
+          flags: Discord.MessageFlags.Ephemeral,
+        });
+      }
     }
   },
 };

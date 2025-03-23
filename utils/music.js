@@ -1,4 +1,5 @@
 import Discord, { ButtonStyle } from "discord.js";
+import fs from "fs-extra";
 const debug = process.env.DEBUG;
 import {
   joinVoiceChannel,
@@ -11,6 +12,17 @@ import {
 import sqlite3 from "better-sqlite3";
 const queue = new sqlite3("./data/queue.db");
 const settings = new sqlite3("./data/settings.db");
+
+import http from "https";
+import path from "path";
+
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const cacheFolder = "../cache/";
 
 function addToQueue(id, url, name, author) {
   queue
@@ -47,46 +59,69 @@ function getConnection(interaction) {
   return connection;
 }
 
-
 function announceTrack(title, author, interaction) {
-    let playingembed = new Discord.EmbedBuilder()
-      .setTitle("Now Playing")
-      .setDescription(
-        `${title}\n\nRequested by <@!${author}>\n\n` +
-          "Use `/controls` to pause, stop or loop the track.",
-      )
-    interaction.channel.send({ embeds: [playingembed] });
+  let playingembed = new Discord.EmbedBuilder()
+    .setTitle("Now Playing")
+    .setDescription(
+      `${title}\n\nRequested by <@!${author}>\n\n` +
+        "Use `/controls` to pause, stop or loop the track.",
+    );
+  interaction.channel.send({ embeds: [playingembed] });
+}
+
+async function getLocalFile(file) {
+  if (fs.existsSync(path.join(__dirname, cacheFolder, file.name))) return "File already exists!";
+  else {
+    let download = fs.createWriteStream(
+      path.join(__dirname, cacheFolder, file.name),
+    );
+    await http
+      .get(file.url, (response) => {
+        response.pipe(download);
+        download.on("finish", () => {
+          download.close(() => {
+            return "File uploaded successfully!";
+          });
+        });
+      })
+      .on("error", (err) => {
+        fs.unlink(path.join(__dirname, cacheFolder, file.name), () => {
+          return "Error uploading file!";
+        });
+      });
+  }
 }
 
 function playLocalFile(file, connection) {
-        let player = createAudioPlayer();
-        connection.subscribe(player);
-        const resource = createAudioResource(file);
-        player.play(resource);
-        player.on(AudioPlayerStatus.Idle, async () => {
-            if (debug.debug === true) {
-              console.log("[DEBUG] No more tracks to play, starting timeout...");
-            }
-            if (getFromQueue(connection.joinConfig.guildId).isLooped === "false") {
-                removeFromQueue(connection.joinConfig.guildId);
-            }
-            if (getQueueLength(connection.joinConfig.guildId) > 0) {
-                if (debug === "true") {
-                  console.log("[DEBUG] Starting the next track...");
-                }
-                let track = getFromQueue(connection.joinConfig.guildId);
-                console.log(track);
-                playLocalFile(track.url, connection)
-            }
-        });
+  let player = createAudioPlayer();
+  connection.subscribe(player);
+  const resource = createAudioResource(file);
+  player.play(resource);
+  player.on(AudioPlayerStatus.Idle, async () => {
+    if (debug.debug === true) {
+      console.log("[DEBUG] No more tracks to play, starting timeout...");
+    }
+    if (getFromQueue(connection.joinConfig.guildId).isLooped === "false") {
+      removeFromQueue(connection.joinConfig.guildId);
+    }
+    if (getQueueLength(connection.joinConfig.guildId) > 0) {
+      if (debug === "true") {
+        console.log("[DEBUG] Starting the next track...");
+      }
+      let track = getFromQueue(connection.joinConfig.guildId);
+      console.log(track);
+      playLocalFile(track.url, connection);
+    }
+  });
 }
 
 export default {
-    addToQueue,
-    removeFromQueue,
-    getFromQueue,
-    getQueueLength,
-    getConnection,
-    playLocalFile,
-    announceTrack,
+  addToQueue,
+  removeFromQueue,
+  getFromQueue,
+  getQueueLength,
+  getConnection,
+  getLocalFile,
+  playLocalFile,
+  announceTrack,
 };

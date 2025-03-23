@@ -92,7 +92,7 @@ export default {
         stats,
         say,
         guilds,
-        cache
+        cache,
       );
       await interaction.editReply({
         embeds: [settingsembed],

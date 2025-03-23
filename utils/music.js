@@ -24,10 +24,10 @@ const __dirname = dirname(__filename);
 
 const cacheFolder = "../cache/";
 
-function addToQueue(id, url, name, author) {
+function addToQueue(id, url, name, channel, author) {
   queue
-    .prepare(`INSERT INTO guild_${id} VALUES (?, ?, ?, ?)`)
-    .run(url, name, author, "false");
+    .prepare(`INSERT INTO guild_${id} VALUES (?, ?, ?, ?, ?)`)
+    .run(url, name, author, channel, "false");
 }
 
 function removeFromQueue(id) {
@@ -59,14 +59,15 @@ function getConnection(interaction) {
   return connection;
 }
 
-function announceTrack(title, author, interaction) {
+function announceTrack(title, author, channel) {
   let playingembed = new Discord.EmbedBuilder()
     .setTitle("Now Playing")
     .setDescription(
       `${title}\n\nRequested by <@!${author}>\n\n` +
         "Use `/controls` to pause, stop or loop the track.",
     );
-  interaction.channel.send({ embeds: [playingembed] });
+  let ch = client.channels.cache.get(channel);
+  ch.send({ embeds: [playingembed] });
 }
 
 async function getLocalFile(file) {
@@ -110,6 +111,7 @@ function playLocalFile(file, connection) {
       }
       let file = getFromQueue(connection.joinConfig.guildId);
       playLocalFile(file.name, connection);
+      announceTrack(file.name, file.author, file.channel)
     }
   });
 }

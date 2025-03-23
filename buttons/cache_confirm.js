@@ -19,7 +19,7 @@ export default {
     let id = interaction.guild.id;
     if (debug === "true") console.log("[DEBUG] User confirmed, proceeding...");
     for (const file of await fs.readdir(path.join(__dirname, cacheFolder))) {
-        await fs.unlink(path.join(__dirname, cacheFolder, file));
+      await fs.unlink(path.join(__dirname, cacheFolder, file));
     }
     return interaction.update({
       content: "Your cache has been wiped successfully!",

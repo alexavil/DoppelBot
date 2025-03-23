@@ -21,7 +21,6 @@ import {
 
 import * as Sentry from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
-import { getVoiceConnection } from "@discordjs/voice";
 
 let token = undefined;
 let name = undefined;
@@ -289,7 +288,7 @@ function createConfig(id) {
   transaction();
   queue
     .prepare(
-      `CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT, name TEXT, author TEXT, isLooped TEXT)`,
+      `CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT, name TEXT, author TEXT, channel TEXT, isLooped TEXT)`,
     )
     .run();
   tags

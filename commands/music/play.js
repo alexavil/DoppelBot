@@ -12,6 +12,18 @@ import sqlite3 from "better-sqlite3";
 const settings = new sqlite3("./data/settings.db");
 const { default: music } = await import("../../utils/music.js");
 
+import fs from "fs-extra";
+
+import path from "path";
+
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const cacheFolder = "../../cache/";
+
 const allowedExts = [".flac", ".mp3", ".ogg", ".wav", ".m4a"];
 
 export default {
@@ -23,9 +35,7 @@ export default {
         .setName("local")
         .setDescription("Play local file")
         .addAttachmentOption((option) =>
-          option
-            .setName("track")
-            .setDescription("File to play"),
+          option.setName("track").setDescription("File to play"),
         ),
     )
     .addSubcommand((subcommand) =>
@@ -53,30 +63,68 @@ export default {
         let track = interaction.options.getAttachment("track");
         let connection = music.getConnection(interaction);
         if (track) {
-              if (!allowedExts.some((extension) => track.name.endsWith(extension))) {
+          if (
+            !allowedExts.some((extension) => track.name.endsWith(extension))
+          ) {
+            return interaction.editReply({
+              content: "This file has an invalid file extension.",
+              flags: Discord.MessageFlags.Ephemeral,
+            });
+          } else {
+            let msg = await music.getLocalFile(track);
+            switch (msg) {
+              case -1:
+              case 0: {
+                music.addToQueue(
+                  interaction.guild.id,
+                  track.url,
+                  track.name,
+                  interaction.channel.id,
+                  interaction.member.id,
+                );
+                music.playLocalFile(track.name, connection);
+                music.announceTrack(
+                  track.name,
+                  interaction.member.id,
+                  interaction.channel.id,
+                );
                 return interaction.editReply({
-                  content: "This file has an invalid file extension.",
+                  content: "Success!",
                   flags: Discord.MessageFlags.Ephemeral,
                 });
-              } else {
-                let msg = await music.getLocalFile(track);
-                switch (msg) {
-                  case -1:
-                  case 0: {
-                      music.addToQueue(interaction.guild.id, track.url, track.name, interaction.member.id);
-                      music.playLocalFile(track.name, connection);
-                      music.announceTrack(track.name, interaction.member.id, interaction);
-                      return interaction.editReply({
-                        content: "Success!",
-                        flags: Discord.MessageFlags.Ephemeral,
-                      });
-                  }
-                  case 1: {
-                      message = "There was an error uploading your file!";
-                      break;
-                  }
-                }
               }
+              case 1: {
+                message = "There was an error uploading your file!";
+                break;
+              }
+            }
+          }
+        } else {
+          let values = [];
+          let options = await fs.readdir(path.join(__dirname, cacheFolder));
+          console.log(options);
+          options.forEach((option) => {
+            let menuOption = new Discord.StringSelectMenuOptionBuilder()
+              .setLabel(option)
+              .setValue(option);
+            values.push(menuOption);
+          });
+          const menu = new Discord.StringSelectMenuBuilder()
+            .setCustomId(`selectlocal`)
+            .setOptions(values)
+            .setMinValues(1)
+            .setMaxValues(values.length);
+          const cancel = new Discord.ButtonBuilder()
+            .setCustomId(`cancel`)
+            .setLabel(`Cancel`)
+            .setStyle(ButtonStyle.Primary);
+          const row = new Discord.ActionRowBuilder().addComponents(menu);
+          const row2 = new Discord.ActionRowBuilder().addComponents(cancel);
+          return interaction.editReply({
+            content: `Select track(s) to play.`,
+            components: [row, row2],
+            flags: Discord.MessageFlags.Ephemeral,
+          });
         }
       }
       case "online": {

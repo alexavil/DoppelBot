@@ -26,16 +26,16 @@ export default {
       let message;
       switch (msg) {
         case -1: {
-            message = "This file already exists in the cache!";
-            break;
+          message = "This file already exists in the cache!";
+          break;
         }
         case 0: {
-            message = "File uploaded successfully!";
-            break;
+          message = "File uploaded successfully!";
+          break;
         }
         case 1: {
-            message = "There was an error uploading your file!";
-            break;
+          message = "There was an error uploading your file!";
+          break;
         }
       }
       return interaction.editReply({

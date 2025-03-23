@@ -2,7 +2,7 @@ import Discord, { messageLink } from "discord.js";
 const debug = process.env.DEBUG;
 const { default: music } = await import("../../utils/music.js");
 
-const allowedExts = [".flac", ".mp3", ".ogg", ".wav"];
+const allowedExts = [".flac", ".mp3", ".ogg", ".wav", ".m4a"];
 
 export default {
   data: new Discord.SlashCommandBuilder()

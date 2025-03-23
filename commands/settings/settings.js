@@ -84,10 +84,15 @@ export default {
         .setCustomId(`gleave`)
         .setLabel(`Leave guilds`)
         .setStyle(ButtonStyle.Danger);
+      const cache = new Discord.ButtonBuilder()
+        .setCustomId(`clear_cache`)
+        .setLabel(`Clear music cache`)
+        .setStyle(ButtonStyle.Danger);
       const ownerrow = new Discord.ActionRowBuilder().addComponents(
         stats,
         say,
         guilds,
+        cache
       );
       await interaction.editReply({
         embeds: [settingsembed],

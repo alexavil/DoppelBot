@@ -95,8 +95,10 @@ async function getLocalFile(file) {
 }
 
 function playLocalFile(file, connection, interaction) {
-  if (timeouts.get(connection.joinConfig.guildId))
+  if (timeouts.get(connection.joinConfig.guildId)) {
+    clearTimeout(timeouts.get(connection.joinConfig.guildId));
     timeouts.delete(connection.joinConfig.guildId);
+  }
   let player = createAudioPlayer();
   connection.subscribe(player);
   const resource = createAudioResource(path.join(__dirname, cacheFolder, file));
@@ -127,7 +129,11 @@ function playLocalFile(file, connection, interaction) {
             )
             .get().value,
         ) * 1000;
-      timeouts.set(connection.joinConfig.guildId, timeout);
+      let timer = setTimeout(() => {
+        timeouts.delete(connection.joinConfig.guildId);
+        connection.destroy();
+      }, timeout)
+      timeouts.set(connection.joinConfig.guildId, timer);
     }
   });
 }

@@ -132,6 +132,7 @@ function playLocalFile(file, connection, interaction) {
       let timer = setTimeout(() => {
         timeouts.delete(connection.joinConfig.guildId);
         connection.destroy();
+        interaction.channel.send(`No more tracks to play, disconnecting!`);
       }, timeout)
       timeouts.set(connection.joinConfig.guildId, timer);
     }

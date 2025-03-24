@@ -1,23 +1,23 @@
-import Discord, { ButtonStyle } from "discord.js";
-import fs from "fs-extra";
-const debug = process.env.DEBUG;
 import {
-  joinVoiceChannel,
+  AudioPlayerStatus,
   createAudioPlayer,
   createAudioResource,
-  NoSubscriberBehavior,
   getVoiceConnection,
-  AudioPlayerStatus,
+  joinVoiceChannel,
+  NoSubscriberBehavior,
 } from "@discordjs/voice";
 import sqlite3 from "better-sqlite3";
+import Discord from "discord.js";
+import fs from "fs-extra";
+const debug = process.env.DEBUG;
 const queue = new sqlite3("./data/queue.db");
 const settings = new sqlite3("./data/settings.db");
 
 import http from "https";
 import path from "path";
 
-import { fileURLToPath } from "url";
 import { dirname } from "path";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

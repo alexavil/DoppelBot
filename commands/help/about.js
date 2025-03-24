@@ -1,4 +1,4 @@
-import Discord, { ButtonStyle } from "discord.js";
+import Discord from "discord.js";
 const name = process.env.NAME;
 export default {
   data: new Discord.SlashCommandBuilder()

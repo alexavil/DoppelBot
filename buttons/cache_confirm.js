@@ -1,12 +1,12 @@
 const debug = process.env.DEBUG;
-import Discord, { ButtonStyle } from "discord.js";
+import Discord from "discord.js";
 
 import fs from "fs-extra";
 
 import path from "path";
 
-import { fileURLToPath } from "url";
 import { dirname } from "path";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

@@ -1,4 +1,4 @@
-import Discord, { ButtonStyle } from "discord.js";
+import Discord from "discord.js";
 
 export default {
   name: "say",

@@ -1,7 +1,8 @@
-import Discord, { ButtonStyle } from "discord.js";
 import sqlite3 from "better-sqlite3";
+import Discord, { ButtonStyle } from "discord.js";
 const settings = new sqlite3("./data/settings.db");
 const owners = process.env.OWNERS.split(",");
+
 export default {
   data: new Discord.SlashCommandBuilder()
     .setName("settings")

@@ -2,7 +2,6 @@ import sqlite3 from "better-sqlite3";
 const debug = process.env.DEBUG;
 
 const settings = new sqlite3("./data/settings.db");
-const tags = new sqlite3("./data/tags.db");
 
 export default {
   name: "def_confirm",

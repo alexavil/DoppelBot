@@ -1,8 +1,9 @@
-import Discord, { ButtonStyle } from "discord.js";
 import child from "child_process";
-const name = process.env.NAME;
+import Discord from "discord.js";
 import os from "os";
 import { convertToString } from "../utils/TimeConverter.js";
+const name = process.env.NAME;
+
 export default {
   name: "stats",
   async execute(interaction) {

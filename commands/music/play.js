@@ -1,23 +1,13 @@
 import Discord, { ButtonStyle } from "discord.js";
 const debug = process.env.DEBUG;
-import {
-  joinVoiceChannel,
-  createAudioPlayer,
-  createAudioResource,
-  NoSubscriberBehavior,
-  getVoiceConnection,
-  AudioPlayerStatus,
-} from "@discordjs/voice";
-import sqlite3 from "better-sqlite3";
-const settings = new sqlite3("./data/settings.db");
 const { default: music } = await import("../../utils/music.js");
 
 import fs from "fs-extra";
 
 import path from "path";
 
-import { fileURLToPath } from "url";
 import { dirname } from "path";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

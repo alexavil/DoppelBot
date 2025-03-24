@@ -1,7 +1,7 @@
 const debug = process.env.DEBUG;
-import Discord from "discord.js";
-import sqlite3 from "better-sqlite3";
 import { getVoiceConnection } from "@discordjs/voice";
+import sqlite3 from "better-sqlite3";
+import Discord from "discord.js";
 
 const queue = new sqlite3("./data/queue.db");
 export default {

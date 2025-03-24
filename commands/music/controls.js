@@ -1,4 +1,4 @@
-import Discord, { ButtonStyle } from "discord.js";
+import Discord from "discord.js";
 const debug = process.env.DEBUG;
 const { default: music } = await import("../../utils/music.js");
 

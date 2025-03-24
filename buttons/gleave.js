@@ -1,5 +1,6 @@
 const debug = process.env.DEBUG;
 import Discord, { ButtonStyle } from "discord.js";
+
 export default {
   name: "gleave",
   async execute(interaction) {

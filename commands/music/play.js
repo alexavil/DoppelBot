@@ -82,11 +82,11 @@ export default {
                   interaction.channel.id,
                   interaction.member.id,
                 );
-                music.playLocalFile(track.name, connection);
+                music.playLocalFile(track.name, connection, interaction);
                 music.announceTrack(
                   track.name,
                   interaction.member.id,
-                  interaction.channel.id,
+                  interaction,
                 );
                 return interaction.editReply({
                   content: "Success!",
@@ -115,7 +115,7 @@ export default {
             .setMinValues(1)
             .setMaxValues(values.length);
           const cancel = new Discord.ButtonBuilder()
-            .setCustomId(`cancel`)
+            .setCustomId(`music_cancel`)
             .setLabel(`Cancel`)
             .setStyle(ButtonStyle.Primary);
           const row = new Discord.ActionRowBuilder().addComponents(menu);

@@ -16,9 +16,23 @@ export default {
     const tracks = interaction.values;
     for (const track of tracks) {
       let file = track;
-      music.addToQueue(interaction.guild.id, file, file, interaction.channel.id, interaction.member.id);
+      music.addToQueue(
+        interaction.guild.id,
+        file,
+        file,
+        interaction.channel.id,
+        interaction.member.id,
+      );
     }
-    music.playLocalFile(music.getFromQueue(interaction.guild.id).name, connection);
-    music.announceTrack(music.getFromQueue(interaction.guild.id).name, interaction.member.id, interaction.channel.id);
+    music.playLocalFile(
+      music.getFromQueue(interaction.guild.id).name,
+      connection,
+      interaction,
+    );
+    music.announceTrack(
+      music.getFromQueue(interaction.guild.id).name,
+      interaction.member.id,
+      interaction,
+    );
   },
 };

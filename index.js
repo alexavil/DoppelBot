@@ -288,7 +288,7 @@ function createConfig(id) {
   transaction();
   queue
     .prepare(
-      `CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT, name TEXT, author TEXT, channel TEXT, isLooped TEXT)`,
+      `CREATE TABLE IF NOT EXISTS guild_${id} (track TEXT, name TEXT, author TEXT, isLooped TEXT)`,
     )
     .run();
   tags

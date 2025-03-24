@@ -24,10 +24,10 @@ const __dirname = dirname(__filename);
 
 const cacheFolder = "../cache/";
 
-function addToQueue(id, url, name, channel, author) {
+function addToQueue(id, url, name, author) {
   queue
-    .prepare(`INSERT INTO guild_${id} VALUES (?, ?, ?, ?, ?)`)
-    .run(url, name, author, channel, "false");
+    .prepare(`INSERT INTO guild_${id} VALUES (?, ?, ?, ?)`)
+    .run(url, name, author, "false");
 }
 
 function removeFromQueue(id) {
@@ -59,15 +59,14 @@ function getConnection(interaction) {
   return connection;
 }
 
-function announceTrack(title, author, channel) {
+function announceTrack(title, author, interaction) {
   let playingembed = new Discord.EmbedBuilder()
     .setTitle("Now Playing")
     .setDescription(
       `${title}\n\nRequested by <@!${author}>\n\n` +
         "Use `/controls` to pause, stop or loop the track.",
     );
-  let ch = client.channels.cache.get(channel);
-  ch.send({ embeds: [playingembed] });
+  interaction.channel.send({ embeds: [playingembed] });
 }
 
 async function getLocalFile(file) {
@@ -93,7 +92,7 @@ async function getLocalFile(file) {
   }
 }
 
-function playLocalFile(file, connection) {
+function playLocalFile(file, connection, interaction) {
   let player = createAudioPlayer();
   connection.subscribe(player);
   const resource = createAudioResource(path.join(__dirname, cacheFolder, file));
@@ -110,8 +109,8 @@ function playLocalFile(file, connection) {
         console.log("[DEBUG] Starting the next track...");
       }
       let file = getFromQueue(connection.joinConfig.guildId);
-      playLocalFile(file.name, connection);
-      announceTrack(file.name, file.author, file.channel)
+      playLocalFile(file.name, connection, interaction);
+      announceTrack(file.name, file.author, interaction);
     }
   });
 }

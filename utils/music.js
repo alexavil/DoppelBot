@@ -24,6 +24,8 @@ const __dirname = dirname(__filename);
 
 const cacheFolder = "../cache/";
 
+const timeouts = new Map();
+
 function addToQueue(id, url, name, author) {
   queue
     .prepare(`INSERT INTO guild_${id} VALUES (?, ?, ?, ?)`)
@@ -93,6 +95,8 @@ async function getLocalFile(file) {
 }
 
 function playLocalFile(file, connection, interaction) {
+  if (timeouts.get(connection.joinConfig.guildId))
+    timeouts.delete(connection.joinConfig.guildId);
   let player = createAudioPlayer();
   connection.subscribe(player);
   const resource = createAudioResource(path.join(__dirname, cacheFolder, file));
@@ -111,6 +115,19 @@ function playLocalFile(file, connection, interaction) {
       let file = getFromQueue(connection.joinConfig.guildId);
       playLocalFile(file.name, connection, interaction);
       announceTrack(file.name, file.author, interaction);
+    } else {
+      if (debug === "true") {
+        console.log("[DEBUG] No more tracks to play, starting timeout...");
+      }
+      let timeout =
+        parseInt(
+          settings
+            .prepare(
+              `SELECT * FROM guild_${connection.joinConfig.guildId} WHERE option = 'disconnect_timeout'`,
+            )
+            .get().value,
+        ) * 1000;
+      timeouts.set(connection.joinConfig.guildId, timeout);
     }
   });
 }

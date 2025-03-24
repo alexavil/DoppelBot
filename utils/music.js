@@ -25,6 +25,7 @@ const __dirname = dirname(__filename);
 const cacheFolder = "../cache/";
 
 const timeouts = new Map();
+const players = new Map();
 
 function addToQueue(id, url, name, author) {
   queue
@@ -100,6 +101,7 @@ function playLocalFile(file, connection, interaction) {
     timeouts.delete(connection.joinConfig.guildId);
   }
   let player = createAudioPlayer();
+  players.set(connection.joinConfig.guildId, player);
   connection.subscribe(player);
   const resource = createAudioResource(path.join(__dirname, cacheFolder, file));
   player.play(resource);
@@ -131,6 +133,7 @@ function playLocalFile(file, connection, interaction) {
         ) * 1000;
       let timer = setTimeout(() => {
         timeouts.delete(connection.joinConfig.guildId);
+        players.delete(connection.joinConfig.guildId);
         connection.destroy();
         interaction.channel.send(`No more tracks to play, disconnecting!`);
       }, timeout)
@@ -148,4 +151,5 @@ export default {
   getLocalFile,
   playLocalFile,
   announceTrack,
+  players,
 };

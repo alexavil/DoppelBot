@@ -79,7 +79,6 @@ export default {
                   interaction.guild.id,
                   track.url,
                   track.name,
-                  interaction.channel.id,
                   interaction.member.id,
                 );
                 music.playLocalFile(track.name, connection, interaction);

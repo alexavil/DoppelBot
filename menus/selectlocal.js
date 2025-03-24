@@ -20,7 +20,6 @@ export default {
         interaction.guild.id,
         file,
         file,
-        interaction.channel.id,
         interaction.member.id,
       );
     }

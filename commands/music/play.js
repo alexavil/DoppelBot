@@ -118,7 +118,7 @@ export default {
       }
       case "online": {
         return interaction.editReply({
-          content: "Online files are currently unavailable.",
+          content: "Online files are coming soon. Please download the music track manually and upload it to the music cache for now.",
           flags: Discord.MessageFlags.Ephemeral,
         });
       }

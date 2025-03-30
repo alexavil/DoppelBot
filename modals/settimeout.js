@@ -1,7 +1,7 @@
 import sqlite3 from "better-sqlite3";
+import Discord from "discord.js";
 const settings = new sqlite3("./data/settings.db");
 const debug = process.env.DEBUG;
-import Discord, { ButtonStyle } from "discord.js";
 
 export default {
   name: "settimeout",

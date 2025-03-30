@@ -7,3 +7,4 @@ start.sh
 *.log
 deprecated/
 tools/
+cache/

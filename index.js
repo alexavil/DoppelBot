@@ -1,27 +1,25 @@
 import "dotenv/config";
 
-import { fileURLToPath } from "url";
 import { dirname } from "path";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-import fs from "fs-extra";
-import util from "util";
-import cron from "cron";
-import path from "path";
 import sqlite3 from "better-sqlite3";
-import Discord from "discord.js";
 import child from "child_process";
-import {
+import cron from "cron";
+import Discord, {
+  ChannelType,
   GatewayIntentBits,
   PermissionsBitField,
-  ChannelType,
 } from "discord.js";
+import fs from "fs-extra";
+import path from "path";
+import util from "util";
 
 import * as Sentry from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
-import { getVoiceConnection } from "@discordjs/voice";
 
 let token = undefined;
 let name = undefined;
@@ -50,7 +48,7 @@ const client = new Discord.Client({
     GatewayIntentBits.DirectMessageReactions,
     GatewayIntentBits.DirectMessageTyping,
     GatewayIntentBits.DirectMessages,
-    GatewayIntentBits.GuildEmojisAndStickers,
+    GatewayIntentBits.GuildExpressions,
     GatewayIntentBits.GuildIntegrations,
     GatewayIntentBits.GuildInvites,
     GatewayIntentBits.GuildMembers,
@@ -69,6 +67,7 @@ const client = new Discord.Client({
 
 if (!fs.existsSync("./data/")) fs.mkdirSync("./data/");
 if (!fs.existsSync("./logs/")) fs.mkdirSync("./logs/");
+if (!fs.existsSync("./cache/")) fs.mkdirSync("./cache/");
 
 const settings = new sqlite3("./data/settings.db");
 const queue = new sqlite3("./data/queue.db");

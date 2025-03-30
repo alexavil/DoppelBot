@@ -1,7 +1,8 @@
-import Discord, { ButtonStyle } from "discord.js";
 import sqlite3 from "better-sqlite3";
+import Discord, { ButtonStyle } from "discord.js";
 const settings = new sqlite3("./data/settings.db");
-const owners = process.env.OWNERS.split(",");
+if (process.env.ACTIVITIES) owners = process.env.OWNERS.split(",");
+
 export default {
   data: new Discord.SlashCommandBuilder()
     .setName("settings")
@@ -13,10 +14,11 @@ export default {
       .setCustomId(`notifications`)
       .setLabel(`Toggle service notifications`)
       .setStyle(ButtonStyle.Primary);
-    const errorsbtn = new Discord.ButtonBuilder()
+/*    const errorsbtn = new Discord.ButtonBuilder()
       .setCustomId(`setfails`)
       .setLabel(`Set error threshold`)
       .setStyle(ButtonStyle.Primary);
+*/
     const timeoutbtn = new Discord.ButtonBuilder()
       .setCustomId(`settimeout`)
       .setLabel(`Set VC timeout`)
@@ -27,7 +29,7 @@ export default {
       .setStyle(ButtonStyle.Danger);
     const adminrow = new Discord.ActionRowBuilder().addComponents(
       notifbtn,
-      errorsbtn,
+      //errorsbtn,
       timeoutbtn,
       defaultbtn,
     );
@@ -58,18 +60,7 @@ export default {
                 .get().value,
             ) +
             " seconds`",
-        },
-        {
-          name: "**Error Threshold**",
-          value:
-            "The bot will give up if the download failed this many times.\nCurrent value: `" +
-            settings
-              .prepare(
-                `SELECT * FROM guild_${id} WHERE option = 'fail_threshold'`,
-              )
-              .get().value +
-            "`",
-        },
+        }
       );
     if (owners.includes(interaction.user.id)) {
       const stats = new Discord.ButtonBuilder()
@@ -84,10 +75,15 @@ export default {
         .setCustomId(`gleave`)
         .setLabel(`Leave guilds`)
         .setStyle(ButtonStyle.Danger);
+      const cache = new Discord.ButtonBuilder()
+        .setCustomId(`clear_cache`)
+        .setLabel(`Clear music cache`)
+        .setStyle(ButtonStyle.Danger);
       const ownerrow = new Discord.ActionRowBuilder().addComponents(
         stats,
         say,
         guilds,
+        cache,
       );
       await interaction.editReply({
         embeds: [settingsembed],

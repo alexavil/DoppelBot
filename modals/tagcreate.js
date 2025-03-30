@@ -1,7 +1,7 @@
 import sqlite3 from "better-sqlite3";
+import Discord, { ButtonStyle } from "discord.js";
 const debug = process.env.DEBUG;
 const tags = new sqlite3("./data/tags.db");
-import Discord, { ButtonStyle } from "discord.js";
 
 export default {
   name: "tagcreate",

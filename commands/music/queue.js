@@ -1,6 +1,6 @@
-import Discord, { ButtonStyle } from "discord.js";
-const debug = process.env.DEBUG;
 import sqlite3 from "better-sqlite3";
+import Discord from "discord.js";
+const debug = process.env.DEBUG;
 
 const queue = new sqlite3("./data/queue.db");
 export default {
@@ -11,9 +11,7 @@ export default {
     const id = interaction.guild.id;
     let counter = 0;
     let embed = new Discord.EmbedBuilder();
-    let queuelength = queue
-      .prepare(`SELECT * FROM guild_${id}`)
-      .all().length;
+    let queuelength = queue.prepare(`SELECT * FROM guild_${id}`).all().length;
     if (queuelength !== 0) {
       if (debug === "true")
         console.log(`[DEBUG] Queue for ${id} is not empty, fetching tracks...`);

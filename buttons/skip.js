@@ -24,14 +24,10 @@ export default {
         flags: Discord.MessageFlags.Ephemeral,
       });
     }
-    if (
-        music.getFromQueue(id).isLooped = "true"
-    ) {
+    if ((music.getFromQueue(id).isLooped = "true")) {
       if (debug === "true")
         console.log("[DEBUG] The current track is looped, unlooping...");
-      queue
-        .prepare(`UPDATE guild_${id} SET isLooped = 'false' LIMIT 1`)
-        .run();
+      queue.prepare(`UPDATE guild_${id} SET isLooped = 'false' LIMIT 1`).run();
     }
     if (debug === "true") console.log("[DEBUG] Skipping the current track...");
     player.stop();

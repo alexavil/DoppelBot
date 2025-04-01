@@ -15,7 +15,7 @@ export default {
       .setCustomId(`notifications`)
       .setLabel(`Toggle service notifications`)
       .setStyle(ButtonStyle.Primary);
-/*    const errorsbtn = new Discord.ButtonBuilder()
+    /*    const errorsbtn = new Discord.ButtonBuilder()
       .setCustomId(`setfails`)
       .setLabel(`Set error threshold`)
       .setStyle(ButtonStyle.Primary);
@@ -61,7 +61,7 @@ export default {
                 .get().value,
             ) +
             " seconds`",
-        }
+        },
       );
     if (owners !== undefined && owners.includes(interaction.user.id)) {
       const stats = new Discord.ButtonBuilder()

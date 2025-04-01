@@ -66,7 +66,7 @@ function announceTrack(title, author, interaction) {
   let playingembed = new Discord.EmbedBuilder()
     .setTitle("Now Playing")
     .setDescription(
-      `${title}\n\nRequested by <@!${author}>\n\n` +
+      `\`${title}\`\n\nRequested by <@!${author}>\n\n` +
         "Use `/controls` to pause, stop or loop the track.",
     );
   interaction.channel.send({ embeds: [playingembed] });
@@ -74,25 +74,26 @@ function announceTrack(title, author, interaction) {
 
 async function getLocalFile(file) {
   if (fs.existsSync(path.join(__dirname, cacheFolder, file.name))) return -1;
-  else {
-    let download = fs.createWriteStream(
+
+  return new Promise((resolve, reject) => {
+    const download = fs.createWriteStream(
       path.join(__dirname, cacheFolder, file.name),
     );
-    await http
+    http
       .get(file.url, (response) => {
         response.pipe(download);
         download.on("finish", () => {
           download.close(() => {
-            return 0;
+            resolve(0);
           });
         });
       })
       .on("error", (err) => {
         fs.unlink(path.join(__dirname, cacheFolder, file.name), () => {
-          return 1;
+          reject(1);
         });
       });
-  }
+  });
 }
 
 function playLocalFile(file, connection, interaction) {
@@ -136,7 +137,7 @@ function playLocalFile(file, connection, interaction) {
         players.delete(connection.joinConfig.guildId);
         connection.destroy();
         interaction.channel.send(`No more tracks to play, disconnecting!`);
-      }, timeout)
+      }, timeout);
       timeouts.set(connection.joinConfig.guildId, timer);
     }
   });

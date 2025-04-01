@@ -12,7 +12,7 @@ export default {
       .addFields(
         {
           name: "Music commands",
-          value: `\`/play local\` - play music from a local file
+          value: `\`/play\` - play music from a local file (online functionality will be restored later)
             \`/upload\` - upload a track to the music library
             \`/queue\` - view the current queue
             \`/controls\` - bring up the music player controls`,

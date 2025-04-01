@@ -1,7 +1,8 @@
 import sqlite3 from "better-sqlite3";
 import Discord, { ButtonStyle } from "discord.js";
 const settings = new sqlite3("./data/settings.db");
-if (process.env.ACTIVITIES) owners = process.env.OWNERS.split(",");
+let owners;
+if (process.env.OWNERS) owners = process.env.OWNERS.split(",");
 
 export default {
   data: new Discord.SlashCommandBuilder()
@@ -62,7 +63,7 @@ export default {
             " seconds`",
         }
       );
-    if (owners.includes(interaction.user.id)) {
+    if (owners !== undefined && owners.includes(interaction.user.id)) {
       const stats = new Discord.ButtonBuilder()
         .setCustomId(`stats`)
         .setLabel(`View stats`)

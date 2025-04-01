@@ -8,7 +8,7 @@ export default {
     const help = new Discord.EmbedBuilder()
       .setColor("#0099ff")
       .setTitle(`${name} Help`)
-      .setDescription("Check out our blog at https://doppelbot.jsbox.xyz/!")
+      .setDescription("Check out our blog at https://doppelbot.jsbox.xyz/")
       .addFields(
         {
           name: "Music commands",

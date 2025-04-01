@@ -13,6 +13,8 @@ const __dirname = dirname(__filename);
 
 const cacheFolder = "../cache/";
 
+const { default: music } = await import("../utils/music.js");
+
 export default {
   name: "cache_confirm",
   async execute(interaction) {
@@ -21,6 +23,10 @@ export default {
     for (const file of await fs.readdir(path.join(__dirname, cacheFolder))) {
       await fs.unlink(path.join(__dirname, cacheFolder, file));
     }
+    music.connections.forEach(conn => {
+      conn.destroy()
+      music.clearQueue(conn.joinConfig.guildId);
+    });
     return interaction.update({
       content: "Your cache has been wiped successfully!",
       components: [],

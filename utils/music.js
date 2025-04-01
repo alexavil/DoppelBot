@@ -26,6 +26,7 @@ const cacheFolder = "../cache/";
 
 const timeouts = new Map();
 const players = new Map();
+const connections = new Map();
 
 function addToQueue(id, url, name, author) {
   queue
@@ -35,6 +36,10 @@ function addToQueue(id, url, name, author) {
 
 function removeFromQueue(id) {
   queue.prepare(`DELETE FROM guild_${id} ORDER BY rowid LIMIT 1`).run();
+}
+
+function clearQueue(id) {
+  queue.prepare(`DELETE FROM guild_${id}`).run();
 }
 
 function getFromQueue(id) {
@@ -59,6 +64,14 @@ function getConnection(interaction) {
       },
     });
   } else connection = getVoiceConnection(interaction.guild.id);
+  if (!connections.has(interaction.guild.id)) connections.set(interaction.guild.id, connection);
+  return connection;
+}
+
+function destroyConnection(id) {
+  let connection = getVoiceConnection(id);
+  connection.destroy();
+  if (connections.has(id)) connections.delete(id);
   return connection;
 }
 
@@ -148,9 +161,12 @@ export default {
   removeFromQueue,
   getFromQueue,
   getQueueLength,
+  clearQueue,
   getConnection,
+  destroyConnection,
   getLocalFile,
   playLocalFile,
   announceTrack,
   players,
+  connections,
 };

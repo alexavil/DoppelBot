@@ -21,8 +21,8 @@ export default {
         .forEach((track) => {
           if (counter < 25) {
             embed.addFields({
-              name: track.name,
-              value: `${track.track}\nRequested by: <@!${track.author}>`,
+              name: `\`${track.name}\``,
+              value: `Requested by: <@!${track.author}>`,
               inline: true,
             });
             counter++;

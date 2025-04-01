@@ -171,4 +171,5 @@ export default {
   announceTrack,
   players,
   connections,
+  timeouts,
 };

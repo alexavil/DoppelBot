@@ -37,6 +37,8 @@ else {
 }
 if (process.env.ACTIVITIES) activities = process.env.ACTIVITIES.split(",");
 
+const { default: music } = await import("./utils/music.js");
+
 let debug = process.env.DEBUG;
 let avatar = process.env.AVATAR;
 let telemetry = process.env.TELEMETRY;
@@ -262,10 +264,13 @@ function CheckForPerms() {
   });
 }
 
-function clearQueue(id) {
+function clearMusicData(id) {
   if (debug === "true")
-    console.log(`[DEBUG] Bot has restarted, clearing queue for guild ${id}.`);
-  queue.prepare(`DELETE FROM guild_${id}`).run();
+    console.log(`[DEBUG] Bot has restarted, clearing music data for guild ${id}.`);
+  music.clearQueue(id);
+  music.players.delete(id);
+  music.connections.delete(id);
+  music.timeouts.delete(id);
 }
 
 function createConfig(id) {
@@ -330,7 +335,7 @@ client.on("ready", () => {
   if (debug === "true") console.log("[DEBUG] Running jobs for every guild...");
   client.guilds.cache.forEach((guild) => {
     createConfig(guild.id);
-    clearQueue(guild.id);
+    clearMusicData(guild.id);
   });
   if (activities !== undefined) {
     let job = new cron.CronJob("00 00 * * * *", editActivity);

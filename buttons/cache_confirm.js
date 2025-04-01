@@ -23,8 +23,8 @@ export default {
     for (const file of await fs.readdir(path.join(__dirname, cacheFolder))) {
       await fs.unlink(path.join(__dirname, cacheFolder, file));
     }
-    music.connections.forEach(conn => {
-      conn.destroy()
+    music.connections.forEach((conn) => {
+      conn.destroy();
       music.clearQueue(conn.joinConfig.guildId);
     });
     return interaction.update({

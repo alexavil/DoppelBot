@@ -64,7 +64,8 @@ function getConnection(interaction) {
       },
     });
   } else connection = getVoiceConnection(interaction.guild.id);
-  if (!connections.has(interaction.guild.id)) connections.set(interaction.guild.id, connection);
+  if (!connections.has(interaction.guild.id))
+    connections.set(interaction.guild.id, connection);
   return connection;
 }
 

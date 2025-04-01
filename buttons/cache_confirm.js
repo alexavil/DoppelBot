@@ -26,6 +26,7 @@ export default {
     music.connections.forEach((conn) => {
       conn.destroy();
       music.clearQueue(conn.joinConfig.guildId);
+      music.connections.delete(conn.joinConfig.guildId);
     });
     return interaction.update({
       content: "Your cache has been wiped successfully!",

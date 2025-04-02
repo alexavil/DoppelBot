@@ -11,9 +11,9 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const cacheFolder = "../cache/";
+const cacheFolder = "../../cache/";
 
-const { default: music } = await import("../utils/music.js");
+const { default: music } = await import("../../utils/music.js");
 
 export default {
   name: "cache_confirm",

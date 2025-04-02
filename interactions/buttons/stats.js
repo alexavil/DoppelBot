@@ -1,7 +1,7 @@
 import child from "child_process";
 import Discord from "discord.js";
 import os from "os";
-import { convertToString } from "../utils/TimeConverter.js";
+import { convertToString } from "../../utils/TimeConverter.js";
 const name = process.env.NAME;
 
 export default {

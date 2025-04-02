@@ -1,6 +1,6 @@
 import Discord from "discord.js";
-import { convertToString } from "../utils/TimeConverter.js";
-const { default: music } = await import("../utils/music.js");
+import { convertToString } from "../../utils/TimeConverter.js";
+const { default: music } = await import("../../utils/music.js");
 
 export default {
   name: "seek",

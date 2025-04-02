@@ -1,6 +1,6 @@
 import Discord from "discord.js";
 const debug = process.env.DEBUG;
-const { default: music } = await import("../../utils/music.js");
+const { default: music } = await import("../../../utils/music.js");
 
 export default {
   data: new Discord.SlashCommandBuilder()

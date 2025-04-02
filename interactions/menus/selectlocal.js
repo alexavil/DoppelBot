@@ -1,4 +1,4 @@
-const { default: music } = await import("../utils/music.js");
+const { default: music } = await import("../../utils/music.js");
 const debug = process.env.DEBUG;
 
 export default {

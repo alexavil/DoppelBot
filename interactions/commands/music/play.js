@@ -1,6 +1,6 @@
 import Discord, { ButtonStyle } from "discord.js";
 const debug = process.env.DEBUG;
-const { default: music } = await import("../../utils/music.js");
+const { default: music } = await import("../../../utils/music.js");
 
 import fs from "fs-extra";
 
@@ -12,7 +12,7 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const cacheFolder = "../../cache/";
+const cacheFolder = "../../../cache/";
 
 const allowedExts = [".flac", ".mp3", ".ogg", ".wav", ".m4a"];
 

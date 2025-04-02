@@ -1,5 +1,5 @@
 import Discord from "discord.js";
-const { default: music } = await import("../utils/music.js");
+const { default: music } = await import("../../utils/music.js");
 
 export default {
   name: "music_cancel",

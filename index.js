@@ -76,7 +76,7 @@ const queue = new sqlite3("./data/queue.db");
 const tags = new sqlite3("./data/tags.db");
 
 client.commands = new Discord.Collection();
-const foldersPath = path.join(__dirname, "commands");
+const foldersPath = path.join(__dirname, "interactions", "commands");
 const commandFolders = fs.readdirSync(foldersPath);
 
 for (const folder of commandFolders) {
@@ -98,7 +98,7 @@ for (const folder of commandFolders) {
 }
 
 client.modals = new Discord.Collection();
-const modalPath = path.join(__dirname, "modals");
+const modalPath = path.join(__dirname, "interactions", "modals");
 const modalFiles = fs
   .readdirSync(modalPath)
   .filter((file) => file.endsWith(".js"));
@@ -115,7 +115,7 @@ for (const file of modalFiles) {
 }
 
 client.buttons = new Discord.Collection();
-const buttonPath = path.join(__dirname, "buttons");
+const buttonPath = path.join(__dirname, "interactions", "buttons");
 const buttonFiles = fs
   .readdirSync(buttonPath)
   .filter((file) => file.endsWith(".js"));
@@ -132,7 +132,7 @@ for (const file of buttonFiles) {
 }
 
 client.menus = new Discord.Collection();
-const menuPath = path.join(__dirname, "menus");
+const menuPath = path.join(__dirname, "interactions", "menus");
 const menuFiles = fs
   .readdirSync(menuPath)
   .filter((file) => file.endsWith(".js"));

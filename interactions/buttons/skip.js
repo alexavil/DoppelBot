@@ -15,10 +15,10 @@ export default {
       (!interaction.channel
         .permissionsFor(interaction.user)
         .has(Discord.PermissionsBitField.Flags.BanMembers) &&
-      channel.members.size !== 2) || music.getQueueLength(interaction.guild.id) === 1
+        channel.members.size !== 2) ||
+      music.getQueueLength(interaction.guild.id) === 1
     ) {
-      if (debug === "true")
-        console.log("[DEBUG] Skip not allowed...");
+      if (debug === "true") console.log("[DEBUG] Skip not allowed...");
       return interaction.reply({
         content: "You are not allowed to skip!",
         flags: Discord.MessageFlags.Ephemeral,

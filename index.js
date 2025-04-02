@@ -266,7 +266,9 @@ function CheckForPerms() {
 
 function clearMusicData(id) {
   if (debug === "true")
-    console.log(`[DEBUG] Bot has restarted, clearing music data for guild ${id}.`);
+    console.log(
+      `[DEBUG] Bot has restarted, clearing music data for guild ${id}.`,
+    );
   music.clearQueue(id);
   music.players.delete(id);
   music.connections.delete(id);

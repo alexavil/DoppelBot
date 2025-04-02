@@ -133,7 +133,8 @@ function playLocalFile(file, connection, interaction) {
       }
       let file = getFromQueue(connection.joinConfig.guildId);
       playLocalFile(file.name, connection, interaction);
-      if (getFromQueue(connection.joinConfig.guildId).isLooped === "false") announceTrack(file.name, file.author, interaction);
+      if (getFromQueue(connection.joinConfig.guildId).isLooped === "false")
+        announceTrack(file.name, file.author, interaction);
     } else {
       if (debug === "true") {
         console.log("[DEBUG] No more tracks to play, starting timeout...");

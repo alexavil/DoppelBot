@@ -52,7 +52,11 @@ export default {
             let length = music.getQueueLength(id);
             if (length === 1) {
               music.playLocalFile(track.name, connection, interaction);
-              music.announceTrack(track.name, interaction.member.id, interaction);
+              music.announceTrack(
+                track.name,
+                interaction.member.id,
+                interaction,
+              );
             }
             return interaction.editReply({
               content: "Added to the queue!",

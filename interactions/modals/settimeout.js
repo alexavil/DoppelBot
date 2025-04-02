@@ -9,6 +9,7 @@ export default {
     const id = interaction.guild.id;
     let timeout = parseInt(
       interaction.fields.getTextInputValue("timeoutInput"),
+      10,
     );
     if (timeout < 0 || !Number.isInteger(timeout)) {
       if (debug === "true") console.log("[DEBUG] Invalid input, aborting...");
@@ -47,6 +48,7 @@ export default {
                   `SELECT * FROM guild_${id} WHERE option = 'disconnect_timeout'`,
                 )
                 .get().value,
+              10,
             ) +
             " seconds`",
         },

@@ -59,6 +59,7 @@ export default {
                   `SELECT * FROM guild_${id} WHERE option = 'disconnect_timeout'`,
                 )
                 .get().value,
+              10,
             ) +
             " seconds`",
         },

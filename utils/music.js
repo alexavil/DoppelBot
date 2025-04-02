@@ -103,6 +103,7 @@ async function getLocalFile(file) {
         });
       })
       .on("error", (err) => {
+        if (debug === "true") console.log("[DEBUG] Error: " + err.message);
         fs.unlink(path.join(__dirname, cacheFolder, file.name), () => {
           reject(1);
         });
@@ -146,6 +147,7 @@ function playLocalFile(file, connection, interaction) {
               `SELECT * FROM guild_${connection.joinConfig.guildId} WHERE option = 'disconnect_timeout'`,
             )
             .get().value,
+          10,
         ) * 1000;
       let timer = setTimeout(() => {
         timeouts.delete(connection.joinConfig.guildId);

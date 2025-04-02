@@ -64,8 +64,10 @@ export default {
             });
           }
           case 1: {
-            message = "There was an error uploading your file!";
-            break;
+            return interaction.editReply({
+              content: "There was an error uploading your file!",
+              flags: Discord.MessageFlags.Ephemeral,
+            });
           }
         }
       }

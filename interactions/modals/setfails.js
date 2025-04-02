@@ -7,7 +7,10 @@ export default {
   name: "setfails",
   async execute(interaction) {
     const id = interaction.guild.id;
-    let errors = parseInt(interaction.fields.getTextInputValue("errorInput"));
+    let errors = parseInt(
+      interaction.fields.getTextInputValue("errorInput"),
+      10,
+    );
     if (errors < 0 || !Number.isInteger(errors)) {
       if (debug === "true") console.log("[DEBUG] Invalid input, aborting...");
       return interaction.reply({
@@ -45,6 +48,7 @@ export default {
                   `SELECT * FROM guild_${id} WHERE option = 'disconnect_timeout'`,
                 )
                 .get().value,
+              10,
             ) +
             " seconds`",
         },

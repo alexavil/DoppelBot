@@ -22,6 +22,8 @@ export default {
         flags: Discord.MessageFlags.Ephemeral,
       });
     } else {
+      if (debug === "true")
+        console.log(`[DEBUG] Adding track(s) to the cache...`);
       let msg = await music.getLocalFile(track);
       let message;
       switch (msg) {

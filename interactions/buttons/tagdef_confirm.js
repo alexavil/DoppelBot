@@ -1,5 +1,7 @@
-import sqlite3 from "better-sqlite3";
 const debug = process.env.DEBUG;
+
+import sqlite3 from "better-sqlite3";
+import Discord, { ButtonStyle } from "discord.js";
 
 const tags = new sqlite3("./data/tags.db");
 

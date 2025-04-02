@@ -1,4 +1,6 @@
 const debug = process.env.DEBUG;
+import Discord from "discord.js";
+
 export default {
   name: "say",
   execute(interaction) {

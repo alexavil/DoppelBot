@@ -74,6 +74,9 @@ if (!fs.existsSync("./cache/")) fs.mkdirSync("./cache/");
 const settings = new sqlite3("./data/settings.db");
 const queue = new sqlite3("./data/queue.db");
 const tags = new sqlite3("./data/tags.db");
+const cache = new sqlite3("./data/cache.db");
+
+const cacheFolder = "./cache/";
 
 client.commands = new Discord.Collection();
 const foldersPath = path.join(__dirname, "interactions", "commands");
@@ -264,6 +267,23 @@ function CheckForPerms() {
   });
 }
 
+function verifyCache() {
+  cache.prepare(`DROP TABLE IF EXISTS files_directory`).run();
+  cache
+    .prepare(
+      `CREATE TABLE IF NOT EXISTS files_directory (name TEXT, filename TEXT, md5Hash TEXT)`,
+    )
+    .run();
+  let options = fs.readdirSync(path.join(__dirname, cacheFolder));
+  if (options.length !== 0) {
+    options.forEach((opt) => {
+      cache
+        .prepare(`INSERT OR IGNORE INTO files_directory VALUES (?, ?, ?)`)
+        .run(opt, opt, "not_implemented");
+    });
+  } else return false;
+}
+
 function clearMusicData(id) {
   if (debug === "true")
     console.log(
@@ -332,6 +352,7 @@ client.on("ready", () => {
   if (telemetry === "true" || debug === "true") initSentry();
   setProfile();
   validateSettings();
+  verifyCache();
   let permcheck = new cron.CronJob("00 00 */8 * * *", CheckForPerms);
   permcheck.start();
   if (debug === "true") console.log("[DEBUG] Running jobs for every guild...");

@@ -33,7 +33,9 @@ Available RAM: ${Math.round(
 CPU: ${os.cpus()[0].model}
 CPU Usage: ${os.loadavg()[0].toFixed(2)}%
 Free Disk Space: ${Math.round(
-  fs.statfsSync(__dirname).bfree / fs.statfsSync(__dirname).blocks * 100)}%
+            (fs.statfsSync(__dirname).bfree / fs.statfsSync(__dirname).blocks) *
+              100,
+          )}%
 Bot Uptime: ${convertToString(process.uptime())}
 OS Uptime: ${convertToString(os.uptime())}\`\`\``,
         },

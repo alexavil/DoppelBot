@@ -12,6 +12,7 @@ import fs from "fs-extra";
 const debug = process.env.DEBUG;
 const queue = new sqlite3("./data/queue.db");
 const settings = new sqlite3("./data/settings.db");
+const cache = new sqlite3("./data/cache.db");
 
 import http from "https";
 import path from "path";
@@ -21,6 +22,8 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+import { getHash } from "../utils/HashCalculator.js";
 
 const cacheFolder = "../cache/";
 
@@ -97,7 +100,11 @@ async function getLocalFile(file) {
       .get(file.url, (response) => {
         response.pipe(download);
         download.on("finish", () => {
-          download.close(() => {
+          download.close(async () => {
+            let hash = await getHash(path.join(__dirname, cacheFolder, file.name));
+            cache
+              .prepare(`INSERT OR IGNORE INTO files_directory VALUES (?, ?, ?)`)
+              .run(file.name, file.name, hash);
             resolve(0);
           });
         });

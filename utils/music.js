@@ -90,7 +90,11 @@ function announceTrack(title, author, interaction) {
 }
 
 async function getLocalFile(file) {
-  if (fs.existsSync(path.join(__dirname, cacheFolder, file.name))) return -1;
+  let existing_file = cache
+    .prepare(`SELECT * FROM files_directory WHERE name = ?`)
+    .get(file.name)
+    console.log(existing_file);
+  if (existing_file !== undefined) return -1;
 
   return new Promise((resolve, reject) => {
     const download = fs.createWriteStream(
@@ -101,11 +105,24 @@ async function getLocalFile(file) {
         response.pipe(download);
         download.on("finish", () => {
           download.close(async () => {
-            let hash = await getHash(path.join(__dirname, cacheFolder, file.name));
-            cache
-              .prepare(`INSERT OR IGNORE INTO files_directory VALUES (?, ?, ?)`)
-              .run(file.name, file.name, hash);
-            resolve(0);
+            let hash = await getHash(
+              path.join(__dirname, cacheFolder, file.name),
+            );
+            let existing_hash = cache
+              .prepare(`SELECT * FROM files_directory WHERE md5Hash = ?`)
+              .get(hash)
+            if (existing_hash !== undefined) {
+              fs.unlink(path.join(__dirname, cacheFolder, file.name), () => {
+                resolve(-1);
+              });
+            } else {
+              cache
+                .prepare(
+                  `INSERT OR IGNORE INTO files_directory VALUES (?, ?, ?)`,
+                )
+                .run(file.name, file.name, hash);
+              resolve(0);
+            }
           });
         });
       })

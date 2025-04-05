@@ -272,13 +272,13 @@ function verifyCache() {
   cache.prepare(`DROP TABLE IF EXISTS files_directory`).run();
   cache
     .prepare(
-      `CREATE TABLE IF NOT EXISTS files_directory (name TEXT, filename TEXT, md5Hash TEXT)`,
+      `CREATE TABLE IF NOT EXISTS files_directory (name TEXT, filename TEXT, md5Hash TEXT UNIQUE)`,
     )
     .run();
   let options = fs.readdirSync(path.join(__dirname, cacheFolder));
   if (options.length !== 0) {
     options.forEach(async (opt) => {
-      let hash = await getHash(path.join(__dirname, cacheFolder, opt))
+      let hash = await getHash(path.join(__dirname, cacheFolder, opt));
       cache
         .prepare(`INSERT OR IGNORE INTO files_directory VALUES (?, ?, ?)`)
         .run(opt, opt, hash);

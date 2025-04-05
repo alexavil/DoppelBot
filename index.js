@@ -38,6 +38,7 @@ else {
 if (process.env.ACTIVITIES) activities = process.env.ACTIVITIES.split(",");
 
 const { default: music } = await import("./utils/music.js");
+import { getHash } from "./utils/HashCalculator.js";
 
 let debug = process.env.DEBUG;
 let avatar = process.env.AVATAR;
@@ -276,10 +277,11 @@ function verifyCache() {
     .run();
   let options = fs.readdirSync(path.join(__dirname, cacheFolder));
   if (options.length !== 0) {
-    options.forEach((opt) => {
+    options.forEach(async (opt) => {
+      let hash = await getHash(path.join(__dirname, cacheFolder, opt))
       cache
         .prepare(`INSERT OR IGNORE INTO files_directory VALUES (?, ?, ?)`)
-        .run(opt, opt, "not_implemented");
+        .run(opt, opt, hash);
     });
   } else return false;
 }

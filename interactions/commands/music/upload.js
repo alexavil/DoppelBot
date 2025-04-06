@@ -12,7 +12,8 @@ export default {
       option
         .setName("track")
         .setDescription("File to upload")
-        .setRequired(true))
+        .setRequired(true),
+    )
     .addStringOption((option) =>
       option
         .setName("display_name")

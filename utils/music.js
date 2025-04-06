@@ -89,7 +89,7 @@ function announceTrack(title, author, interaction) {
   interaction.channel.send({ embeds: [playingembed] });
 }
 
-async function getLocalFile(file) {
+async function getLocalFile(file, display_name) {
   let existing_file = cache
     .prepare(`SELECT * FROM files_directory WHERE name = ?`)
     .get(file.name)
@@ -120,7 +120,7 @@ async function getLocalFile(file) {
                 .prepare(
                   `INSERT OR IGNORE INTO files_directory VALUES (?, ?, ?)`,
                 )
-                .run(file.name, file.name, hash);
+                .run(display_name, file.name, hash);
               resolve(0);
             }
           });

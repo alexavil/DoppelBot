@@ -12,7 +12,11 @@ export default {
       option
         .setName("track")
         .setDescription("File to upload")
-        .setRequired(true),
+        .setRequired(true))
+    .addStringOption((option) =>
+      option
+        .setName("display_name")
+        .setDescription("Display name for the track"),
     ),
   async execute(interaction) {
     let track = interaction.options.getAttachment("track");
@@ -24,9 +28,12 @@ export default {
     } else {
       if (debug === "true")
         console.log(`[DEBUG] Adding track(s) to the cache...`);
-      let msg = await music.getLocalFile(track);
+      let name = interaction.options.getString("display_name");
+      let status;
+      if (name !== undefined) status = await music.getLocalFile(track, name);
+      else status = await music.getLocalFile(track, track.name);
       let message;
-      switch (msg) {
+      switch (status) {
         case -1: {
           message = "This file already exists in the cache!";
           break;

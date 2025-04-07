@@ -30,6 +30,7 @@ const cacheFolder = "../cache/";
 const timeouts = new Map();
 const players = new Map();
 const connections = new Map();
+const menu_pages = new Map();
 
 function addToQueue(id, url, name, author) {
   queue
@@ -92,8 +93,8 @@ function announceTrack(title, author, interaction) {
 async function getLocalFile(file, display_name) {
   let existing_file = cache
     .prepare(`SELECT * FROM files_directory WHERE name = ?`)
-    .get(file.name)
-    console.log(existing_file);
+    .get(file.name);
+  console.log(existing_file);
   if (existing_file !== undefined) return -1;
 
   return new Promise((resolve, reject) => {
@@ -110,7 +111,7 @@ async function getLocalFile(file, display_name) {
             );
             let existing_hash = cache
               .prepare(`SELECT * FROM files_directory WHERE md5Hash = ?`)
-              .get(hash)
+              .get(hash);
             if (existing_hash !== undefined) {
               fs.unlink(path.join(__dirname, cacheFolder, file.name), () => {
                 resolve(-1);
@@ -159,7 +160,7 @@ function playLocalFile(file, connection, interaction) {
       let file = getFromQueue(connection.joinConfig.guildId);
       playLocalFile(file.name, connection, interaction);
       if (getFromQueue(connection.joinConfig.guildId).isLooped === "false")
-        announceTrack(file.name, file.author, interaction);
+        announceTrack(file.track, file.author, interaction);
     } else {
       if (debug === "true") {
         console.log("[DEBUG] No more tracks to play, starting timeout...");
@@ -199,4 +200,5 @@ export default {
   players,
   connections,
   timeouts,
+  menu_pages,
 };

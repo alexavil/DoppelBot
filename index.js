@@ -269,7 +269,6 @@ function CheckForPerms() {
 }
 
 function verifyCache() {
-  cache.prepare(`DROP TABLE IF EXISTS files_directory`).run();
   cache
     .prepare(
       `CREATE TABLE IF NOT EXISTS files_directory (name TEXT, filename TEXT, md5Hash TEXT UNIQUE)`,
@@ -277,13 +276,27 @@ function verifyCache() {
     .run();
   let options = fs.readdirSync(path.join(__dirname, cacheFolder));
   if (options.length !== 0) {
+    let dbFiles = cache.prepare(`SELECT filename FROM files_directory`).all();
+    let currentFilesSet = new Set(options);
+    dbFiles.forEach(({ filename }) => {
+      if (!currentFilesSet.has(filename)) {
+        cache
+          .prepare(`DELETE FROM files_directory WHERE filename = ?`)
+          .run(filename);
+      }
+    });
     options.forEach(async (opt) => {
       let hash = await getHash(path.join(__dirname, cacheFolder, opt));
       cache
         .prepare(`INSERT OR IGNORE INTO files_directory VALUES (?, ?, ?)`)
         .run(opt, opt, hash);
+      cache
+        .prepare(`UPDATE files_directory SET md5Hash = ? WHERE filename = ?`)
+        .run(hash, opt);
     });
-  } else return false;
+  } else {
+    return false;
+  }
 }
 
 function clearMusicData(id) {
@@ -295,6 +308,7 @@ function clearMusicData(id) {
   music.players.delete(id);
   music.connections.delete(id);
   music.timeouts.delete(id);
+  music.menu_pages.delete(id);
 }
 
 function createConfig(id) {

@@ -16,8 +16,15 @@ export default {
     music.menu_pages.delete(id);
     for (const track of tracks) {
       let file = track;
-      let data = cache.prepare("SELECT * FROM files_directory WHERE filename = ?").get(file);
-      music.addToQueue(interaction.guild.id, data.name, file, interaction.member.id);
+      let data = cache
+        .prepare("SELECT * FROM files_directory WHERE filename = ?")
+        .get(file);
+      music.addToQueue(
+        interaction.guild.id,
+        data.name,
+        file,
+        interaction.member.id,
+      );
     }
     let player = music.players.get(id);
     if (!player || player._state.status === "idle") {

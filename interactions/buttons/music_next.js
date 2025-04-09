@@ -1,5 +1,5 @@
-import { generateMenu } from "../../utils/CacheMenuGenerator.js";
-const { default: music } = await import("../../utils/music.js");
+import { generateMusicMenu } from "../../utils/CacheMenuGenerator.js";
+const { default: service } = await import("../../utils/ServiceVariables.js");
 
 import sqlite3 from "better-sqlite3";
 const cache = new sqlite3("./data/cache.db");
@@ -10,11 +10,11 @@ export default {
     try {
       let id = interaction.guild.id;
       let options = cache.prepare("SELECT * FROM files_directory").all();
-      let page = music.menu_pages.get(id) || 1;
+      let page = service.music_pages.get(id) || 1;
       let new_page = page + 1;
 
-      music.menu_pages.set(id, new_page);
-      let reply = generateMenu(options, new_page);
+      service.music_pages.set(id, new_page);
+      let reply = generateMusicMenu(options, new_page);
 
       return interaction.update(reply);
     } catch (error) {

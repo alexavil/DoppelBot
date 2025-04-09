@@ -30,7 +30,6 @@ const cacheFolder = "../cache/";
 const timeouts = new Map();
 const players = new Map();
 const connections = new Map();
-const menu_pages = new Map();
 
 function addToQueue(id, url, name, author) {
   queue
@@ -200,5 +199,4 @@ export default {
   players,
   connections,
   timeouts,
-  menu_pages,
 };

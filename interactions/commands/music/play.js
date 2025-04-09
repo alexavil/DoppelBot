@@ -1,6 +1,7 @@
 import Discord, { ButtonStyle } from "discord.js";
 const debug = process.env.DEBUG;
 const { default: music } = await import("../../../utils/music.js");
+const { default: service } = await import("../../../utils/ServiceVariables.js");
 
 import fs from "fs-extra";
 
@@ -12,7 +13,7 @@ const cache = new sqlite3("./data/cache.db");
 
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-import { generateMenu } from "../../../utils/CacheMenuGenerator.js";
+import { generateMusicMenu } from "../../../utils/CacheMenuGenerator.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -83,8 +84,8 @@ export default {
           content: `There are no tracks in the cache. Please upload a new track using \`/upload\`.`,
           flags: Discord.MessageFlags.Ephemeral,
         });
-      let reply = generateMenu(options, 1);
-      music.menu_pages.set(id, 1);
+      let reply = generateMusicMenu(options, 1);
+      service.music_pages.set(id, 1);
       return interaction.editReply(reply);
     }
   },

@@ -38,6 +38,7 @@ else {
 if (process.env.ACTIVITIES) activities = process.env.ACTIVITIES.split(",");
 
 const { default: music } = await import("./utils/music.js");
+const { default: service } = await import("./utils/ServiceVariables.js");
 import { getHash } from "./utils/HashCalculator.js";
 
 let debug = process.env.DEBUG;
@@ -308,7 +309,7 @@ function clearMusicData(id) {
   music.players.delete(id);
   music.connections.delete(id);
   music.timeouts.delete(id);
-  music.menu_pages.delete(id);
+  service.music_pages.delete(id);
 }
 
 function createConfig(id) {

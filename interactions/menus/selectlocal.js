@@ -4,6 +4,7 @@ const debug = process.env.DEBUG;
 import sqlite3 from "better-sqlite3";
 
 const cache = new sqlite3("./data/cache.db");
+const { default: service } = await import("../../utils/ServiceVariables.js");
 
 export default {
   name: "selectlocal",
@@ -13,7 +14,7 @@ export default {
       console.log(`[DEBUG] Adding track(s) to the queue...`);
     let connection = music.getConnection(interaction);
     const tracks = interaction.values;
-    music.menu_pages.delete(id);
+    service.music_pages.delete(id);
     for (const track of tracks) {
       let file = track;
       let data = cache

@@ -10,6 +10,7 @@ export default {
       .setCustomId("keywordInput")
       .setLabel("Tag Keyword")
       .setStyle(Discord.TextInputStyle.Short)
+      .setMaxLength(256)
       .setRequired(true);
     const responseInput = new Discord.TextInputBuilder()
       .setCustomId("responseInput")
@@ -20,6 +21,7 @@ export default {
 response2`,
       )
       .setStyle(Discord.TextInputStyle.Paragraph)
+      .setMaxLength(1024)
       .setRequired(true);
     const firstActionRow = new Discord.ActionRowBuilder().addComponents(
       keywordInput,

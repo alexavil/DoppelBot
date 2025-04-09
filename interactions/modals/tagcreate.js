@@ -27,7 +27,11 @@ export default {
       .run(keyword, response);
     if (debug === "true") console.log(`[DEBUG] Fetching tag list for ${id}...`);
     let responses = tags.prepare(`SELECT * FROM guild_${id}`).all();
-    let reply = generateTagsEmbed(responses, service.tags_pages.get(id), interaction);
+    let reply = generateTagsEmbed(
+      responses,
+      service.tags_pages.get(id),
+      interaction,
+    );
     return interaction.update(reply);
   },
 };

@@ -20,7 +20,7 @@ export default {
     if (responses.length === 0) {
       if (debug === "true") console.log("[DEBUG] No tags found...");
       let tagsembed = new Discord.EmbedBuilder().setTitle(
-          `Tags for ${interaction.guild.name}`,
+        `Tags for ${interaction.guild.name}`,
       );
       tagsembed.setDescription("This server has no active tags yet!");
       const addtag = new Discord.ButtonBuilder()

@@ -7,10 +7,10 @@ export const generateTagsMenu = (options, page = 1) => {
 
   for (i = start; i < start + 25 && i < options.length; i++) {
     let option = options[i];
-      let menuOption = new Discord.StringSelectMenuOptionBuilder()
-        .setLabel(option.tag)
-        .setValue(option.tag);
-      values.push(menuOption);
+    let menuOption = new Discord.StringSelectMenuOptionBuilder()
+      .setLabel(option.tag)
+      .setValue(option.tag);
+    values.push(menuOption);
   }
 
   const menu = new Discord.StringSelectMenuBuilder()

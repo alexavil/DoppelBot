@@ -5,7 +5,7 @@ export const generateTagsEmbed = (options, page = 1, interaction) => {
   let values = [];
   let i;
   let tagsembed = new Discord.EmbedBuilder().setTitle(
-      `Tags for ${interaction.guild.name}`,
+    `Tags for ${interaction.guild.name}`,
   );
 
   for (i = start; i < start + 25 && i < options.length; i++) {
@@ -13,7 +13,7 @@ export const generateTagsEmbed = (options, page = 1, interaction) => {
     let field = {
       name: `${option.tag}`,
       value: `${option.response.replace("\n---\n", "\n")}`,
-    }
+    };
     values.push(field);
   }
 
@@ -41,7 +41,11 @@ export const generateTagsEmbed = (options, page = 1, interaction) => {
     .setLabel(`Next =>`)
     .setStyle(Discord.ButtonStyle.Primary)
     .setDisabled(start + 25 >= options.length);
-  const row = new Discord.ActionRowBuilder().addComponents(addtag, deltag, deftag);
+  const row = new Discord.ActionRowBuilder().addComponents(
+    addtag,
+    deltag,
+    deftag,
+  );
 
   let row2;
   if (options.length > 25) {
@@ -61,6 +65,4 @@ export const generateTagsEmbed = (options, page = 1, interaction) => {
       flags: Discord.MessageFlags.Ephemeral,
     };
   }
-
-
 };

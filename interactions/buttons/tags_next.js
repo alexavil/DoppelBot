@@ -17,7 +17,7 @@ export default {
 
       return interaction.update(reply);
     } catch (error) {
-        console.log(error);
+      console.log(error);
       return interaction.reply({
         content: "There was an error!",
         ephemeral: true,

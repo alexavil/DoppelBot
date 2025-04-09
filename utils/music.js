@@ -12,6 +12,7 @@ import fs from "fs-extra";
 const debug = process.env.DEBUG;
 const queue = new sqlite3("./data/queue.db");
 const settings = new sqlite3("./data/settings.db");
+const cache = new sqlite3("./data/cache.db");
 
 import http from "https";
 import path from "path";
@@ -21,6 +22,8 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+import { getHash } from "../utils/HashCalculator.js";
 
 const cacheFolder = "../cache/";
 
@@ -86,8 +89,12 @@ function announceTrack(title, author, interaction) {
   interaction.channel.send({ embeds: [playingembed] });
 }
 
-async function getLocalFile(file) {
-  if (fs.existsSync(path.join(__dirname, cacheFolder, file.name))) return -1;
+async function getLocalFile(file, display_name) {
+  let existing_file = cache
+    .prepare(`SELECT * FROM files_directory WHERE name = ?`)
+    .get(file.name);
+  console.log(existing_file);
+  if (existing_file !== undefined) return -1;
 
   return new Promise((resolve, reject) => {
     const download = fs.createWriteStream(
@@ -97,8 +104,25 @@ async function getLocalFile(file) {
       .get(file.url, (response) => {
         response.pipe(download);
         download.on("finish", () => {
-          download.close(() => {
-            resolve(0);
+          download.close(async () => {
+            let hash = await getHash(
+              path.join(__dirname, cacheFolder, file.name),
+            );
+            let existing_hash = cache
+              .prepare(`SELECT * FROM files_directory WHERE md5Hash = ?`)
+              .get(hash);
+            if (existing_hash !== undefined) {
+              fs.unlink(path.join(__dirname, cacheFolder, file.name), () => {
+                resolve(-1);
+              });
+            } else {
+              cache
+                .prepare(
+                  `INSERT OR IGNORE INTO files_directory VALUES (?, ?, ?)`,
+                )
+                .run(display_name, file.name, hash);
+              resolve(0);
+            }
           });
         });
       })
@@ -135,7 +159,7 @@ function playLocalFile(file, connection, interaction) {
       let file = getFromQueue(connection.joinConfig.guildId);
       playLocalFile(file.name, connection, interaction);
       if (getFromQueue(connection.joinConfig.guildId).isLooped === "false")
-        announceTrack(file.name, file.author, interaction);
+        announceTrack(file.track, file.author, interaction);
     } else {
       if (debug === "true") {
         console.log("[DEBUG] No more tracks to play, starting timeout...");

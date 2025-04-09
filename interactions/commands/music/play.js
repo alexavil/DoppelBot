@@ -1,13 +1,19 @@
 import Discord, { ButtonStyle } from "discord.js";
 const debug = process.env.DEBUG;
 const { default: music } = await import("../../../utils/music.js");
+const { default: service } = await import("../../../utils/ServiceVariables.js");
 
 import fs from "fs-extra";
 
 import path from "path";
 
+import sqlite3 from "better-sqlite3";
+
+const cache = new sqlite3("./data/cache.db");
+
 import { dirname } from "path";
 import { fileURLToPath } from "url";
+import { generateMusicMenu } from "../../../utils/CacheMenuGenerator.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -72,35 +78,15 @@ export default {
         }
       }
     } else {
-      let values = [];
-      let options = await fs.readdir(path.join(__dirname, cacheFolder));
+      let options = cache.prepare("SELECT * FROM files_directory").all();
       if (options.length === 0)
         return interaction.editReply({
           content: `There are no tracks in the cache. Please upload a new track using \`/upload\`.`,
           flags: Discord.MessageFlags.Ephemeral,
         });
-      options.forEach((option) => {
-        let menuOption = new Discord.StringSelectMenuOptionBuilder()
-          .setLabel(option)
-          .setValue(option);
-        values.push(menuOption);
-      });
-      const menu = new Discord.StringSelectMenuBuilder()
-        .setCustomId(`selectlocal`)
-        .setOptions(values)
-        .setMinValues(1)
-        .setMaxValues(values.length);
-      const cancel = new Discord.ButtonBuilder()
-        .setCustomId(`music_cancel`)
-        .setLabel(`Cancel`)
-        .setStyle(ButtonStyle.Primary);
-      const row = new Discord.ActionRowBuilder().addComponents(menu);
-      const row2 = new Discord.ActionRowBuilder().addComponents(cancel);
-      return interaction.editReply({
-        content: `Select track(s) to play.`,
-        components: [row, row2],
-        flags: Discord.MessageFlags.Ephemeral,
-      });
+      let reply = generateMusicMenu(options, 1);
+      service.music_pages.set(id, 1);
+      return interaction.editReply(reply);
     }
   },
 };

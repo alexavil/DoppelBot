@@ -38,6 +38,8 @@ else {
 if (process.env.ACTIVITIES) activities = process.env.ACTIVITIES.split(",");
 
 const { default: music } = await import("./utils/music.js");
+const { default: service } = await import("./utils/ServiceVariables.js");
+import { getHash } from "./utils/HashCalculator.js";
 
 let debug = process.env.DEBUG;
 let avatar = process.env.AVATAR;
@@ -74,6 +76,9 @@ if (!fs.existsSync("./cache/")) fs.mkdirSync("./cache/");
 const settings = new sqlite3("./data/settings.db");
 const queue = new sqlite3("./data/queue.db");
 const tags = new sqlite3("./data/tags.db");
+const cache = new sqlite3("./data/cache.db");
+
+const cacheFolder = "./cache/";
 
 client.commands = new Discord.Collection();
 const foldersPath = path.join(__dirname, "interactions", "commands");
@@ -264,6 +269,37 @@ function CheckForPerms() {
   });
 }
 
+function verifyCache() {
+  cache
+    .prepare(
+      `CREATE TABLE IF NOT EXISTS files_directory (name TEXT, filename TEXT, md5Hash TEXT UNIQUE)`,
+    )
+    .run();
+  let options = fs.readdirSync(path.join(__dirname, cacheFolder));
+  if (options.length !== 0) {
+    let dbFiles = cache.prepare(`SELECT filename FROM files_directory`).all();
+    let currentFilesSet = new Set(options);
+    dbFiles.forEach(({ filename }) => {
+      if (!currentFilesSet.has(filename)) {
+        cache
+          .prepare(`DELETE FROM files_directory WHERE filename = ?`)
+          .run(filename);
+      }
+    });
+    options.forEach(async (opt) => {
+      let hash = await getHash(path.join(__dirname, cacheFolder, opt));
+      cache
+        .prepare(`INSERT OR IGNORE INTO files_directory VALUES (?, ?, ?)`)
+        .run(opt, opt, hash);
+      cache
+        .prepare(`UPDATE files_directory SET md5Hash = ? WHERE filename = ?`)
+        .run(hash, opt);
+    });
+  } else {
+    return false;
+  }
+}
+
 function clearMusicData(id) {
   if (debug === "true")
     console.log(
@@ -273,6 +309,7 @@ function clearMusicData(id) {
   music.players.delete(id);
   music.connections.delete(id);
   music.timeouts.delete(id);
+  service.music_pages.delete(id);
 }
 
 function createConfig(id) {
@@ -332,6 +369,7 @@ client.on("ready", () => {
   if (telemetry === "true" || debug === "true") initSentry();
   setProfile();
   validateSettings();
+  verifyCache();
   let permcheck = new cron.CronJob("00 00 */8 * * *", CheckForPerms);
   permcheck.start();
   if (debug === "true") console.log("[DEBUG] Running jobs for every guild...");

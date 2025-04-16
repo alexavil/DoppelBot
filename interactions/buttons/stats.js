@@ -1,8 +1,15 @@
 import child from "child_process";
 import Discord from "discord.js";
+import fs from "fs-extra";
 import os from "os";
 import { convertToString } from "../../utils/TimeConverter.js";
 const name = process.env.NAME;
+
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export default {
   name: "stats",
@@ -25,6 +32,10 @@ Available RAM: ${Math.round(
           )} / ${Math.round(os.totalmem() / 1024 / 1024)} MB,
 CPU: ${os.cpus()[0].model}
 CPU Usage: ${os.loadavg()[0].toFixed(2)}%
+Free Disk Space: ${Math.round(
+            (fs.statfsSync(__dirname).bfree / fs.statfsSync(__dirname).blocks) *
+              100,
+          )}%
 Bot Uptime: ${convertToString(process.uptime())}
 OS Uptime: ${convertToString(os.uptime())}\`\`\``,
         },

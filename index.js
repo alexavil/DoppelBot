@@ -21,6 +21,10 @@ import util from "util";
 import * as Sentry from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
 
+if (!fs.existsSync("./data/")) fs.mkdirSync("./data/");
+if (!fs.existsSync("./logs/")) fs.mkdirSync("./logs/");
+if (!fs.existsSync("./cache/")) fs.mkdirSync("./cache/");
+
 let token = undefined;
 let name = undefined;
 let activities = undefined;
@@ -68,10 +72,6 @@ const client = new Discord.Client({
     GatewayIntentBits.MessageContent,
   ],
 });
-
-if (!fs.existsSync("./data/")) fs.mkdirSync("./data/");
-if (!fs.existsSync("./logs/")) fs.mkdirSync("./logs/");
-if (!fs.existsSync("./cache/")) fs.mkdirSync("./cache/");
 
 const settings = new sqlite3("./data/settings.db");
 const queue = new sqlite3("./data/queue.db");

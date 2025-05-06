@@ -1,7 +1,8 @@
+import debugLog from "../../utils/DebugHandler.js";
 import { getVoiceConnection } from "@discordjs/voice";
 import sqlite3 from "better-sqlite3";
 import Discord from "discord.js";
-const debug = process.env.DEBUG;
+
 const { default: music } = await import("../../utils/music.js");
 
 const queue = new sqlite3("./data/queue.db");
@@ -16,8 +17,8 @@ export default {
         .has(Discord.PermissionsBitField.Flags.BanMembers) &&
       channel.members.size !== 2
     ) {
-      if (debug === "true")
-        console.log("[DEBUG] User is not admin or alone, stop not allowed...");
+      
+        debugLog("User is not admin or alone, stop not allowed...");
       return interaction.reply({
         content: "You are not allowed to stop!",
         flags: Discord.MessageFlags.Ephemeral,
@@ -30,7 +31,7 @@ export default {
         flags: Discord.MessageFlags.Ephemeral,
       });
     else {
-      if (debug === "true") console.log("[DEBUG] Stopping the connection...");
+       debugLog("Stopping the connection...");
       let connection = getVoiceConnection(id);
       connection.destroy();
       music.players.delete(id);

@@ -1,11 +1,9 @@
+import debugLog from "../../../utils/DebugHandler.js";
 import Discord, { ButtonStyle } from "discord.js";
-const debug = process.env.DEBUG;
+
 const { default: music } = await import("../../../utils/music.js");
 const { default: service } = await import("../../../utils/ServiceVariables.js");
 
-import fs from "fs-extra";
-
-import path from "path";
 
 import sqlite3 from "better-sqlite3";
 
@@ -32,8 +30,8 @@ export default {
   async execute(interaction) {
     const id = interaction.guild.id;
     if (!interaction.member.voice.channel) {
-      if (debug === "true")
-        console.log("[DEBUG] No voice channel found, aborting...");
+      
+        debugLog("No voice channel found, aborting...");
       return interaction.editReply("You need to join a voice channel first!");
     }
     let track = interaction.options.getAttachment("track");

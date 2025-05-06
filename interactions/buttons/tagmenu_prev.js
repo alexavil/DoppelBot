@@ -1,3 +1,4 @@
+import debugLog from "../../utils/DebugHandler.js";
 import sqlite3 from "better-sqlite3";
 import { generateTagsMenu } from "../../utils/TagsMenuGenerator.js";
 const { default: service } = await import("../../utils/ServiceVariables.js");
@@ -17,7 +18,7 @@ export default {
 
       return interaction.update(reply);
     } catch (error) {
-      console.log(error);
+      debugLog(error);
       return interaction.reply({
         content: "There was an error!",
         ephemeral: true,

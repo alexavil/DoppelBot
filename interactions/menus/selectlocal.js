@@ -1,5 +1,6 @@
+import debugLog from "../../utils/DebugHandler.js";
 const { default: music } = await import("../../utils/music.js");
-const debug = process.env.DEBUG;
+
 
 import sqlite3 from "better-sqlite3";
 
@@ -10,8 +11,8 @@ export default {
   name: "selectlocal",
   async execute(interaction) {
     let id = interaction.guild.id;
-    if (debug === "true")
-      console.log(`[DEBUG] Adding track(s) to the queue...`);
+    
+      debugLog(`Adding track(s) to the queue...`);
     let connection = music.getConnection(interaction);
     const tracks = interaction.values;
     service.music_pages.delete(id);

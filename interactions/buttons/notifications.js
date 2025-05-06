@@ -1,7 +1,8 @@
+import debugLog from "../../utils/DebugHandler.js";
 import sqlite3 from "better-sqlite3";
 import Discord from "discord.js";
 const settings = new sqlite3("./data/settings.db");
-const debug = process.env.DEBUG;
+
 
 export default {
   name: "notifications",
@@ -12,9 +13,9 @@ export default {
       .get().value;
     switch (value) {
       case "false":
-        if (debug === "true")
-          console.log(
-            "[DEBUG] Notifications are disabled for " +
+        
+          debugLog(
+            "Notifications are disabled for " +
               id +
               ", switching on...",
           );
@@ -23,9 +24,9 @@ export default {
           .run("true", "notifications");
         break;
       case "true":
-        if (debug === "true")
-          console.log(
-            "[DEBUG] Notifications are enabled for " +
+        
+          debugLog(
+            "Notifications are enabled for " +
               id +
               ", switching off...",
           );

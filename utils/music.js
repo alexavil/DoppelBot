@@ -1,3 +1,4 @@
+import debugLog from "./DebugHandler.js";
 import {
   AudioPlayerStatus,
   createAudioPlayer,
@@ -9,7 +10,7 @@ import {
 import sqlite3 from "better-sqlite3";
 import Discord from "discord.js";
 import fs from "fs-extra";
-const debug = process.env.DEBUG;
+
 const queue = new sqlite3("./data/queue.db");
 const settings = new sqlite3("./data/settings.db");
 const cache = new sqlite3("./data/cache.db");
@@ -93,7 +94,7 @@ async function getLocalFile(file, display_name) {
   let existing_file = cache
     .prepare(`SELECT * FROM files_directory WHERE name = ?`)
     .get(file.name);
-  console.log(existing_file);
+  debugLog(existing_file);
   if (existing_file !== undefined) return -1;
 
   return new Promise((resolve, reject) => {
@@ -127,7 +128,7 @@ async function getLocalFile(file, display_name) {
         });
       })
       .on("error", (err) => {
-        if (debug === "true") console.log("[DEBUG] Error: " + err.message);
+         debugLog("Error: " + err.message);
         fs.unlink(path.join(__dirname, cacheFolder, file.name), () => {
           reject(1);
         });
@@ -147,22 +148,22 @@ function playLocalFile(file, connection, interaction) {
   player.play(resource);
   player.on(AudioPlayerStatus.Idle, async () => {
     if (debug.debug === true) {
-      console.log("[DEBUG] No more tracks to play, starting timeout...");
+      debugLog("No more tracks to play, starting timeout...");
     }
     if (getFromQueue(connection.joinConfig.guildId).isLooped === "false") {
       removeFromQueue(connection.joinConfig.guildId);
     }
     if (getQueueLength(connection.joinConfig.guildId) > 0) {
-      if (debug === "true") {
-        console.log("[DEBUG] Starting the next track...");
+       {
+        debugLog("Starting the next track...");
       }
       let file = getFromQueue(connection.joinConfig.guildId);
       playLocalFile(file.name, connection, interaction);
       if (getFromQueue(connection.joinConfig.guildId).isLooped === "false")
         announceTrack(file.track, file.author, interaction);
     } else {
-      if (debug === "true") {
-        console.log("[DEBUG] No more tracks to play, starting timeout...");
+       {
+        debugLog("No more tracks to play, starting timeout...");
       }
       let timeout =
         parseInt(

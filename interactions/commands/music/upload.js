@@ -1,5 +1,6 @@
+import debugLog from "../../../utils/DebugHandler.js";
 import Discord from "discord.js";
-const debug = process.env.DEBUG;
+
 const { default: music } = await import("../../../utils/music.js");
 
 const allowedExts = [".flac", ".mp3", ".ogg", ".wav", ".m4a"];
@@ -27,8 +28,8 @@ export default {
         flags: Discord.MessageFlags.Ephemeral,
       });
     } else {
-      if (debug === "true")
-        console.log(`[DEBUG] Adding track(s) to the cache...`);
+      
+        debugLog(`Adding track(s) to the cache...`);
       let name = interaction.options.getString("display_name");
       let status;
       if (name !== undefined) status = await music.getLocalFile(track, name);

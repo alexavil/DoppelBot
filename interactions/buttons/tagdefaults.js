@@ -1,14 +1,14 @@
-const debug = process.env.DEBUG;
+import debugLog from "../../utils/DebugHandler.js";
 import Discord, { ButtonStyle } from "discord.js";
 
 export default {
   name: "tagdefaults",
   async execute(interaction) {
     const id = interaction.guild.id;
-    if (debug === "true")
-      console.log(`[DEBUG] Preparing to clear tags for ${id}...`);
-    if (debug === "true")
-      console.log("[DEBUG] Confirmation required - awaiting user input...");
+    
+      debugLog(`Preparing to clear tags for ${id}...`);
+    
+      debugLog("Confirmation required - awaiting user input...");
     const confirm = new Discord.ButtonBuilder()
       .setCustomId(`tagdef_confirm`)
       .setLabel(`Yes`)

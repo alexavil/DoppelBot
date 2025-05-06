@@ -1,6 +1,7 @@
+import debugLog from "../../utils/DebugHandler.js";
 import sqlite3 from "better-sqlite3";
 import Discord from "discord.js";
-const debug = process.env.DEBUG;
+
 const { default: music } = await import("../../utils/music.js");
 
 const queue = new sqlite3("./data/queue.db");
@@ -18,18 +19,18 @@ export default {
         channel.members.size !== 2) ||
       music.getQueueLength(interaction.guild.id) === 1
     ) {
-      if (debug === "true") console.log("[DEBUG] Skip not allowed...");
+       debugLog("Skip not allowed...");
       return interaction.reply({
         content: "You are not allowed to skip!",
         flags: Discord.MessageFlags.Ephemeral,
       });
     }
     if (music.getFromQueue(id).isLooped === "true") {
-      if (debug === "true")
-        console.log("[DEBUG] The current track is looped, unlooping...");
+      
+        debugLog("The current track is looped, unlooping...");
       queue.prepare(`UPDATE guild_${id} SET isLooped = 'false' LIMIT 1`).run();
     }
-    if (debug === "true") console.log("[DEBUG] Skipping the current track...");
+     debugLog("Skipping the current track...");
     if (player._state.status === "paused") player.unpause();
     player.stop();
     interaction.reply({

@@ -1,14 +1,14 @@
-const debug = process.env.DEBUG;
+import debugLog from "../../utils/DebugHandler.js";
 import Discord, { ButtonStyle } from "discord.js";
 
 export default {
   name: "defaults",
   async execute(interaction) {
     const id = interaction.guild.id;
-    if (debug === "true")
-      console.log(`[DEBUG] Preparing to reset settings for ${id}...`);
-    if (debug === "true")
-      console.log("[DEBUG] Confirmation required - awaiting user input...");
+    
+      debugLog(`Preparing to reset settings for ${id}...`);
+    
+      debugLog("Confirmation required - awaiting user input...");
     const confirm = new Discord.ButtonBuilder()
       .setCustomId(`def_confirm`)
       .setLabel(`Yes`)

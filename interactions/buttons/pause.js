@@ -1,5 +1,6 @@
+import debugLog from "../../utils/DebugHandler.js";
 import Discord from "discord.js";
-const debug = process.env.DEBUG;
+
 const { default: music } = await import("../../utils/music.js");
 
 export default {
@@ -10,8 +11,8 @@ export default {
     if (!player) return interaction.reply("Nothing to pause!");
     switch (player._state.status) {
       case "paused": {
-        if (debug === "true")
-          console.log("[DEBUG] Player is paused, unpausing...");
+        
+          debugLog("Player is paused, unpausing...");
         player.unpause();
         return interaction.reply({
           content: "Unpaused!",
@@ -19,8 +20,8 @@ export default {
         });
       }
       case "playing": {
-        if (debug === "true")
-          console.log("[DEBUG] Player is not paused, pausing...");
+        
+          debugLog("Player is not paused, pausing...");
         player.pause();
         return interaction.reply({
           content: "Paused!",

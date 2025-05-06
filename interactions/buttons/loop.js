@@ -1,4 +1,4 @@
-const debug = process.env.DEBUG;
+import debugLog from "../../utils/DebugHandler.js";
 import { getVoiceConnection } from "@discordjs/voice";
 import sqlite3 from "better-sqlite3";
 import Discord from "discord.js";
@@ -17,8 +17,8 @@ export default {
         .isLooped
     ) {
       case "true": {
-        if (debug === "true")
-          console.log("[DEBUG] Unlooping the current track...");
+        
+          debugLog("Unlooping the current track...");
         queue
           .prepare(`UPDATE guild_${id} SET isLooped = 'false' LIMIT 1`)
           .run();
@@ -28,8 +28,8 @@ export default {
         });
       }
       case "false": {
-        if (debug === "true")
-          console.log("[DEBUG] Looping the current track...");
+        
+          debugLog("Looping the current track...");
         queue.prepare(`UPDATE guild_${id} SET isLooped = 'true' LIMIT 1`).run();
         return interaction.reply({
           content: "The current track will be looped!",

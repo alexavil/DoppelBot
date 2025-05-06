@@ -10,7 +10,7 @@ import { dirname } from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const clientId = process.env.CLIENTID;
+const clientId = process.env.CLIENT_ID;
 const token = process.env.TOKEN;
 
 const commands = [];

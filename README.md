@@ -18,3 +18,7 @@ Please host the bot in a neutral location.
 6. Create the `.env` file and fill it out according to the example.
 7. Deploy the commands by running `node utils/deploy.js`.
 8. Launch the `index.js` file: `node index.js`.
+
+[Privacy Policy](https://doppelbot.jsbox.xyz/privacy-policy/)
+
+[Website](https://doppelbot.jsbox.xyz/)

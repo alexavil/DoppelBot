@@ -1,10 +1,5 @@
 import util from "util";
 import fs from "fs-extra";
-import path from "path";
-import url from "url";
-
-const __filename = url.fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 let debugLog;
 
@@ -14,7 +9,8 @@ switch (process.env.DEBUG) {
       flags: "a",
     });
     const log_stdout = process.stdout;
-    debugLog = (msg) => {
+    debugLog = (str) => {
+        let msg = "[DEBUG] " + str;
       log_file.write(
         new Date().toLocaleString() + " --- " + util.format(msg) + "\n",
       );
@@ -24,7 +20,7 @@ switch (process.env.DEBUG) {
   }
   case "false":
   default: {
-    debugLog = (msg) => {
+    debugLog = (str) => {
       return false;
     };
     break;

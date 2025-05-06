@@ -138,15 +138,12 @@ for (const file of menuFiles) {
 }
 
 const RequiredPerms = [
-  [Discord.PermissionsBitField.Flags.ViewChannel, "View Channels"],
-  [
-    Discord.PermissionsBitField.Flags.ReadMessageHistory,
-    "Read Message History",
-  ],
-  [Discord.PermissionsBitField.Flags.SendMessages, "Send Messages"],
-  [Discord.PermissionsBitField.Flags.ManageMessages, "Manage Messages"],
-  [Discord.PermissionsBitField.Flags.Connect, "Connect"],
-  [Discord.PermissionsBitField.Flags.Speak, "Speak"],
+  Discord.PermissionsBitField.Flags.ViewChannel,
+  Discord.PermissionsBitField.Flags.ReadMessageHistory,
+  Discord.PermissionsBitField.Flags.SendMessages,
+  Discord.PermissionsBitField.Flags.ManageMessages,
+  Discord.PermissionsBitField.Flags.Connect,
+  Discord.PermissionsBitField.Flags.Speak
 ];
 
 function setProfile() {
@@ -187,20 +184,10 @@ function CheckForPerms(id) {
     );
     return false;
   }
-  let botmember = guild.members.me;
-  let guild_owner = guild.ownerId;
-  let message = `The bot is missing the following permissions in ${guild.name}:\n\n`;
-  let missing = 0;
-  RequiredPerms.forEach((perm) => {
-    if (!botmember.permissions.has(perm[0])) {
-      debugLog(`Guild ${id} is missing ${perm[1]}.`);
-      message += `${perm[1]}\n`;
-      missing++;
-    }
-  });
-  if (missing > 0) {
+  if (!guild.members.me.has(RequiredPerms)) {
     debugLog(`Sending permissions alert for guild ${id}...`);
-    message += `\nPlease check your role and member settings!`;
+    let guild_owner = guild.ownerId;
+    let message = `The bot must have the following permissions in ${guild.name}:\n\nView Channel\nRead Message History\nSend Messages\nManage Messages\nConnect\nSpeak\n\nPlease check your role and member settings!`;
     const notifbtn = new Discord.ButtonBuilder()
       .setCustomId(`notifications`)
       .setLabel(`Toggle service notifications in ${guild.name}`)

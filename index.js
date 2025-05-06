@@ -1,22 +1,16 @@
 import "dotenv/config";
 
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
 import sqlite3 from "better-sqlite3";
 import child from "child_process";
 import cron from "cron";
-import Discord, {
-  ChannelType,
-  GatewayIntentBits,
-  PermissionsBitField,
-} from "discord.js";
+import Discord from "discord.js";
 import fs from "fs-extra";
 import path from "path";
 import util from "util";
+import url from "url";
+
+const __filename = url.fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 import * as Sentry from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
@@ -41,20 +35,20 @@ import { getHash } from "./utils/HashCalculator.js";
 
 const client = new Discord.Client({
   intents: [
-    GatewayIntentBits.GuildExpressions,
-    GatewayIntentBits.GuildIntegrations,
-    GatewayIntentBits.GuildInvites,
-    GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.GuildMessageReactions,
-    GatewayIntentBits.GuildMessageTyping,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.GuildModeration,
-    GatewayIntentBits.GuildPresences,
-    GatewayIntentBits.GuildScheduledEvents,
-    GatewayIntentBits.GuildVoiceStates,
-    GatewayIntentBits.GuildWebhooks,
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.MessageContent,
+    Discord.GatewayIntentBits.GuildExpressions,
+    Discord.GatewayIntentBits.GuildIntegrations,
+    Discord.GatewayIntentBits.GuildInvites,
+    Discord.GatewayIntentBits.GuildMembers,
+    Discord.GatewayIntentBits.GuildMessageReactions,
+    Discord.GatewayIntentBits.GuildMessageTyping,
+    Discord.GatewayIntentBits.GuildMessages,
+    Discord.GatewayIntentBits.GuildModeration,
+    Discord.GatewayIntentBits.GuildPresences,
+    Discord.GatewayIntentBits.GuildScheduledEvents,
+    Discord.GatewayIntentBits.GuildVoiceStates,
+    Discord.GatewayIntentBits.GuildWebhooks,
+    Discord.GatewayIntentBits.Guilds,
+    Discord.GatewayIntentBits.MessageContent,
   ],
 });
 
@@ -139,12 +133,12 @@ for (const file of menuFiles) {
 }
 
 const RequiredPerms = [
-  [PermissionsBitField.Flags.ViewChannel, "View Channels"],
-  [PermissionsBitField.Flags.ReadMessageHistory, "Read Message History"],
-  [PermissionsBitField.Flags.SendMessages, "Send Messages"],
-  [PermissionsBitField.Flags.ManageMessages, "Manage Messages"],
-  [PermissionsBitField.Flags.Connect, "Connect"],
-  [PermissionsBitField.Flags.Speak, "Speak"],
+  [Discord.PermissionsBitField.Flags.ViewChannel, "View Channels"],
+  [Discord.PermissionsBitField.Flags.ReadMessageHistory, "Read Message History"],
+  [Discord.PermissionsBitField.Flags.SendMessages, "Send Messages"],
+  [Discord.PermissionsBitField.Flags.ManageMessages, "Manage Messages"],
+  [Discord.PermissionsBitField.Flags.Connect, "Connect"],
+  [Discord.PermissionsBitField.Flags.Speak, "Speak"],
 ];
 
 if (process.env.DEBUG === "true") {

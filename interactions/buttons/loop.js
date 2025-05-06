@@ -17,8 +17,7 @@ export default {
         .isLooped
     ) {
       case "true": {
-        
-          debugLog("Unlooping the current track...");
+        debugLog("Unlooping the current track...");
         queue
           .prepare(`UPDATE guild_${id} SET isLooped = 'false' LIMIT 1`)
           .run();
@@ -28,8 +27,7 @@ export default {
         });
       }
       case "false": {
-        
-          debugLog("Looping the current track...");
+        debugLog("Looping the current track...");
         queue.prepare(`UPDATE guild_${id} SET isLooped = 'true' LIMIT 1`).run();
         return interaction.reply({
           content: "The current track will be looped!",

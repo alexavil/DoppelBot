@@ -10,16 +10,16 @@ export default {
   name: "tagdelete",
   async execute(interaction) {
     let id = interaction.guild.id;
-    
-      debugLog(`Starting tag deletion for ${id}...`);
+
+    debugLog(`Starting tag deletion for ${id}...`);
     const keywords = interaction.values;
     for (const keyword of keywords) {
       tags.prepare(`DELETE FROM guild_${id} WHERE tag = '${keyword}'`).run();
     }
-     debugLog(`Fetching tag list for ${id}...`);
+    debugLog(`Fetching tag list for ${id}...`);
     let responses = tags.prepare(`SELECT * FROM guild_${id}`).all();
     if (responses.length === 0) {
-       debugLog("No tags found...");
+      debugLog("No tags found...");
       let tagsembed = new Discord.EmbedBuilder().setTitle(
         `Tags for ${interaction.guild.name}`,
       );

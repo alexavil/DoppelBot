@@ -2,7 +2,6 @@ import debugLog from "../../../utils/DebugHandler.js";
 import sqlite3 from "better-sqlite3";
 import Discord from "discord.js";
 
-
 const queue = new sqlite3("./data/queue.db");
 export default {
   data: new Discord.SlashCommandBuilder()
@@ -14,8 +13,7 @@ export default {
     let embed = new Discord.EmbedBuilder();
     let queuelength = queue.prepare(`SELECT * FROM guild_${id}`).all().length;
     if (queuelength !== 0) {
-      
-        debugLog(`Queue for ${id} is not empty, fetching tracks...`);
+      debugLog(`Queue for ${id} is not empty, fetching tracks...`);
       queue
         .prepare(`SELECT * FROM guild_${id}`)
         .all()
@@ -30,7 +28,7 @@ export default {
           }
         });
     } else {
-       debugLog(`Queue for ${id} is empty...`);
+      debugLog(`Queue for ${id} is empty...`);
       embed.setDescription("The queue is currently empty.");
     }
     embed.setTitle(`Queue for ${interaction.guild.name}`);

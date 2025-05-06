@@ -3,7 +3,6 @@ import sqlite3 from "better-sqlite3";
 import Discord from "discord.js";
 const settings = new sqlite3("./data/settings.db");
 
-
 export default {
   name: "settimeout",
   async execute(interaction) {
@@ -13,14 +12,14 @@ export default {
       10,
     );
     if (timeout < 0 || !Number.isInteger(timeout)) {
-       debugLog("Invalid input, aborting...");
+      debugLog("Invalid input, aborting...");
       return interaction.reply({
         content: "Please provide a valid number in seconds!",
         flags: Discord.MessageFlags.Ephemeral,
       });
     }
-    
-      debugLog(`New disconnect timeout for ${id}: ${timeout}...`);
+
+    debugLog(`New disconnect timeout for ${id}: ${timeout}...`);
     settings
       .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
       .run(timeout, "disconnect_timeout");

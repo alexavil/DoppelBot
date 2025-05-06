@@ -11,8 +11,7 @@ export default {
     if (!player) return interaction.reply("Nothing to pause!");
     switch (player._state.status) {
       case "paused": {
-        
-          debugLog("Player is paused, unpausing...");
+        debugLog("Player is paused, unpausing...");
         player.unpause();
         return interaction.reply({
           content: "Unpaused!",
@@ -20,8 +19,7 @@ export default {
         });
       }
       case "playing": {
-        
-          debugLog("Player is not paused, pausing...");
+        debugLog("Player is not paused, pausing...");
         player.pause();
         return interaction.reply({
           content: "Paused!",

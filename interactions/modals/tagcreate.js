@@ -16,8 +16,7 @@ export default {
       .prepare(`SELECT * FROM guild_${id} WHERE tag = ?`)
       .get(keyword);
     if (tag !== undefined) {
-      
-        debugLog("Tag already exists, aborting...");
+      debugLog("Tag already exists, aborting...");
       return interaction.update({
         content: "A tag with that key word already exists!",
         flags: Discord.MessageFlags.Ephemeral,
@@ -26,7 +25,7 @@ export default {
     tags
       .prepare(`INSERT OR IGNORE INTO guild_${id} VALUES (?, ?)`)
       .run(keyword, response);
-     debugLog(`Fetching tag list for ${id}...`);
+    debugLog(`Fetching tag list for ${id}...`);
     let responses = tags.prepare(`SELECT * FROM guild_${id}`).all();
     let reply = generateTagsEmbed(
       responses,

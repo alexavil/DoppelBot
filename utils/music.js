@@ -128,7 +128,7 @@ async function getLocalFile(file, display_name) {
         });
       })
       .on("error", (err) => {
-         debugLog("Error: " + err.message);
+        debugLog("Error: " + err.message);
         fs.unlink(path.join(__dirname, cacheFolder, file.name), () => {
           reject(1);
         });
@@ -154,7 +154,7 @@ function playLocalFile(file, connection, interaction) {
       removeFromQueue(connection.joinConfig.guildId);
     }
     if (getQueueLength(connection.joinConfig.guildId) > 0) {
-       {
+      {
         debugLog("Starting the next track...");
       }
       let file = getFromQueue(connection.joinConfig.guildId);
@@ -162,7 +162,7 @@ function playLocalFile(file, connection, interaction) {
       if (getFromQueue(connection.joinConfig.guildId).isLooped === "false")
         announceTrack(file.track, file.author, interaction);
     } else {
-       {
+      {
         debugLog("No more tracks to play, starting timeout...");
       }
       let timeout =

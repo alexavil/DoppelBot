@@ -3,7 +3,6 @@ import sqlite3 from "better-sqlite3";
 import Discord from "discord.js";
 const settings = new sqlite3("./data/settings.db");
 
-
 export default {
   name: "notifications",
   async execute(interaction) {
@@ -13,23 +12,13 @@ export default {
       .get().value;
     switch (value) {
       case "false":
-        
-          debugLog(
-            "Notifications are disabled for " +
-              id +
-              ", switching on...",
-          );
+        debugLog("Notifications are disabled for " + id + ", switching on...");
         settings
           .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
           .run("true", "notifications");
         break;
       case "true":
-        
-          debugLog(
-            "Notifications are enabled for " +
-              id +
-              ", switching off...",
-          );
+        debugLog("Notifications are enabled for " + id + ", switching off...");
         settings
           .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
           .run("false", "notifications");

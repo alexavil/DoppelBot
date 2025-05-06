@@ -4,7 +4,6 @@ import Discord, { ButtonStyle } from "discord.js";
 import { generateTagsEmbed } from "../../../utils/TagsEmbedGenerator.js";
 const { default: service } = await import("../../../utils/ServiceVariables.js");
 
-
 const tags = new sqlite3("./data/tags.db");
 
 export default {
@@ -13,10 +12,10 @@ export default {
     .setDescription("List tags"),
   async execute(interaction) {
     let id = interaction.guild.id;
-     debugLog(`Fetching tag list for ${id}...`);
+    debugLog(`Fetching tag list for ${id}...`);
     let responses = tags.prepare(`SELECT * FROM guild_${id}`).all();
     if (responses.length === 0) {
-       debugLog("No tags found...");
+      debugLog("No tags found...");
       let tagsembed = new Discord.EmbedBuilder().setTitle(
         `Tags for ${interaction.guild.name}`,
       );

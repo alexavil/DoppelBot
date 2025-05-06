@@ -5,10 +5,10 @@ export default {
   name: "defaults",
   async execute(interaction) {
     const id = interaction.guild.id;
-    
-      debugLog(`Preparing to reset settings for ${id}...`);
-    
-      debugLog("Confirmation required - awaiting user input...");
+
+    debugLog(`Preparing to reset settings for ${id}...`);
+
+    debugLog("Confirmation required - awaiting user input...");
     const confirm = new Discord.ButtonBuilder()
       .setCustomId(`def_confirm`)
       .setLabel(`Yes`)

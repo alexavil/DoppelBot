@@ -4,7 +4,6 @@ import Discord, { ButtonStyle } from "discord.js";
 const { default: music } = await import("../../../utils/music.js");
 const { default: service } = await import("../../../utils/ServiceVariables.js");
 
-
 import sqlite3 from "better-sqlite3";
 
 const cache = new sqlite3("./data/cache.db");
@@ -30,8 +29,7 @@ export default {
   async execute(interaction) {
     const id = interaction.guild.id;
     if (!interaction.member.voice.channel) {
-      
-        debugLog("No voice channel found, aborting...");
+      debugLog("No voice channel found, aborting...");
       return interaction.editReply("You need to join a voice channel first!");
     }
     let track = interaction.options.getAttachment("track");

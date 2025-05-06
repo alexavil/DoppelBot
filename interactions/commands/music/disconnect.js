@@ -19,14 +19,13 @@ export default {
         .has(Discord.PermissionsBitField.Flags.BanMembers) &&
       channel.members.size !== 2
     ) {
-      
-        debugLog("User is not admin or alone, stop not allowed...");
+      debugLog("User is not admin or alone, stop not allowed...");
       return interaction.reply({
         content: "You are not allowed to disconnect the bot!",
         flags: Discord.MessageFlags.Ephemeral,
       });
     }
-     debugLog("Stopping the connection...");
+    debugLog("Stopping the connection...");
     let connection = getVoiceConnection(id);
     if (connection) connection.destroy();
     music.players.delete(id);

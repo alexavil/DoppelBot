@@ -10,7 +10,7 @@ switch (process.env.DEBUG) {
     });
     const log_stdout = process.stdout;
     debugLog = (str) => {
-        let msg = "[DEBUG] " + str;
+      let msg = "[DEBUG] " + str;
       log_file.write(
         new Date().toLocaleString() + " --- " + util.format(msg) + "\n",
       );

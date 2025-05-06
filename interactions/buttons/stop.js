@@ -17,8 +17,7 @@ export default {
         .has(Discord.PermissionsBitField.Flags.BanMembers) &&
       channel.members.size !== 2
     ) {
-      
-        debugLog("User is not admin or alone, stop not allowed...");
+      debugLog("User is not admin or alone, stop not allowed...");
       return interaction.reply({
         content: "You are not allowed to stop!",
         flags: Discord.MessageFlags.Ephemeral,
@@ -31,7 +30,7 @@ export default {
         flags: Discord.MessageFlags.Ephemeral,
       });
     else {
-       debugLog("Stopping the connection...");
+      debugLog("Stopping the connection...");
       let connection = getVoiceConnection(id);
       connection.destroy();
       music.players.delete(id);

@@ -25,37 +25,22 @@ if (!fs.existsSync("./data/")) fs.mkdirSync("./data/");
 if (!fs.existsSync("./logs/")) fs.mkdirSync("./logs/");
 if (!fs.existsSync("./cache/")) fs.mkdirSync("./cache/");
 
-let token = undefined;
-let name = undefined;
-let activities = undefined;
-
-if (process.env.TOKEN) token = process.env.TOKEN;
-else {
+if (!process.env.TOKEN) {
   console.error("Please provide a valid token!");
   process.exit();
 }
-if (process.env.NAME) name = process.env.NAME;
-else {
+
+if (!process.env.NAME) {
   console.error("Please provide a valid username!");
   process.exit();
 }
-if (process.env.ACTIVITIES) activities = process.env.ACTIVITIES.split(",");
 
 const { default: music } = await import("./utils/music.js");
 const { default: service } = await import("./utils/ServiceVariables.js");
 import { getHash } from "./utils/HashCalculator.js";
 
-let debug = process.env.DEBUG;
-let avatar = process.env.AVATAR;
-let telemetry = process.env.TELEMETRY;
-
 const client = new Discord.Client({
   intents: [
-    GatewayIntentBits.AutoModerationConfiguration,
-    GatewayIntentBits.AutoModerationExecution,
-    GatewayIntentBits.DirectMessageReactions,
-    GatewayIntentBits.DirectMessageTyping,
-    GatewayIntentBits.DirectMessages,
     GatewayIntentBits.GuildExpressions,
     GatewayIntentBits.GuildIntegrations,
     GatewayIntentBits.GuildInvites,
@@ -162,7 +147,7 @@ const RequiredPerms = [
   [PermissionsBitField.Flags.Speak, "Speak"],
 ];
 
-if (debug === "true") {
+if (process.env.DEBUG === "true") {
   const log_file = fs.createWriteStream(__dirname + "/logs/debug.log", {
     flags: "a",
   });
@@ -176,9 +161,9 @@ if (debug === "true") {
     log_stdout.write(util.format(d) + "\n");
   };
 
-  console.log(`WARNING: ${name} is in debug mode! 
+  console.log(`WARNING: ${process.env.NAME} is in debug mode! 
   Debug mode is intended to be used for testing purposes only. 
-  In this mode, ${name} will log most actions and commands, including sensitive information. 
+  In this mode, ${process.env.NAME} will log most actions and commands, including sensitive information. 
   We highly recommend redirecting the output to a file. 
   This mode is not recommended for use in production. Please proceed with caution.`);
   console.log(
@@ -190,21 +175,28 @@ if (debug === "true") {
 }
 
 function setProfile() {
-  if (client.user.username !== name && name !== undefined)
-    client.user.setUsername(name);
-  if (client.user.avatar !== avatar && avatar !== undefined)
-    client.user.setAvatar(avatar);
+  if (
+    client.user.username !== process.env.NAME &&
+    process.env.NAME !== undefined
+  )
+    client.user.setUsername(process.env.NAME);
+  if (
+    client.user.avatar !== process.env.AVATAR &&
+    process.env.AVATAR !== undefined
+  )
+    client.user.setAvatar(process.env.AVATAR);
 }
 
 function initSentry() {
-  if (debug === "true") console.log("[DEBUG] Initializing Sentry...");
+  if (process.env.DEBUG === "true")
+    console.log("[DEBUG] Initializing Sentry...");
   Sentry.init({
     dsn: "https://3f2f508f31b53efc75cf35eda503e49b@o4505970900467712.ingest.us.sentry.io/4509011809796097",
     integrations: [nodeProfilingIntegration()],
     // Tracing
     tracesSampleRate: 1.0,
     profilesSampleRate: 1.0,
-    environment: debug ? "testing" : "production",
+    environment: process.env.DEBUG ? "testing" : "production",
     release: "3.0",
   });
 }
@@ -212,13 +204,13 @@ function initSentry() {
 function CheckForPerms() {
   client.guilds.cache.forEach((guild) => {
     let id = guild.id;
-    if (debug === "true")
+    if (process.env.DEBUG === "true")
       console.log(`[DEBUG] Checking for permissions in guild ${id}...`);
     let notifs_value = settings
       .prepare(`SELECT * FROM guild_${id} WHERE option = 'notifications'`)
       .get().value;
     if (notifs_value === "false") {
-      if (debug === "true")
+      if (process.env.DEBUG === "true")
         console.log(
           `[DEBUG] Guild ${id} has notifications disabled. Message will not be sent.`,
         );
@@ -230,14 +222,14 @@ function CheckForPerms() {
     let missing = 0;
     RequiredPerms.forEach((perm) => {
       if (!botmember.permissions.has(perm[0])) {
-        if (debug === "true")
+        if (process.env.DEBUG === "true")
           console.log(`[DEBUG] Guild ${id} is missing ${perm[1]}.`);
         message += `${perm[1]}\n`;
         missing++;
       }
     });
     if (missing > 0) {
-      if (debug === "true")
+      if (process.env.DEBUG === "true")
         console.log(`[DEBUG] Sending permissions alert for guild ${id}...`);
       message += `\nPlease check your role and member settings!`;
       const notifbtn = new Discord.ButtonBuilder()
@@ -254,7 +246,7 @@ function CheckForPerms() {
         .send({ embeds: [embed], components: [row] })
         .catch((err) => {
           if (err.code === Discord.Constants.APIErrors.CANNOT_MESSAGE_USER) {
-            if (debug === "true")
+            if (process.env.DEBUG === "true")
               console.log(
                 `[DEBUG] Cannot message owner of guild ${id}. Message will not be sent.`,
               );
@@ -262,7 +254,7 @@ function CheckForPerms() {
           }
         });
     } else {
-      if (debug === "true")
+      if (process.env.DEBUG === "true")
         console.log(`[DEBUG] Guild ${id} has all required permissions.`);
       return true;
     }
@@ -301,7 +293,7 @@ function verifyCache() {
 }
 
 function clearMusicData(id) {
-  if (debug === "true")
+  if (process.env.DEBUG === "true")
     console.log(
       `[DEBUG] Bot has restarted, clearing music data for guild ${id}.`,
     );
@@ -313,7 +305,7 @@ function clearMusicData(id) {
 }
 
 function createConfig(id) {
-  if (debug === "true")
+  if (process.env.DEBUG === "true")
     console.log(`[DEBUG] Creating/validating config for guild ${id}.`);
   settings
     .prepare(
@@ -340,7 +332,8 @@ function createConfig(id) {
 }
 
 function validateSettings() {
-  if (debug === "true") console.log("[DEBUG] Validating settings...");
+  if (process.env.DEBUG === "true")
+    console.log("[DEBUG] Validating settings...");
   let tables = settings
     .prepare(`SELECT name FROM sqlite_schema WHERE type='table'`)
     .all();
@@ -352,7 +345,7 @@ function validateSettings() {
 }
 
 function deleteConfig(id) {
-  if (debug === "true")
+  if (process.env.DEBUG === "true")
     console.log(`[DEBUG] Deleting config for guild ${id}...`);
   settings.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
   queue.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
@@ -360,40 +353,43 @@ function deleteConfig(id) {
 }
 
 function editActivity() {
-  let gamestring = Math.floor(Math.random() * activities.length);
-  if (debug === "true") console.log(`[DEBUG] Editing bot activity...`);
-  client.user.setActivity(activities[gamestring]);
+  let gamestring = Math.floor(Math.random() * process.env.ACTIVITIES.split(",").length);
+  if (process.env.DEBUG === "true")
+    console.log(`[DEBUG] Editing bot activity...`);
+  client.user.setActivity(process.env.ACTIVITIES.split(",")[gamestring]);
 }
 
 client.on("ready", () => {
-  if (telemetry === "true" || debug === "true") initSentry();
+  if (process.env.TELEMETRY === "true" || process.env.DEBUG === "true")
+    initSentry();
   setProfile();
   validateSettings();
   verifyCache();
   let permcheck = new cron.CronJob("00 00 */8 * * *", CheckForPerms);
   permcheck.start();
-  if (debug === "true") console.log("[DEBUG] Running jobs for every guild...");
+  if (process.env.DEBUG === "true")
+    console.log("[DEBUG] Running jobs for every guild...");
   client.guilds.cache.forEach((guild) => {
     createConfig(guild.id);
     clearMusicData(guild.id);
   });
-  if (activities !== undefined) {
+  if (process.env.ACTIVITIES.split(",") !== undefined) {
     let job = new cron.CronJob("00 00 * * * *", editActivity);
     job.start();
     editActivity();
   }
-  if (debug === "true") console.log("[DEBUG] Jobs completed...");
+  if (process.env.DEBUG === "true") console.log("[DEBUG] Jobs completed...");
   console.log("I am ready!");
 });
 
 client.on("guildCreate", (guild) => {
-  if (debug === "true")
+  if (process.env.DEBUG === "true")
     console.log(`[DEBUG] A new guild (${guild.id}) has been added!`);
   createConfig(guild.id);
 });
 
 client.on("guildDelete", (guild) => {
-  if (debug === "true")
+  if (process.env.DEBUG === "true")
     console.log(`[DEBUG] A guild (${guild.id}) has been removed!`);
   deleteConfig(guild.id);
 });
@@ -401,7 +397,7 @@ client.on("guildDelete", (guild) => {
 client.on("interactionCreate", async (interaction) => {
   let id = interaction.guild.id;
   let monitor = undefined;
-  if (telemetry === "true" || debug === "true")
+  if (process.env.TELEMETRY === "true" || process.env.DEBUG === "true")
     monitor = Sentry.startInactiveSpan({
       op: "transaction",
       name: `DoppelBot Performance - ${interaction.id} (${interaction.guildId} - ${interaction.channelId})`,
@@ -411,7 +407,7 @@ client.on("interactionCreate", async (interaction) => {
     const modal = interaction.client.modals.get(interaction.customId);
 
     try {
-      if (debug === "true")
+      if (process.env.DEBUG === "true")
         console.log(
           `[DEBUG] Trying to execute ${interaction.customId} in ${id}.`,
         );
@@ -419,9 +415,10 @@ client.on("interactionCreate", async (interaction) => {
       if (monitor !== undefined) return monitor.end();
       else return;
     } catch (error) {
-      if (telemetry === "true" || debug === "true")
+      if (process.env.TELEMETRY === "true" || process.env.DEBUG === "true")
         Sentry.captureException(error);
-      if (debug === "true") console.log("[DEBUG] Error: " + error.message);
+      if (process.env.DEBUG === "true")
+        console.log("[DEBUG] Error: " + error.message);
       return;
     }
   }
@@ -430,7 +427,7 @@ client.on("interactionCreate", async (interaction) => {
     const button = interaction.client.buttons.get(interaction.customId);
 
     try {
-      if (debug === "true")
+      if (process.env.DEBUG === "true")
         console.log(
           `[DEBUG] Trying to execute ${interaction.customId} in ${id}.`,
         );
@@ -438,9 +435,10 @@ client.on("interactionCreate", async (interaction) => {
       if (monitor !== undefined) return monitor.end();
       else return;
     } catch (error) {
-      if (telemetry === "true" || debug === "true")
+      if (process.env.TELEMETRY === "true" || process.env.DEBUG === "true")
         Sentry.captureException(error);
-      if (debug === "true") console.log("[DEBUG] Error: " + error.message);
+      if (process.env.DEBUG === "true")
+        console.log("[DEBUG] Error: " + error.message);
       return;
     }
   }
@@ -449,7 +447,7 @@ client.on("interactionCreate", async (interaction) => {
     const menu = interaction.client.menus.get(interaction.customId);
 
     try {
-      if (debug === "true")
+      if (process.env.DEBUG === "true")
         console.log(
           `[DEBUG] Trying to execute ${interaction.customId} in ${id}.`,
         );
@@ -457,9 +455,10 @@ client.on("interactionCreate", async (interaction) => {
       if (monitor !== undefined) return monitor.end();
       else return;
     } catch (error) {
-      if (telemetry === "true" || debug === "true")
+      if (process.env.TELEMETRY === "true" || process.env.DEBUG === "true")
         Sentry.captureException(error);
-      if (debug === "true") console.log("[DEBUG] Error: " + error.message);
+      if (process.env.DEBUG === "true")
+        console.log("[DEBUG] Error: " + error.message);
       return;
     }
   }
@@ -471,7 +470,7 @@ client.on("interactionCreate", async (interaction) => {
   }
 
   try {
-    if (debug === "true")
+    if (process.env.DEBUG === "true")
       console.log(
         `[DEBUG] Trying to execute ${interaction.commandName} in ${id}.`,
       );
@@ -481,9 +480,10 @@ client.on("interactionCreate", async (interaction) => {
     if (monitor !== undefined) return monitor.end();
     else return;
   } catch (error) {
-    if (telemetry === "true" || debug === "true")
+    if (process.env.TELEMETRY === "true" || process.env.DEBUG === "true")
       Sentry.captureException(error);
-    if (debug === "true") console.log("[DEBUG] Error: " + error.message);
+    if (process.env.DEBUG === "true")
+      console.log("[DEBUG] Error: " + error.message);
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({
         content: "uhh can u say that again?",
@@ -504,14 +504,14 @@ client.on("messageCreate", (message) => {
 
   let custom_tags = tags.prepare(`SELECT * FROM guild_${id}`).all();
 
-  if (debug === "true") console.log("[DEBUG] Got a message!");
+  if (process.env.DEBUG === "true") console.log("[DEBUG] Got a message!");
 
   let monitor = undefined;
 
   custom_tags.forEach((tag) => {
     if (!message.author.bot && message.content === tag.tag) {
-      if (debug === "true") console.log("[DEBUG] Tag found!");
-      if (telemetry === "true" || debug === "true") {
+      if (process.env.DEBUG === "true") console.log("[DEBUG] Tag found!");
+      if (process.env.TELEMETRY === "true" || process.env.DEBUG === "true") {
         monitor = Sentry.startInactiveSpan({
           op: "transaction",
           name: `DoppelBot Performance - ${message.id} (${id} - ${message.channel.id})`,
@@ -531,13 +531,17 @@ client.on("messageCreate", (message) => {
 });
 
 process.on("unhandledRejection", (error) => {
-  if (debug === "true") console.log("[DEBUG] Error: " + error.message);
-  if (telemetry === "true" || debug === "true") Sentry.captureException(error);
+  if (process.env.DEBUG === "true")
+    console.log("[DEBUG] Error: " + error.message);
+  if (process.env.TELEMETRY === "true" || process.env.DEBUG === "true")
+    Sentry.captureException(error);
 });
 
 process.on("uncaughtException", (error) => {
-  if (debug === "true") console.log("[DEBUG] Error: " + error.message);
-  if (telemetry === "true" || debug === "true") Sentry.captureException(error);
+  if (process.env.DEBUG === "true")
+    console.log("[DEBUG] Error: " + error.message);
+  if (process.env.TELEMETRY === "true" || process.env.DEBUG === "true")
+    Sentry.captureException(error);
 });
 
 process.on("SIGINT", () => {
@@ -545,4 +549,4 @@ process.on("SIGINT", () => {
   process.exit();
 });
 
-client.login(token);
+client.login(process.env.TOKEN);

@@ -94,7 +94,6 @@ async function getLocalFile(file, display_name) {
   let existing_file = cache
     .prepare(`SELECT * FROM files_directory WHERE name = ?`)
     .get(file.name);
-  debugLog(existing_file);
   if (existing_file !== undefined) return -1;
 
   return new Promise((resolve, reject) => {
@@ -147,24 +146,18 @@ function playLocalFile(file, connection, interaction) {
   const resource = createAudioResource(path.join(__dirname, cacheFolder, file));
   player.play(resource);
   player.on(AudioPlayerStatus.Idle, async () => {
-    if (debug.debug === true) {
-      debugLog("No more tracks to play, starting timeout...");
-    }
+    debugLog("No more tracks to play, starting timeout...");
     if (getFromQueue(connection.joinConfig.guildId).isLooped === "false") {
       removeFromQueue(connection.joinConfig.guildId);
     }
     if (getQueueLength(connection.joinConfig.guildId) > 0) {
-      {
-        debugLog("Starting the next track...");
-      }
+      debugLog("Starting the next track...");
       let file = getFromQueue(connection.joinConfig.guildId);
       playLocalFile(file.name, connection, interaction);
       if (getFromQueue(connection.joinConfig.guildId).isLooped === "false")
         announceTrack(file.track, file.author, interaction);
     } else {
-      {
-        debugLog("No more tracks to play, starting timeout...");
-      }
+      debugLog("No more tracks to play, starting timeout...");
       let timeout =
         parseInt(
           settings

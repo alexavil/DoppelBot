@@ -35,18 +35,12 @@ import { getHash } from "./utils/HashCalculator.js";
 
 const client = new Discord.Client({
   intents: [
-    Discord.GatewayIntentBits.GuildExpressions,
-    Discord.GatewayIntentBits.GuildIntegrations,
-    Discord.GatewayIntentBits.GuildInvites,
     Discord.GatewayIntentBits.GuildMembers,
     Discord.GatewayIntentBits.GuildMessageReactions,
     Discord.GatewayIntentBits.GuildMessageTyping,
     Discord.GatewayIntentBits.GuildMessages,
-    Discord.GatewayIntentBits.GuildModeration,
     Discord.GatewayIntentBits.GuildPresences,
-    Discord.GatewayIntentBits.GuildScheduledEvents,
     Discord.GatewayIntentBits.GuildVoiceStates,
-    Discord.GatewayIntentBits.GuildWebhooks,
     Discord.GatewayIntentBits.Guilds,
     Discord.GatewayIntentBits.MessageContent,
   ],

@@ -18,6 +18,21 @@ if (!fs.existsSync("./data/")) fs.mkdirSync("./data/");
 if (!fs.existsSync("./logs/")) fs.mkdirSync("./logs/");
 if (!fs.existsSync("./cache/")) fs.mkdirSync("./cache/");
 
+if (!process.env.TOKEN) {
+  console.error("Please provide a valid token!");
+  process.exit();
+}
+
+if (!process.env.NAME) {
+  console.error("Please provide a valid username!");
+  process.exit();
+}
+
+if (!process.env.OWNERS) {
+  console.error("Please provide valid owner IDs!");
+  process.exit();
+}
+
 import debugLog from "./utils/DebugHandler.js";
 
 debugLog(`WARNING: ${process.env.NAME} is in Debug Mode! 
@@ -29,16 +44,6 @@ debugLog(
   "Build hash: " +
     child.execSync("git rev-parse --short HEAD").toString().trim(),
 );
-
-if (!process.env.TOKEN) {
-  console.error("Please provide a valid token!");
-  process.exit();
-}
-
-if (!process.env.NAME) {
-  console.error("Please provide a valid username!");
-  process.exit();
-}
 
 const { default: music } = await import("./utils/music.js");
 const { default: service } = await import("./utils/ServiceVariables.js");

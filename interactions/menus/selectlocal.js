@@ -1,17 +1,17 @@
-import debugLog from "../../utils/DebugHandler.js";
+import engine from "../../utils/Engine.js";
 const { default: music } = await import("../../utils/music.js");
 
 import sqlite3 from "better-sqlite3";
 
 const cache = new sqlite3("./data/cache.db");
-const { default: service } = await import("../../utils/ServiceVariables.js");
+const { default: service } = await import("../../utils/Engine.js");
 
 export default {
   name: "selectlocal",
   async execute(interaction) {
     let id = interaction.guild.id;
 
-    debugLog(`Adding track(s) to the queue...`);
+    engine.debugLog(`Adding track(s) to the queue...`);
     let connection = music.getConnection(interaction);
     const tracks = interaction.values;
     service.music_pages.delete(id);

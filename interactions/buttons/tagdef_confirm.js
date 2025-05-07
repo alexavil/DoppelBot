@@ -1,4 +1,4 @@
-import debugLog from "../../utils/DebugHandler.js";
+import engine from "../../utils/Engine.js";
 import sqlite3 from "better-sqlite3";
 import Discord, { ButtonStyle } from "discord.js";
 
@@ -8,14 +8,14 @@ export default {
   name: "tagdef_confirm",
   async execute(interaction) {
     let id = interaction.guild.id;
-    debugLog("User confirmed, proceeding...");
+    engine.debugLog("User confirmed, proceeding...");
     tags.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
     tags
       .prepare(
         `CREATE TABLE IF NOT EXISTS guild_${id} (tag TEXT, response TEXT)`,
       )
       .run();
-    debugLog(`Reset finished for ${id}!`);
+    engine.debugLog(`Reset finished for ${id}!`);
     return interaction.update({
       content: "Your tags have been wiped successfully!",
       components: [],

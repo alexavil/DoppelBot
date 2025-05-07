@@ -1,4 +1,4 @@
-import debugLog from "../../utils/DebugHandler.js";
+import engine from "../../utils/Engine.js";
 import Discord, { ButtonStyle } from "discord.js";
 
 export default {
@@ -6,9 +6,9 @@ export default {
   async execute(interaction) {
     const id = interaction.guild.id;
 
-    debugLog(`Preparing to clear tags for ${id}...`);
+    engine.debugLog(`Preparing to clear tags for ${id}...`);
 
-    debugLog("Confirmation required - awaiting user input...");
+    engine.debugLog("Confirmation required - awaiting user input...");
     const confirm = new Discord.ButtonBuilder()
       .setCustomId(`tagdef_confirm`)
       .setLabel(`Yes`)

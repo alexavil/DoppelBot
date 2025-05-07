@@ -1,4 +1,4 @@
-import debugLog from "./DebugHandler.js";
+import engine from "./Engine.js";
 import {
   AudioPlayerStatus,
   createAudioPlayer,
@@ -18,19 +18,13 @@ const cache = new sqlite3("./data/cache.db");
 import http from "https";
 import path from "path";
 
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
 import { getHash } from "../utils/HashCalculator.js";
-
-const cacheFolder = "../cache/";
 
 const timeouts = new Map();
 const players = new Map();
 const connections = new Map();
+
+const allowedExts = [".flac", ".mp3", ".ogg", ".wav", ".m4a"];
 
 function addToQueue(id, url, name, author) {
   queue
@@ -98,7 +92,7 @@ async function getLocalFile(file, display_name) {
 
   return new Promise((resolve, reject) => {
     const download = fs.createWriteStream(
-      path.join(__dirname, cacheFolder, file.name),
+      path.join(engine.cacheFolder, file.name),
     );
     http
       .get(file.url, (response) => {
@@ -106,13 +100,13 @@ async function getLocalFile(file, display_name) {
         download.on("finish", () => {
           download.close(async () => {
             let hash = await getHash(
-              path.join(__dirname, cacheFolder, file.name),
+              path.join(engine.cacheFolder, file.name),
             );
             let existing_hash = cache
               .prepare(`SELECT * FROM files_directory WHERE md5Hash = ?`)
               .get(hash);
             if (existing_hash !== undefined) {
-              fs.unlink(path.join(__dirname, cacheFolder, file.name), () => {
+              fs.unlink(path.join(engine.cacheFolder, file.name), () => {
                 resolve(-1);
               });
             } else {
@@ -127,8 +121,8 @@ async function getLocalFile(file, display_name) {
         });
       })
       .on("error", (err) => {
-        debugLog("Error: " + err.message);
-        fs.unlink(path.join(__dirname, cacheFolder, file.name), () => {
+        engine.debugLog("Error: " + err.message);
+        fs.unlink(path.join(engine.cacheFolder, file.name), () => {
           reject(1);
         });
       });
@@ -143,21 +137,21 @@ function playLocalFile(file, connection, interaction) {
   let player = createAudioPlayer();
   players.set(connection.joinConfig.guildId, player);
   connection.subscribe(player);
-  const resource = createAudioResource(path.join(__dirname, cacheFolder, file));
+  const resource = createAudioResource(path.join(engine.cacheFolder, file));
   player.play(resource);
   player.on(AudioPlayerStatus.Idle, async () => {
-    debugLog("No more tracks to play, starting timeout...");
+    engine.debugLog("No more tracks to play, starting timeout...");
     if (getFromQueue(connection.joinConfig.guildId).isLooped === "false") {
       removeFromQueue(connection.joinConfig.guildId);
     }
     if (getQueueLength(connection.joinConfig.guildId) > 0) {
-      debugLog("Starting the next track...");
+      engine.debugLog("Starting the next track...");
       let file = getFromQueue(connection.joinConfig.guildId);
       playLocalFile(file.name, connection, interaction);
       if (getFromQueue(connection.joinConfig.guildId).isLooped === "false")
         announceTrack(file.track, file.author, interaction);
     } else {
-      debugLog("No more tracks to play, starting timeout...");
+      engine.debugLog("No more tracks to play, starting timeout...");
       let timeout =
         parseInt(
           settings
@@ -193,4 +187,5 @@ export default {
   players,
   connections,
   timeouts,
+  allowedExts,
 };

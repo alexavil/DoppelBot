@@ -1,23 +1,13 @@
-import debugLog from "../../../utils/DebugHandler.js";
+import engine from "../../../utils/Engine.js";
 import Discord, { ButtonStyle } from "discord.js";
 
 const { default: music } = await import("../../../utils/music.js");
-const { default: service } = await import("../../../utils/ServiceVariables.js");
+const { default: service } = await import("../../../utils/Engine.js");
 
 import sqlite3 from "better-sqlite3";
 
 const cache = new sqlite3("./data/cache.db");
-
-import { dirname } from "path";
-import { fileURLToPath } from "url";
 import { generateMusicMenu } from "../../../utils/CacheMenuGenerator.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const cacheFolder = "../../../cache/";
-
-const allowedExts = [".flac", ".mp3", ".ogg", ".wav", ".m4a"];
 
 export default {
   data: new Discord.SlashCommandBuilder()
@@ -29,13 +19,13 @@ export default {
   async execute(interaction) {
     const id = interaction.guild.id;
     if (!interaction.member.voice.channel) {
-      debugLog("No voice channel found, aborting...");
+      engine.debugLog("No voice channel found, aborting...");
       return interaction.editReply("You need to join a voice channel first!");
     }
     let track = interaction.options.getAttachment("track");
     let connection = music.getConnection(interaction);
     if (track) {
-      if (!allowedExts.some((extension) => track.name.endsWith(extension))) {
+      if (!music.allowedExts.some((extension) => track.name.endsWith(extension))) {
         return interaction.editReply({
           content: "This file has an invalid file extension.",
           flags: Discord.MessageFlags.Ephemeral,

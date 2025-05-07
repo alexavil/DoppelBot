@@ -1,6 +1,6 @@
 import sqlite3 from "better-sqlite3";
 import { generateTagsEmbed } from "../../utils/TagsEmbedGenerator.js";
-const { default: service } = await import("../../utils/ServiceVariables.js");
+const { default: service } = await import("../../utils/Engine.js");
 const tags = new sqlite3("./data/tags.db");
 
 export default {

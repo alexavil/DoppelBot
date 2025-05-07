@@ -1,12 +1,12 @@
-import debugLog from "../../utils/DebugHandler.js";
+import engine from "../../utils/Engine.js";
 import Discord, { ButtonStyle } from "discord.js";
 
 export default {
   name: "clear_cache",
   async execute(interaction) {
     const id = interaction.guild.id;
-    debugLog(`Preparing to clear cache for ${id}...`);
-    debugLog("Confirmation required - awaiting user input...");
+    engine.debugLog(`Preparing to clear cache for ${id}...`);
+    engine.debugLog("Confirmation required - awaiting user input...");
     const confirm = new Discord.ButtonBuilder()
       .setCustomId(`cache_confirm`)
       .setLabel(`Yes`)

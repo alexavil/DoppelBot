@@ -1,5 +1,5 @@
 import { generateMusicMenu } from "../../utils/CacheMenuGenerator.js";
-const { default: service } = await import("../../utils/ServiceVariables.js");
+const { default: service } = await import("../../utils/Engine.js");
 
 import sqlite3 from "better-sqlite3";
 const cache = new sqlite3("./data/cache.db");

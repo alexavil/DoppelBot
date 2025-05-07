@@ -1,4 +1,4 @@
-import debugLog from "../../utils/DebugHandler.js";
+import engine from "../../utils/Engine.js";
 import sqlite3 from "better-sqlite3";
 
 import Discord from "discord.js";
@@ -9,7 +9,7 @@ export default {
   name: "def_confirm",
   async execute(interaction) {
     let id = interaction.guild.id;
-    debugLog("User confirmed, proceeding...");
+    engine.debugLog("User confirmed, proceeding...");
     settings.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
     settings
       .prepare(
@@ -25,7 +25,7 @@ export default {
       statement.run("fail_threshold", "10");
     });
     transaction();
-    debugLog(`Reset finished for ${id}!`);
+    engine.debugLog(`Reset finished for ${id}!`);
     return interaction.update({
       content: "Your settings have been reset successfully!",
       components: [],

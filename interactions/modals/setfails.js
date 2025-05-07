@@ -1,4 +1,4 @@
-import debugLog from "../../utils/DebugHandler.js";
+import engine from "../../utils/Engine.js";
 import sqlite3 from "better-sqlite3";
 import Discord from "discord.js";
 const settings = new sqlite3("./data/settings.db");
@@ -12,14 +12,14 @@ export default {
       10,
     );
     if (errors < 0 || !Number.isInteger(errors)) {
-      debugLog("Invalid input, aborting...");
+      engine.debugLog("Invalid input, aborting...");
       return interaction.reply({
         content: "Please provide a valid number!",
         flags: Discord.MessageFlags.Ephemeral,
       });
     }
 
-    debugLog(`New error threshold for ${id}: ${errors}...`);
+    engine.debugLog(`New error threshold for ${id}: ${errors}...`);
     settings
       .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
       .run(errors, "fail_threshold");

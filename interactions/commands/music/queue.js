@@ -1,4 +1,4 @@
-import debugLog from "../../../utils/DebugHandler.js";
+import engine from "../../../utils/Engine.js";
 import sqlite3 from "better-sqlite3";
 import Discord from "discord.js";
 
@@ -13,7 +13,7 @@ export default {
     let embed = new Discord.EmbedBuilder();
     let queuelength = queue.prepare(`SELECT * FROM guild_${id}`).all().length;
     if (queuelength !== 0) {
-      debugLog(`Queue for ${id} is not empty, fetching tracks...`);
+      engine.debugLog(`Queue for ${id} is not empty, fetching tracks...`);
       queue
         .prepare(`SELECT * FROM guild_${id}`)
         .all()
@@ -28,7 +28,7 @@ export default {
           }
         });
     } else {
-      debugLog(`Queue for ${id} is empty...`);
+      engine.debugLog(`Queue for ${id} is empty...`);
       embed.setDescription("The queue is currently empty.");
     }
     embed.setTitle(`Queue for ${interaction.guild.name}`);

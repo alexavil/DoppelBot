@@ -1,5 +1,9 @@
 import Discord from "discord.js";
 import child from "child_process";
+import * as Sentry from "@sentry/node";
+import { nodeProfilingIntegration } from "@sentry/profiling-node";
+import util from "util";
+import fs from "fs-extra";
 
 const engine = {
   intents: [
@@ -40,6 +44,62 @@ const engine = {
   telemetry: process.env.TELEMETRY,
   debug: process.env.DEBUG,
   build_hash: child.execSync("git rev-parse --short HEAD").toString().trim(),
+  debugLog: undefined,
+  reportError: undefined,
+  monitorPerformance: undefined,
+};
+
+switch (engine.debug) {
+  case "true": {
+    const log_file = fs.createWriteStream(process.cwd() + "/logs/debug.log", {
+      flags: "a",
+    });
+    const log_stdout = process.stdout;
+    engine.debugLog = (str) => {
+      let msg = "[DEBUG] " + str;
+      log_file.write(
+        new Date().toLocaleString() + " --- " + util.format(msg) + "\n",
+      );
+      log_stdout.write(util.format(msg) + "\n");
+    };
+    break;
+  }
+  case "false":
+  default: {
+    engine.debugLog = (str) => {
+      return undefined;
+    };
+    break;
+  }
+}
+
+if (engine.debug === "true" || engine.telemetry === "true") {
+  engine.debugLog("Activating Sentry...");
+  Sentry.init({
+    dsn: "https://3f2f508f31b53efc75cf35eda503e49b@o4505970900467712.ingest.us.sentry.io/4509011809796097",
+    integrations: [nodeProfilingIntegration()],
+    tracesSampleRate: 1.0,
+    profilesSampleRate: 1.0,
+    environment: engine.debug ? "testing" : "production",
+    release: engine.build_hash,
+  });
+  engine.reportError = (str) => {
+    Sentry.captureException(str);
+  };
+  engine.monitorPerformance = (id) => {
+    let perf = Sentry.startInactiveSpan({
+      op: "transaction",
+      name: `${engine.name} Performance - ${id}`,
+    });
+    return perf;
+  };
+} else {
+  engine.reportError = (str) => {
+    return undefined;
+  };
+  engine.monitorPerformance = (id) => {
+    return undefined;
+  };
 }
 
 export default engine;

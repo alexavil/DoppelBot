@@ -1,4 +1,4 @@
-import debugLog from "../../../utils/DebugHandler.js";
+import engine from "../../../utils/Engine.js";
 import Discord from "discord.js";
 
 const { default: music } = await import("../../../utils/music.js");
@@ -9,11 +9,11 @@ export default {
     .setDescription("Display player controls (VC only)"),
   async execute(interaction) {
     if (!interaction.member.voice.channel) {
-      debugLog("No voice channel found, aborting...");
+      engine.debugLog("No voice channel found, aborting...");
       return interaction.editReply("You need to join a voice channel first!");
     }
     if (music.getQueueLength(interaction.guild.id) === 0) {
-      debugLog("No tracks are playing, aborting...");
+      engine.debugLog("No tracks are playing, aborting...");
       return interaction.editReply(
         "The queue is empty, add tracks to use the player controls!",
       );

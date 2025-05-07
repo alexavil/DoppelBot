@@ -1,9 +1,7 @@
-import debugLog from "../../../utils/DebugHandler.js";
+import engine from "../../../utils/Engine.js";
 import Discord from "discord.js";
 
 const { default: music } = await import("../../../utils/music.js");
-
-const allowedExts = [".flac", ".mp3", ".ogg", ".wav", ".m4a"];
 
 export default {
   data: new Discord.SlashCommandBuilder()
@@ -22,13 +20,13 @@ export default {
     ),
   async execute(interaction) {
     let track = interaction.options.getAttachment("track");
-    if (!allowedExts.some((extension) => track.name.endsWith(extension))) {
+    if (!music.allowedExts.some((extension) => track.name.endsWith(extension))) {
       return interaction.editReply({
         content: "This file has an invalid file extension.",
         flags: Discord.MessageFlags.Ephemeral,
       });
     } else {
-      debugLog(`Adding track(s) to the cache...`);
+      engine.debugLog(`Adding track(s) to the cache...`);
       let name = interaction.options.getString("display_name");
       let status;
       if (name !== undefined) status = await music.getLocalFile(track, name);

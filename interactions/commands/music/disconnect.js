@@ -1,4 +1,4 @@
-import debugLog from "../../../utils/DebugHandler.js";
+import engine from "../../../utils/Engine.js";
 import { getVoiceConnection } from "@discordjs/voice";
 import sqlite3 from "better-sqlite3";
 import Discord from "discord.js";
@@ -19,13 +19,13 @@ export default {
         .has(Discord.PermissionsBitField.Flags.BanMembers) &&
       channel.members.size !== 2
     ) {
-      debugLog("User is not admin or alone, stop not allowed...");
+      engine.debugLog("User is not admin or alone, stop not allowed...");
       return interaction.reply({
         content: "You are not allowed to disconnect the bot!",
         flags: Discord.MessageFlags.Ephemeral,
       });
     }
-    debugLog("Stopping the connection...");
+    engine.debugLog("Stopping the connection...");
     let connection = getVoiceConnection(id);
     if (connection) connection.destroy();
     music.players.delete(id);

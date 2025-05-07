@@ -1,5 +1,5 @@
 import Discord from "discord.js";
-const { default: music } = await import("../../utils/music.js");
+import musicEngine from "../../utils/music.js";
 const { default: service } = await import("../../utils/Engine.js");
 
 export default {

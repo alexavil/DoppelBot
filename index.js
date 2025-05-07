@@ -29,9 +29,7 @@ engine.debugLog(`WARNING: ${engine.name} is in Debug Mode!
   This mode is not recommended for use in production. Please proceed with caution.`);
 engine.debugLog(`Build hash: ${engine.build_hash}`);
 
-const { default: music } = await import("./utils/music.js");
-
-import { getHash } from "./utils/HashCalculator.js";
+import musicEngine from "./utils/music.js";
 
 const client = new Discord.Client({
   intents: engine.intents,
@@ -171,7 +169,7 @@ function verifyCache() {
       }
     });
     options.forEach(async (opt) => {
-      let hash = await getHash(engine.cacheFolder);
+      let hash = await musicEngine.getHash(engine.cacheFolder);
       cache
         .prepare(`INSERT OR IGNORE INTO files_directory VALUES (?, ?, ?)`)
         .run(opt, opt, hash);
@@ -186,10 +184,10 @@ function verifyCache() {
 
 function clearMusicData(id) {
   engine.debugLog(`Bot has restarted, clearing music data for guild ${id}.`);
-  music.clearQueue(id);
-  music.players.delete(id);
-  music.connections.delete(id);
-  music.timeouts.delete(id);
+  musicEngine.clearQueue(id);
+  musicEngine.players.delete(id);
+  musicEngine.connections.delete(id);
+  musicEngine.timeouts.delete(id);
   //service.music_pages.delete(id);
 }
 
@@ -290,7 +288,7 @@ client.on("interactionCreate", async (interaction) => {
       if (monitor !== undefined) return monitor.end();
       else return;
     } catch (error) {
-      reportError(error);
+      engine.reportError(error);
       engine.debugLog("Error: " + error.message);
       return;
     }
@@ -305,7 +303,7 @@ client.on("interactionCreate", async (interaction) => {
       if (monitor !== undefined) return monitor.end();
       else return;
     } catch (error) {
-      reportError(error);
+      engine.reportError(error);
 
       engine.debugLog("Error: " + error.message);
       return;
@@ -321,7 +319,7 @@ client.on("interactionCreate", async (interaction) => {
       if (monitor !== undefined) return monitor.end();
       else return;
     } catch (error) {
-      reportError(error);
+      engine.reportError(error);
 
       engine.debugLog("Error: " + error.message);
       return;
@@ -342,7 +340,7 @@ client.on("interactionCreate", async (interaction) => {
     if (monitor !== undefined) return monitor.end();
     else return;
   } catch (error) {
-    reportError(error);
+    engine.reportError(error);
 
     engine.debugLog("Error: " + error.message);
     if (interaction.replied || interaction.deferred) {
@@ -392,12 +390,12 @@ client.on("messageCreate", (message) => {
 });
 
 process.on("unhandledRejection", (error) => {
-  reportError(error);
+  engine.reportError(error);
   engine.debugLog("Error: " + error.message);
 });
 
 process.on("uncaughtException", (error) => {
-  reportError(error);
+  engine.reportError(error);
   engine.debugLog("Error: " + error.message);
 });
 

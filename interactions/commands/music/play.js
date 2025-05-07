@@ -1,7 +1,7 @@
 import engine from "../../../utils/Engine.js";
 import Discord, { ButtonStyle } from "discord.js";
 
-const { default: music } = await import("../../../utils/music.js");
+import musicEngine from "../../../utils/music.js";
 const { default: service } = await import("../../../utils/Engine.js");
 
 import sqlite3 from "better-sqlite3";
@@ -25,7 +25,9 @@ export default {
     let track = interaction.options.getAttachment("track");
     let connection = music.getConnection(interaction);
     if (track) {
-      if (!music.allowedExts.some((extension) => track.name.endsWith(extension))) {
+      if (
+        !music.allowedExts.some((extension) => track.name.endsWith(extension))
+      ) {
         return interaction.editReply({
           content: "This file has an invalid file extension.",
           flags: Discord.MessageFlags.Ephemeral,

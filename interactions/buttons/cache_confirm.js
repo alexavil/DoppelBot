@@ -5,7 +5,7 @@ import fs from "fs-extra";
 import path from "path";
 import engine from "../../utils/Engine.js";
 
-const { default: music } = await import("../../utils/music.js");
+import musicEngine from "../../utils/music.js";
 
 export default {
   name: "cache_confirm",

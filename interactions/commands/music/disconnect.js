@@ -3,7 +3,7 @@ import { getVoiceConnection } from "@discordjs/voice";
 import sqlite3 from "better-sqlite3";
 import Discord from "discord.js";
 
-const { default: music } = await import("../../../utils/music.js");
+import musicEngine from "../../../utils/music.js";
 
 const queue = new sqlite3("./data/queue.db");
 export default {

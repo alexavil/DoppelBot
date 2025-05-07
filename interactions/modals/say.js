@@ -14,7 +14,9 @@ export default {
         flags: Discord.MessageFlags.Ephemeral,
       });
     } else {
-      engine.debugLog(`Sending dev-generated message to ${interaction.channel.id}...`);
+      engine.debugLog(
+        `Sending dev-generated message to ${interaction.channel.id}...`,
+      );
       interaction.channel.send(msg);
       interaction.reply({
         content: "Success!",

@@ -1,7 +1,7 @@
 import engine from "../../utils/Engine.js";
 import Discord from "discord.js";
 
-const { default: music } = await import("../../utils/music.js");
+import musicEngine from "../../utils/music.js";
 
 export default {
   name: "pause",

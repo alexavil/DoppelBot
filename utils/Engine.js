@@ -44,9 +44,15 @@ const engine = {
   telemetry: process.env.TELEMETRY,
   debug: process.env.DEBUG,
   build_hash: child.execSync("git rev-parse --short HEAD").toString().trim(),
-  debugLog: undefined,
-  reportError: undefined,
-  monitorPerformance: undefined,
+  debugLog: function (str) {
+    return undefined;
+  },
+  reportError: function (id) {
+    return undefined;
+  },
+  monitorPerformance: function (str) {
+    return undefined;
+  },
 };
 
 switch (engine.debug) {

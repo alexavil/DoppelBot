@@ -1,7 +1,7 @@
 import engine from "../../../utils/Engine.js";
 import Discord from "discord.js";
 
-const { default: music } = await import("../../../utils/music.js");
+import musicEngine from "../../../utils/music.js";
 
 export default {
   data: new Discord.SlashCommandBuilder()
@@ -20,7 +20,9 @@ export default {
     ),
   async execute(interaction) {
     let track = interaction.options.getAttachment("track");
-    if (!music.allowedExts.some((extension) => track.name.endsWith(extension))) {
+    if (
+      !music.allowedExts.some((extension) => track.name.endsWith(extension))
+    ) {
       return interaction.editReply({
         content: "This file has an invalid file extension.",
         flags: Discord.MessageFlags.Ephemeral,

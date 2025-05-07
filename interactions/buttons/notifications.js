@@ -12,13 +12,17 @@ export default {
       .get().value;
     switch (value) {
       case "false":
-        engine.debugLog("Notifications are disabled for " + id + ", switching on...");
+        engine.debugLog(
+          "Notifications are disabled for " + id + ", switching on...",
+        );
         settings
           .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
           .run("true", "notifications");
         break;
       case "true":
-        engine.debugLog("Notifications are enabled for " + id + ", switching off...");
+        engine.debugLog(
+          "Notifications are enabled for " + id + ", switching off...",
+        );
         settings
           .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
           .run("false", "notifications");

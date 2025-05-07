@@ -20,9 +20,9 @@ if (!fs.existsSync("./cache/")) fs.mkdirSync("./cache/");
 
 import debugLog from "./utils/DebugHandler.js";
 
-debugLog(`WARNING: ${process.env.NAME} is in debug mode! 
-  Debug mode is intended to be used for testing purposes only. Telemetry is automatically enabled in this mode.
-  In this mode, ${process.env.NAME} will log most actions and commands, including sensitive information. 
+debugLog(`WARNING: ${process.env.NAME} is in Debug Mode! 
+  Debug Mode is intended to be used for testing purposes only. 
+  In this mode, ${process.env.NAME} will log most actions and commands, including sensitive information. Telemetry is automatically enabled in this mode.
   We highly recommend redirecting the output to a file. 
   This mode is not recommended for use in production. Please proceed with caution.`);
 debugLog(
@@ -143,7 +143,7 @@ const RequiredPerms = [
   Discord.PermissionsBitField.Flags.SendMessages,
   Discord.PermissionsBitField.Flags.ManageMessages,
   Discord.PermissionsBitField.Flags.Connect,
-  Discord.PermissionsBitField.Flags.Speak
+  Discord.PermissionsBitField.Flags.Speak,
 ];
 
 function setProfile() {
@@ -286,7 +286,6 @@ function validateSettings() {
     .prepare(`SELECT name FROM sqlite_schema WHERE type='table'`)
     .all();
   tables.forEach((row) => {
-    if (row.name === "global") return false;
     let id = row.name.split("_")[1];
     if (!client.guilds.cache.has(id)) deleteConfig(id);
   });

@@ -1,80 +1,61 @@
 import "dotenv/config";
 
 import sqlite3 from "better-sqlite3";
-import child from "child_process";
 import cron from "cron";
 import Discord from "discord.js";
 import fs from "fs-extra";
 import path from "path";
-import url from "url";
 
-const __filename = url.fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import engine from "./utils/ServiceVariables.js";
 
 import * as Sentry from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
 
-if (!fs.existsSync("./data/")) fs.mkdirSync("./data/");
-if (!fs.existsSync("./logs/")) fs.mkdirSync("./logs/");
-if (!fs.existsSync("./cache/")) fs.mkdirSync("./cache/");
+if (engine.telemetry === "true" || engine.debug === "true") initSentry();
 
-if (!process.env.TOKEN) {
+if (!fs.existsSync(engine.dataFolder)) fs.mkdirSync(engine.dataFolder);
+if (!fs.existsSync(engine.logsFolder)) fs.mkdirSync(engine.logsFolder);
+if (!fs.existsSync(engine.cacheFolder)) fs.mkdirSync(engine.cacheFolder);
+
+if (engine.token === "") {
   console.error("Please provide a valid token!");
   process.exit();
 }
 
-if (!process.env.NAME) {
+if (engine.name === "") {
   console.error("Please provide a valid username!");
-  process.exit();
-}
-
-if (!process.env.OWNERS) {
-  console.error("Please provide valid owner IDs!");
   process.exit();
 }
 
 import debugLog from "./utils/DebugHandler.js";
 
-debugLog(`WARNING: ${process.env.NAME} is in Debug Mode! 
+debugLog(`WARNING: ${engine.name} is in Debug Mode! 
   Debug Mode is intended to be used for testing purposes only. 
-  In this mode, ${process.env.NAME} will log most actions and commands, including sensitive information. Telemetry is automatically enabled in this mode.
+  In this mode, ${engine.name} will log most actions and commands, including sensitive information. Telemetry is automatically enabled in this mode.
   We highly recommend redirecting the output to a file. 
   This mode is not recommended for use in production. Please proceed with caution.`);
 debugLog(
-  "Build hash: " +
-    child.execSync("git rev-parse --short HEAD").toString().trim(),
+  `Build hash: ${engine.build_hash}`,
 );
 
 const { default: music } = await import("./utils/music.js");
-const { default: service } = await import("./utils/ServiceVariables.js");
+
 import { getHash } from "./utils/HashCalculator.js";
 
 const client = new Discord.Client({
-  intents: [
-    Discord.GatewayIntentBits.GuildMembers,
-    Discord.GatewayIntentBits.GuildMessageReactions,
-    Discord.GatewayIntentBits.GuildMessageTyping,
-    Discord.GatewayIntentBits.GuildMessages,
-    Discord.GatewayIntentBits.GuildPresences,
-    Discord.GatewayIntentBits.GuildVoiceStates,
-    Discord.GatewayIntentBits.Guilds,
-    Discord.GatewayIntentBits.MessageContent,
-  ],
+  intents: engine.intents
 });
 
-const settings = new sqlite3("./data/settings.db");
-const queue = new sqlite3("./data/queue.db");
-const tags = new sqlite3("./data/tags.db");
-const cache = new sqlite3("./data/cache.db");
-
-const cacheFolder = "./cache/";
+const settings = new sqlite3(engine.dataFolder + engine.settingsDB);
+const queue = new sqlite3(engine.dataFolder + engine.queueDB);
+const tags = new sqlite3(engine.dataFolder + engine.tagsDB);
+const cache = new sqlite3(engine.dataFolder + engine.cacheDB);
 
 client.commands = new Discord.Collection();
-const foldersPath = path.join(__dirname, "interactions", "commands");
-const commandFolders = fs.readdirSync(foldersPath);
+const commandFolders = fs.readdirSync(engine.commandsFolder);
 
 for (const folder of commandFolders) {
-  const commandsPath = path.join(foldersPath, folder);
+  const commandsPath = path.join(engine.commandsFolder, folder);
   const commandFiles = fs
     .readdirSync(commandsPath)
     .filter((file) => file.endsWith(".js"));
@@ -92,13 +73,12 @@ for (const folder of commandFolders) {
 }
 
 client.modals = new Discord.Collection();
-const modalPath = path.join(__dirname, "interactions", "modals");
 const modalFiles = fs
-  .readdirSync(modalPath)
+  .readdirSync(engine.modalsFolder)
   .filter((file) => file.endsWith(".js"));
 
 for (const file of modalFiles) {
-  const { default: modal } = await import(modalPath + "/" + file);
+  const { default: modal } = await import(engine.modalsFolder + "/" + file);
   if ("name" in modal && "execute" in modal) {
     client.modals.set(modal.name, modal);
   } else {
@@ -109,13 +89,12 @@ for (const file of modalFiles) {
 }
 
 client.buttons = new Discord.Collection();
-const buttonPath = path.join(__dirname, "interactions", "buttons");
 const buttonFiles = fs
-  .readdirSync(buttonPath)
+  .readdirSync(engine.buttonsFolder)
   .filter((file) => file.endsWith(".js"));
 
 for (const file of buttonFiles) {
-  const { default: button } = await import(buttonPath + "/" + file);
+  const { default: button } = await import(engine.buttonsFolder + "/" + file);
   if ("name" in button && "execute" in button) {
     client.buttons.set(button.name, button);
   } else {
@@ -126,13 +105,12 @@ for (const file of buttonFiles) {
 }
 
 client.menus = new Discord.Collection();
-const menuPath = path.join(__dirname, "interactions", "menus");
 const menuFiles = fs
-  .readdirSync(menuPath)
+  .readdirSync(engine.menusFolder)
   .filter((file) => file.endsWith(".js"));
 
 for (const file of menuFiles) {
-  const { default: menu } = await import(menuPath + "/" + file);
+  const { default: menu } = await import(engine.menusFolder + "/" + file);
   if ("name" in menu && "execute" in menu) {
     client.menus.set(menu.name, menu);
   } else {
@@ -140,28 +118,6 @@ for (const file of menuFiles) {
       `[WARNING] The menu at ${file} is missing a required "name" or "execute" property.`,
     );
   }
-}
-
-const RequiredPerms = [
-  Discord.PermissionsBitField.Flags.ViewChannel,
-  Discord.PermissionsBitField.Flags.ReadMessageHistory,
-  Discord.PermissionsBitField.Flags.SendMessages,
-  Discord.PermissionsBitField.Flags.ManageMessages,
-  Discord.PermissionsBitField.Flags.Connect,
-  Discord.PermissionsBitField.Flags.Speak,
-];
-
-function setProfile() {
-  if (
-    client.user.username !== process.env.NAME &&
-    process.env.NAME !== undefined
-  )
-    client.user.setUsername(process.env.NAME);
-  if (
-    client.user.avatar !== process.env.AVATAR &&
-    process.env.AVATAR !== undefined
-  )
-    client.user.setAvatar(process.env.AVATAR);
 }
 
 function initSentry() {
@@ -225,7 +181,7 @@ function verifyCache() {
       `CREATE TABLE IF NOT EXISTS files_directory (name TEXT, filename TEXT, md5Hash TEXT UNIQUE)`,
     )
     .run();
-  let options = fs.readdirSync(path.join(__dirname, cacheFolder));
+  let options = fs.readdirSync(engine.cacheFolder);
   if (options.length !== 0) {
     let dbFiles = cache.prepare(`SELECT filename FROM files_directory`).all();
     let currentFilesSet = new Set(options);
@@ -237,7 +193,7 @@ function verifyCache() {
       }
     });
     options.forEach(async (opt) => {
-      let hash = await getHash(path.join(__dirname, cacheFolder, opt));
+      let hash = await getHash(engine.cacheFolder);
       cache
         .prepare(`INSERT OR IGNORE INTO files_directory VALUES (?, ?, ?)`)
         .run(opt, opt, hash);
@@ -256,7 +212,7 @@ function clearMusicData(id) {
   music.players.delete(id);
   music.connections.delete(id);
   music.timeouts.delete(id);
-  service.music_pages.delete(id);
+  //service.music_pages.delete(id);
 }
 
 function createConfig(id) {
@@ -312,9 +268,8 @@ function editActivity() {
 }
 
 client.on("ready", () => {
-  if (process.env.TELEMETRY === "true" || process.env.DEBUG === "true")
-    initSentry();
-  setProfile();
+  client.user.setUsername(engine.name);
+  client.user.setAvatar(engine.avatar);
   validateSettings();
   verifyCache();
   let permcheck = new cron.CronJob("00 00 */8 * * *", CheckForPerms);

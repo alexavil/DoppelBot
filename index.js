@@ -21,7 +21,7 @@ if (!fs.existsSync("./cache/")) fs.mkdirSync("./cache/");
 import debugLog from "./utils/DebugHandler.js";
 
 debugLog(`WARNING: ${process.env.NAME} is in debug mode! 
-  Debug mode is intended to be used for testing purposes only. 
+  Debug mode is intended to be used for testing purposes only. Telemetry is automatically enabled in this mode.
   In this mode, ${process.env.NAME} will log most actions and commands, including sensitive information. 
   We highly recommend redirecting the output to a file. 
   This mode is not recommended for use in production. Please proceed with caution.`);

@@ -169,7 +169,7 @@ function verifyCache() {
       }
     });
     options.forEach(async (opt) => {
-      let hash = await musicEngine.getHash(engine.cacheFolder);
+      let hash = await musicEngine.getHash(path.join(engine.cacheFolder, opt));
       cache
         .prepare(`INSERT OR IGNORE INTO files_directory VALUES (?, ?, ?)`)
         .run(opt, opt, hash);

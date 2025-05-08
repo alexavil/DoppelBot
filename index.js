@@ -1,5 +1,8 @@
 import "dotenv/config";
 
+import "trace";
+import "clarify";
+
 import sqlite3 from "better-sqlite3";
 import cron from "cron";
 import Discord from "discord.js";
@@ -169,7 +172,7 @@ function verifyCache() {
       }
     });
     options.forEach(async (opt) => {
-      let hash = await musicEngine.getHash(path.join(engine.cacheFolder, opt));
+      let hash = await musicEngine.getHash(engine.cacheFolder);
       cache
         .prepare(`INSERT OR IGNORE INTO files_directory VALUES (?, ?, ?)`)
         .run(opt, opt, hash);
@@ -263,6 +266,7 @@ client.on("ready", () => {
   }
   engine.debugLog("Jobs completed...");
   console.log(`Logged in as ${process.env.NAME}! Have a nice day!`);
+  fs();
 });
 
 client.on("guildCreate", (guild) => {

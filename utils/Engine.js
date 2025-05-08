@@ -1,9 +1,8 @@
 import Discord from "discord.js";
 import child from "child_process";
-import * as Sentry from "@sentry/node";
-import { nodeProfilingIntegration } from "@sentry/profiling-node";
 import util from "util";
 import fs from "fs-extra";
+import BotError from "./Error.js";
 
 const engine = {
   intents: [
@@ -80,24 +79,13 @@ switch (engine.debug) {
 }
 
 if (engine.debug === "true" || engine.telemetry === "true") {
-  engine.debugLog("Activating Sentry...");
-  Sentry.init({
-    dsn: "https://3f2f508f31b53efc75cf35eda503e49b@o4505970900467712.ingest.us.sentry.io/4509011809796097",
-    integrations: [nodeProfilingIntegration()],
-    tracesSampleRate: 1.0,
-    profilesSampleRate: 1.0,
-    environment: engine.debug ? "testing" : "production",
-    release: engine.build_hash,
-  });
+  engine.debugLog("Activating Telemetry...");
   engine.reportError = (str) => {
-    Sentry.captureException(str);
+    BotError.err = str.stack;
+    console.log(BotError);
   };
   engine.monitorPerformance = (id) => {
-    let perf = Sentry.startInactiveSpan({
-      op: "transaction",
-      name: `${engine.name} Performance - ${id}`,
-    });
-    return perf;
+    return undefined;
   };
 } else {
   engine.reportError = (str) => {

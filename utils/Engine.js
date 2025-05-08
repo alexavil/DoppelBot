@@ -81,11 +81,13 @@ switch (engine.debug) {
 if (engine.debug === "true" || engine.telemetry === "true") {
   engine.debugLog("Activating Telemetry...");
   engine.reportError = (str) => {
-    BotError.err = str.stack;
-    console.log(BotError);
+    let err = new BotError();
+    err.setError(str);
+    //TODO: send this error somewhere
   };
   engine.monitorPerformance = (id) => {
-    return undefined;
+    let perf = performance.measure(`${engine.name} Performance - ${id}`);
+    return perf;
   };
 } else {
   engine.reportError = (str) => {

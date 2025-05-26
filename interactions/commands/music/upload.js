@@ -27,8 +27,7 @@ export default {
         flags: Discord.MessageFlags.Ephemeral,
       });
     } else {
-      if (debug === "true")
-        console.log(`Adding track(s) to the cache...`);
+      if (debug === "true") console.log(`Adding track(s) to the cache...`);
       let name = interaction.options.getString("display_name");
       let status;
       if (name !== undefined) status = await music.getLocalFile(track, name);

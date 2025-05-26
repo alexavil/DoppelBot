@@ -14,9 +14,7 @@ export default {
       case "false":
         if (debug === "true")
           console.log(
-            "Notifications are disabled for " +
-              id +
-              ", switching on...",
+            "Notifications are disabled for " + id + ", switching on...",
           );
         settings
           .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
@@ -25,9 +23,7 @@ export default {
       case "true":
         if (debug === "true")
           console.log(
-            "Notifications are enabled for " +
-              id +
-              ", switching off...",
+            "Notifications are enabled for " + id + ", switching off...",
           );
         settings
           .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)

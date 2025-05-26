@@ -9,8 +9,7 @@ export default {
   name: "tagdelete",
   async execute(interaction) {
     let id = interaction.guild.id;
-    if (debug === "true")
-      console.log(`Starting tag deletion for ${id}...`);
+    if (debug === "true") console.log(`Starting tag deletion for ${id}...`);
     const keywords = interaction.values;
     for (const keyword of keywords) {
       tags.prepare(`DELETE FROM guild_${id} WHERE tag = '${keyword}'`).run();

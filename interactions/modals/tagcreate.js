@@ -15,8 +15,7 @@ export default {
       .prepare(`SELECT * FROM guild_${id} WHERE tag = ?`)
       .get(keyword);
     if (tag !== undefined) {
-      if (debug === "true")
-        console.log("Tag already exists, aborting...");
+      if (debug === "true") console.log("Tag already exists, aborting...");
       return interaction.update({
         content: "A tag with that key word already exists!",
         flags: Discord.MessageFlags.Ephemeral,

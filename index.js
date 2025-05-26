@@ -233,8 +233,7 @@ function CheckForPerms() {
     let missing = 0;
     RequiredPerms.forEach((perm) => {
       if (!botmember.permissions.has(perm[0])) {
-        if (debug === "true")
-          console.log(`Guild ${id} is missing ${perm[1]}.`);
+        if (debug === "true") console.log(`Guild ${id} is missing ${perm[1]}.`);
         message += `${perm[1]}\n`;
         missing++;
       }
@@ -305,9 +304,7 @@ function verifyCache() {
 
 function clearMusicData(id) {
   if (debug === "true")
-    console.log(
-      `Bot has restarted, clearing music data for guild ${id}.`,
-    );
+    console.log(`Bot has restarted, clearing music data for guild ${id}.`);
   music.clearQueue(id);
   music.players.delete(id);
   music.connections.delete(id);
@@ -355,8 +352,7 @@ function validateSettings() {
 }
 
 function deleteConfig(id) {
-  if (debug === "true")
-    console.log(`Deleting config for guild ${id}...`);
+  if (debug === "true") console.log(`Deleting config for guild ${id}...`);
   settings.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
   queue.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
   tags.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
@@ -395,8 +391,7 @@ client.on("guildCreate", (guild) => {
 });
 
 client.on("guildDelete", (guild) => {
-  if (debug === "true")
-    console.log(`A guild (${guild.id}) has been removed!`);
+  if (debug === "true") console.log(`A guild (${guild.id}) has been removed!`);
   deleteConfig(guild.id);
 });
 
@@ -414,9 +409,7 @@ client.on("interactionCreate", async (interaction) => {
 
     try {
       if (debug === "true")
-        console.log(
-          `Trying to execute ${interaction.customId} in ${id}.`,
-        );
+        console.log(`Trying to execute ${interaction.customId} in ${id}.`);
       modal.execute(interaction);
       if (monitor !== undefined) return monitor.end();
       else return;
@@ -433,9 +426,7 @@ client.on("interactionCreate", async (interaction) => {
 
     try {
       if (debug === "true")
-        console.log(
-          `Trying to execute ${interaction.customId} in ${id}.`,
-        );
+        console.log(`Trying to execute ${interaction.customId} in ${id}.`);
       button.execute(interaction);
       if (monitor !== undefined) return monitor.end();
       else return;
@@ -452,9 +443,7 @@ client.on("interactionCreate", async (interaction) => {
 
     try {
       if (debug === "true")
-        console.log(
-          `Trying to execute ${interaction.customId} in ${id}.`,
-        );
+        console.log(`Trying to execute ${interaction.customId} in ${id}.`);
       menu.execute(interaction);
       if (monitor !== undefined) return monitor.end();
       else return;
@@ -474,9 +463,7 @@ client.on("interactionCreate", async (interaction) => {
 
   try {
     if (debug === "true")
-      console.log(
-        `Trying to execute ${interaction.commandName} in ${id}.`,
-      );
+      console.log(`Trying to execute ${interaction.commandName} in ${id}.`);
     if (command.shouldWait !== false)
       await interaction.deferReply({ flags: Discord.MessageFlags.Ephemeral });
     await command.execute(interaction);

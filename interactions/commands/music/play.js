@@ -32,8 +32,7 @@ export default {
   async execute(interaction) {
     const id = interaction.guild.id;
     if (!interaction.member.voice.channel) {
-      if (debug === "true")
-        console.log("No voice channel found, aborting...");
+      if (debug === "true") console.log("No voice channel found, aborting...");
       return interaction.editReply("You need to join a voice channel first!");
     }
     let track = interaction.options.getAttachment("track");

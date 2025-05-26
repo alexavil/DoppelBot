@@ -8,7 +8,7 @@ export default {
     let msg = interaction.fields.getTextInputValue("responseInput");
     if (chl) {
       if (debug === "true")
-        console.log(`[DEBUG] Sending dev-generated message to ${chl}...`);
+        console.log(`Sending dev-generated message to ${chl}...`);
       interaction.client.channels.cache.get(chl).send(msg);
       interaction.reply({
         content: "Success!",
@@ -17,7 +17,7 @@ export default {
     } else {
       if (debug === "true")
         console.log(
-          `[DEBUG] Sending dev-generated message to ${interaction.channel.id}...`,
+          `Sending dev-generated message to ${interaction.channel.id}...`,
         );
       interaction.channel.send(msg);
       interaction.reply({

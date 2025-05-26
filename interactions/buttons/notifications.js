@@ -14,7 +14,7 @@ export default {
       case "false":
         if (debug === "true")
           console.log(
-            "[DEBUG] Notifications are disabled for " +
+            "Notifications are disabled for " +
               id +
               ", switching on...",
           );
@@ -25,7 +25,7 @@ export default {
       case "true":
         if (debug === "true")
           console.log(
-            "[DEBUG] Notifications are enabled for " +
+            "Notifications are enabled for " +
               id +
               ", switching off...",
           );

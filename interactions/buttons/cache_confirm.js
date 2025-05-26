@@ -18,7 +18,7 @@ const { default: music } = await import("../../utils/music.js");
 export default {
   name: "cache_confirm",
   async execute(interaction) {
-    if (debug === "true") console.log("[DEBUG] User confirmed, proceeding...");
+    if (debug === "true") console.log("User confirmed, proceeding...");
     for (const file of await fs.readdir(path.join(__dirname, cacheFolder))) {
       await fs.unlink(path.join(__dirname, cacheFolder, file));
     }

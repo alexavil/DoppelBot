@@ -33,7 +33,7 @@ export default {
     const id = interaction.guild.id;
     if (!interaction.member.voice.channel) {
       if (debug === "true")
-        console.log("[DEBUG] No voice channel found, aborting...");
+        console.log("No voice channel found, aborting...");
       return interaction.editReply("You need to join a voice channel first!");
     }
     let track = interaction.options.getAttachment("track");

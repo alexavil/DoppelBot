@@ -12,14 +12,14 @@ export default {
       10,
     );
     if (timeout < 0 || !Number.isInteger(timeout)) {
-      if (debug === "true") console.log("[DEBUG] Invalid input, aborting...");
+      if (debug === "true") console.log("Invalid input, aborting...");
       return interaction.reply({
         content: "Please provide a valid number in seconds!",
         flags: Discord.MessageFlags.Ephemeral,
       });
     }
     if (debug === "true")
-      console.log(`[DEBUG] New disconnect timeout for ${id}: ${timeout}...`);
+      console.log(`New disconnect timeout for ${id}: ${timeout}...`);
     settings
       .prepare(`UPDATE guild_${id} SET value = ? WHERE option = ?`)
       .run(timeout, "disconnect_timeout");

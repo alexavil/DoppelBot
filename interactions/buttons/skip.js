@@ -18,7 +18,7 @@ export default {
         channel.members.size !== 2) ||
       music.getQueueLength(interaction.guild.id) === 1
     ) {
-      if (debug === "true") console.log("[DEBUG] Skip not allowed...");
+      if (debug === "true") console.log("Skip not allowed...");
       return interaction.reply({
         content: "You are not allowed to skip!",
         flags: Discord.MessageFlags.Ephemeral,
@@ -26,10 +26,10 @@ export default {
     }
     if (music.getFromQueue(id).isLooped === "true") {
       if (debug === "true")
-        console.log("[DEBUG] The current track is looped, unlooping...");
+        console.log("The current track is looped, unlooping...");
       queue.prepare(`UPDATE guild_${id} SET isLooped = 'false' LIMIT 1`).run();
     }
-    if (debug === "true") console.log("[DEBUG] Skipping the current track...");
+    if (debug === "true") console.log("Skipping the current track...");
     if (player._state.status === "paused") player.unpause();
     player.stop();
     interaction.reply({

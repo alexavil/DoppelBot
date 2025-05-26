@@ -17,7 +17,7 @@ export default {
       channel.members.size !== 2
     ) {
       if (debug === "true")
-        console.log("[DEBUG] User is not admin or alone, stop not allowed...");
+        console.log("User is not admin or alone, stop not allowed...");
       return interaction.reply({
         content: "You are not allowed to stop!",
         flags: Discord.MessageFlags.Ephemeral,
@@ -30,7 +30,7 @@ export default {
         flags: Discord.MessageFlags.Ephemeral,
       });
     else {
-      if (debug === "true") console.log("[DEBUG] Stopping the connection...");
+      if (debug === "true") console.log("Stopping the connection...");
       let connection = getVoiceConnection(id);
       connection.destroy();
       music.players.delete(id);

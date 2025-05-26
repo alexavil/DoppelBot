@@ -28,7 +28,7 @@ export default {
       });
     } else {
       if (debug === "true")
-        console.log(`[DEBUG] Adding track(s) to the cache...`);
+        console.log(`Adding track(s) to the cache...`);
       let name = interaction.options.getString("display_name");
       let status;
       if (name !== undefined) status = await music.getLocalFile(track, name);

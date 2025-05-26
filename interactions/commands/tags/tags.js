@@ -12,10 +12,10 @@ export default {
     .setDescription("List tags"),
   async execute(interaction) {
     let id = interaction.guild.id;
-    if (debug === "true") console.log(`[DEBUG] Fetching tag list for ${id}...`);
+    if (debug === "true") console.log(`Fetching tag list for ${id}...`);
     let responses = tags.prepare(`SELECT * FROM guild_${id}`).all();
     if (responses.length === 0) {
-      if (debug === "true") console.log("[DEBUG] No tags found...");
+      if (debug === "true") console.log("No tags found...");
       let tagsembed = new Discord.EmbedBuilder().setTitle(
         `Tags for ${interaction.guild.name}`,
       );

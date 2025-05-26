@@ -6,9 +6,9 @@ export default {
   async execute(interaction) {
     const id = interaction.guild.id;
     if (debug === "true")
-      console.log(`[DEBUG] Preparing to clear tags for ${id}...`);
+      console.log(`Preparing to clear tags for ${id}...`);
     if (debug === "true")
-      console.log("[DEBUG] Confirmation required - awaiting user input...");
+      console.log("Confirmation required - awaiting user input...");
     const confirm = new Discord.ButtonBuilder()
       .setCustomId(`tagdef_confirm`)
       .setLabel(`Yes`)

@@ -9,12 +9,12 @@ export default {
   async execute(interaction) {
     if (!interaction.member.voice.channel) {
       if (debug === "true")
-        console.log("[DEBUG] No voice channel found, aborting...");
+        console.log("No voice channel found, aborting...");
       return interaction.editReply("You need to join a voice channel first!");
     }
     if (music.getQueueLength(interaction.guild.id) === 0) {
       if (debug === "true")
-        console.log("[DEBUG] No tracks are playing, aborting...");
+        console.log("No tracks are playing, aborting...");
       return interaction.editReply(
         "The queue is empty, add tracks to use the player controls!",
       );

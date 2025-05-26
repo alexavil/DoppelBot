@@ -9,7 +9,7 @@ export default {
   name: "def_confirm",
   async execute(interaction) {
     let id = interaction.guild.id;
-    if (debug === "true") console.log("[DEBUG] User confirmed, proceeding...");
+    if (debug === "true") console.log("User confirmed, proceeding...");
     settings.prepare(`DROP TABLE IF EXISTS guild_${id}`).run();
     settings
       .prepare(
@@ -25,7 +25,7 @@ export default {
       statement.run("fail_threshold", "10");
     });
     transaction();
-    if (debug === "true") console.log(`[DEBUG] Reset finished for ${id}!`);
+    if (debug === "true") console.log(`Reset finished for ${id}!`);
     return interaction.update({
       content: "Your settings have been reset successfully!",
       components: [],

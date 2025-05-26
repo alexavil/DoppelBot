@@ -5,10 +5,9 @@ export default {
   name: "clear_cache",
   async execute(interaction) {
     const id = interaction.guild.id;
+    if (debug === "true") console.log(`Preparing to clear cache for ${id}...`);
     if (debug === "true")
-      console.log(`[DEBUG] Preparing to clear cache for ${id}...`);
-    if (debug === "true")
-      console.log("[DEBUG] Confirmation required - awaiting user input...");
+      console.log("Confirmation required - awaiting user input...");
     const confirm = new Discord.ButtonBuilder()
       .setCustomId(`cache_confirm`)
       .setLabel(`Yes`)

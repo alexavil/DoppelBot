@@ -127,7 +127,7 @@ async function getLocalFile(file, display_name) {
         });
       })
       .on("error", (err) => {
-        if (debug === "true") console.log("[DEBUG] Error: " + err.message);
+        if (debug === "true") console.log("Error: " + err.message);
         fs.unlink(path.join(__dirname, cacheFolder, file.name), () => {
           reject(1);
         });
@@ -147,14 +147,14 @@ function playLocalFile(file, connection, interaction) {
   player.play(resource);
   player.on(AudioPlayerStatus.Idle, async () => {
     if (debug.debug === true) {
-      console.log("[DEBUG] No more tracks to play, starting timeout...");
+      console.log("No more tracks to play, starting timeout...");
     }
     if (getFromQueue(connection.joinConfig.guildId).isLooped === "false") {
       removeFromQueue(connection.joinConfig.guildId);
     }
     if (getQueueLength(connection.joinConfig.guildId) > 0) {
       if (debug === "true") {
-        console.log("[DEBUG] Starting the next track...");
+        console.log("Starting the next track...");
       }
       let file = getFromQueue(connection.joinConfig.guildId);
       playLocalFile(file.name, connection, interaction);
@@ -162,7 +162,7 @@ function playLocalFile(file, connection, interaction) {
         announceTrack(file.track, file.author, interaction);
     } else {
       if (debug === "true") {
-        console.log("[DEBUG] No more tracks to play, starting timeout...");
+        console.log("No more tracks to play, starting timeout...");
       }
       let timeout =
         parseInt(

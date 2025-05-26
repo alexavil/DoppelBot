@@ -9,16 +9,15 @@ export default {
   name: "tagdelete",
   async execute(interaction) {
     let id = interaction.guild.id;
-    if (debug === "true")
-      console.log(`[DEBUG] Starting tag deletion for ${id}...`);
+    if (debug === "true") console.log(`Starting tag deletion for ${id}...`);
     const keywords = interaction.values;
     for (const keyword of keywords) {
       tags.prepare(`DELETE FROM guild_${id} WHERE tag = '${keyword}'`).run();
     }
-    if (debug === "true") console.log(`[DEBUG] Fetching tag list for ${id}...`);
+    if (debug === "true") console.log(`Fetching tag list for ${id}...`);
     let responses = tags.prepare(`SELECT * FROM guild_${id}`).all();
     if (responses.length === 0) {
-      if (debug === "true") console.log("[DEBUG] No tags found...");
+      if (debug === "true") console.log("No tags found...");
       let tagsembed = new Discord.EmbedBuilder().setTitle(
         `Tags for ${interaction.guild.name}`,
       );
@@ -28,6 +27,12 @@ export default {
         .setLabel(`Create a tag`)
         .setStyle(ButtonStyle.Primary);
       let row = new Discord.ActionRowBuilder().addComponents(addtag);
+      return interaction.update({
+        content: "",
+        embeds: [tagsembed],
+        components: [row],
+        flags: Discord.MessageFlags.Ephemeral,
+      });
     } else {
       let reply = generateTagsEmbed(responses, 1, interaction);
       service.tags_pages.set(id, 1);

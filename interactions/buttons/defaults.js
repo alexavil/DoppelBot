@@ -6,9 +6,9 @@ export default {
   async execute(interaction) {
     const id = interaction.guild.id;
     if (debug === "true")
-      console.log(`[DEBUG] Preparing to reset settings for ${id}...`);
+      console.log(`Preparing to reset settings for ${id}...`);
     if (debug === "true")
-      console.log("[DEBUG] Confirmation required - awaiting user input...");
+      console.log("Confirmation required - awaiting user input...");
     const confirm = new Discord.ButtonBuilder()
       .setCustomId(`def_confirm`)
       .setLabel(`Yes`)

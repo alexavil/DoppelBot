@@ -33,7 +33,11 @@ export default {
       .setLabel(`Website`)
       .setURL("https://doppelbot.jsbox.xyz/")
       .setStyle(Discord.ButtonStyle.Link);
-    const row = new Discord.ActionRowBuilder().addComponents(privacy, update, blog);
+    const row = new Discord.ActionRowBuilder().addComponents(
+      privacy,
+      update,
+      blog,
+    );
     interaction.editReply({ embeds: [help], components: [row] });
   },
 };

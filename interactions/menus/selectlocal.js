@@ -10,8 +10,7 @@ export default {
   name: "selectlocal",
   async execute(interaction) {
     let id = interaction.guild.id;
-    if (debug === "true")
-      console.log(`[DEBUG] Adding track(s) to the queue...`);
+    if (debug === "true") console.log(`Adding track(s) to the queue...`);
     let connection = music.getConnection(interaction);
     const tracks = interaction.values;
     service.music_pages.delete(id);

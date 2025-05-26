@@ -1,5 +1,9 @@
 import "dotenv/config";
 
+if (!fs.existsSync("./data/")) fs.mkdirSync("./data/");
+if (!fs.existsSync("./logs/")) fs.mkdirSync("./logs/");
+if (!fs.existsSync("./cache/")) fs.mkdirSync("./cache/");
+
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -68,10 +72,6 @@ const client = new Discord.Client({
     GatewayIntentBits.MessageContent,
   ],
 });
-
-if (!fs.existsSync("./data/")) fs.mkdirSync("./data/");
-if (!fs.existsSync("./logs/")) fs.mkdirSync("./logs/");
-if (!fs.existsSync("./cache/")) fs.mkdirSync("./cache/");
 
 const settings = new sqlite3("./data/settings.db");
 const queue = new sqlite3("./data/queue.db");

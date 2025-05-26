@@ -180,7 +180,8 @@ if (debug === "true") {
   console.log(`WARNING: ${name} is in debug mode! 
   Debug mode is intended to be used for testing purposes only. 
   In this mode, ${name} will log most actions and commands, including sensitive information. 
-  We highly recommend redirecting the output to a file. 
+  Telemetry is enabled by default in this mode.
+  For troubleshooting, see your logs folder.
   This mode is not recommended for use in production. Please proceed with caution.`);
   console.log(
     "Build hash: " +

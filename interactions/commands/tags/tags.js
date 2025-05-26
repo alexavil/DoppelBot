@@ -25,6 +25,11 @@ export default {
         .setLabel(`Create a tag`)
         .setStyle(ButtonStyle.Primary);
       let row = new Discord.ActionRowBuilder().addComponents(addtag);
+      return interaction.editReply({
+        embeds: [tagsembed],
+        components: [row],
+        flags: Discord.MessageFlags.Ephemeral,
+      });
     } else {
       let reply = generateTagsEmbed(responses, 1, interaction);
       service.tags_pages.set(id, 1);

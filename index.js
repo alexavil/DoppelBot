@@ -14,7 +14,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 import sqlite3 from "better-sqlite3";
-import child from "child_process";
+import commit from "./utils/buildHashGenerator.js";
 import cron from "cron";
 import Discord, {
   ChannelType,
@@ -179,7 +179,7 @@ if (debug === "true") {
   This mode is not recommended for use in production. Please proceed with caution.`);
   console.log(
     "Build hash: " +
-      child.execSync("git rev-parse --short HEAD").toString().trim(),
+      commit,
   );
   client.on("debug", console.log);
   client.on("warn", console.log);
@@ -359,7 +359,7 @@ function editActivity() {
   client.user.setActivity(activities[gamestring]);
 }
 
-client.on("ready", () => {
+client.on("clientReady", () => {
   setProfile();
   validateSettings();
   verifyCache();

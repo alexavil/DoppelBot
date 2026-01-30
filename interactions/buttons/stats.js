@@ -1,7 +1,8 @@
-import child from "child_process";
+
 import Discord from "discord.js";
 import fs from "fs-extra";
 import os from "os";
+import commit from "../../utils/buildHashGenerator.js";
 import { convertToString } from "../../utils/TimeConverter.js";
 const name = process.env.NAME;
 
@@ -14,7 +15,6 @@ const __dirname = dirname(__filename);
 export default {
   name: "stats",
   async execute(interaction) {
-    let commit = child.execSync("git rev-parse --short HEAD").toString().trim();
     const stats = new Discord.EmbedBuilder()
       .setColor("#0099ff")
       .setTitle(`${name} Stats`)
